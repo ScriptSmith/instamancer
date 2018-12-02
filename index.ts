@@ -67,6 +67,7 @@ let argv = require('yargs')
             describe: 'Name of the log file'
         }
     })
+    .demandCommand()
     .argv;
 
 async function spawn(args) {
