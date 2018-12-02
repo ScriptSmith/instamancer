@@ -506,7 +506,7 @@ export class Location extends Instagram {
     constructor(id: string, options: object = {}) {
         let pageQuery = "data.location.edge_location_to_media.page_info.has_next_page";
         let edgeQuery = "data.location.edge_location_to_media.edges";
-        super(Endpoints.HASHTAG, id, pageQuery, edgeQuery, options)
+        super(Endpoints.LOCATION, id, pageQuery, edgeQuery, options)
     }
 }
 
@@ -517,6 +517,6 @@ export class User extends Instagram {
     constructor(id: string, options: object = {}) {
         let pageQuery = "data.user.edge_owner_to_timeline_media.page_info.has_next_page";
         let edgeQuery = "data.user.edge_owner_to_timeline_media.edges";
-        super(Endpoints.HASHTAG, id, pageQuery, edgeQuery, options)
+        super(Endpoints.USER, id, pageQuery, edgeQuery, options)
     }
 }
