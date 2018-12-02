@@ -2,9 +2,9 @@
   "name": "socialcreaper",
   "version": "2.0.0",
   "description": "Scrape Instagram with Puppeteer",
-  "main": "api.js",
+  "main": "socialcreaper.js",
   "bin": {
-    "punchman": "api.js"
+    "socialcreaper": "index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
