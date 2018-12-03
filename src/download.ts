@@ -3,7 +3,12 @@ import * as fs from "fs";
 import * as json2csv from "json2csv";
 
 const path = require('path');
-
+/**
+ * Recursively create directories
+ * @see https://stackoverflow.com/a/40686853/7435520
+ * @param targetDir The path to create
+ * @param isRelativeToScript Create path relative to this script
+ */
 function mkDirByPathSync(targetDir, {isRelativeToScript = false} = {}) {
     const sep = path.sep;
     const initDir = path.isAbsolute(targetDir) ? sep : '';
@@ -33,6 +38,13 @@ function mkDirByPathSync(targetDir, {isRelativeToScript = false} = {}) {
     }, initDir);
 }
 
+/**
+ * Download file
+ * @param url The URL of the file
+ * @param name The name used to identify the file
+ * @param directory The directory to save the file
+ * @param callback Run upon completion
+ */
 export function download(url, name, directory, callback) {
     https.get(url, response => {
         mkDirByPathSync(directory);
@@ -55,10 +67,12 @@ let fields = ['node.comments_disabled', 'node.__typename', 'node.id', 'node.edge
     'node.thumbnail_resources.4.src', 'node.thumbnail_resources.4.config_width',
     'node.thumbnail_resources.4.config_height', 'node.is_video', 'node.video_view_count', 'node.accessibility_caption'];
 
-
-export function toCSV(data, path) {
+/**
+ * Save list of posts to a CSV file
+ */
+export function toCSV(posts, path) {
     let parser = new json2csv.Parser({fields});
-    let csv = parser.parse(data);
+    let csv = parser.parse(posts);
     fs.writeFileSync(path, csv);
 }
 

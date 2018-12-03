@@ -208,12 +208,14 @@ class Instagram implements AsyncIterableIterator<object> {
             // Get more posts, then yield the posts in the buffer
             let more = await this.getNext();
             if (more) {
+                // Yield post from buffer
                 let post;
                 await this.postBufferLock.acquireAsync();
                 post = this.postBuffer.shift();
                 this.postBufferLock.release();
                 yield post;
             } else {
+                // Yield leftover posts from buffer
                 await this.postBufferLock.acquireAsync();
                 while (this.postBuffer.length > 0) {
                     yield this.postBuffer.shift();
@@ -249,6 +251,8 @@ class Instagram implements AsyncIterableIterator<object> {
         if (repeatCount > 0) {
             padding = " ".repeat(repeatCount)
         }
+
+        // Update output length
         if (out.length > this.outputLength) {
             this.outputLength = out.length;
         }

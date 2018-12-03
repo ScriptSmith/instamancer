@@ -79,6 +79,7 @@ require('yargs')
  * @param args
  */
 async function spawn(args) {
+    // Initiate logger
     let logger = winston.createLogger({
         level: args['logging'],
         silent: args['logging'] == "none",
@@ -89,6 +90,7 @@ async function spawn(args) {
         ]
     });
 
+    // Pick endpoint
     let api;
     if (args['_'] == "hashtag") {
         api = Hashtag;
@@ -98,15 +100,19 @@ async function spawn(args) {
         api = User;
     }
 
+    // Define options
     let options: ApiOptions = {
         total: args['count'],
         headless: !args['visible'],
         logger: logger
     };
 
+    // Start API
     logger.info("Starting API");
     let obj = new api(args['id'], options);
     await obj.start();
+
+    // Download posts
     let posts = [];
     for await (let post of obj.itr()) {
         posts.push(post);
@@ -115,6 +121,7 @@ async function spawn(args) {
         }
     }
 
+    // Save to CSV
     toCSV(posts, args['filename'])
 }
 
