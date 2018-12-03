@@ -1,7 +1,7 @@
 {
   "name": "socialcreaper",
   "version": "2.0.0",
-  "description": "Scrape Instagram with Puppeteer",
+  "description": "Scrape the Instagram API with Puppeteer",
   "main": "socialcreaper.js",
   "bin": {
     "socialcreaper": "index.js"
