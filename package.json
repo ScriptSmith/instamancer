@@ -8,7 +8,7 @@
   },
   "scripts": {
     "compile": "tsc",
-    "test": "tc-jest"
+    "test": "jest"
   },
   "author": "ScriptSmith",
   "license": "MIT",
