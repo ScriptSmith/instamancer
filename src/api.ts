@@ -79,13 +79,13 @@ class Instagram implements AsyncIterableIterator<object> {
     private readonly id: string;
 
     // List of scraped posts and lock
-    private postBuffer: Array<object> = new Array<object>();
+    private postBuffer: Array<object> = [];
     private postBufferLock: AwaitLock = new AwaitLock();
 
     // Request and Response buffers and locks
-    private requestBuffer: Array<Request> = new Array<Request>();
+    private requestBuffer: Array<Request> = [];
     private requestBufferLock: AwaitLock = new AwaitLock();
-    private responseBuffer: Array<Response> = new Array<Response>();
+    private responseBuffer: Array<Response> = [];
     private responseBufferLock: AwaitLock = new AwaitLock();
 
     // Grafting state
