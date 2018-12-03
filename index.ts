@@ -176,7 +176,7 @@ async function spawn(args) {
         posts.push(post);
 
         // Download thumbnail
-        if (args['download']) {
+        if (args['download'] && 'node' in post) {
             download(post.node.thumbnail_src, post.node.shortcode, args['downdir'], () => null);
         }
     }
