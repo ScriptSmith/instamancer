@@ -423,7 +423,7 @@ class Instagram implements AsyncIterableIterator<object> {
 
     /**
      * Halt execution
-     * @param time seconds
+     * @param time Seconds
      */
     private async sleep(time) {
         for (let i = time; i > 0; i--) {
