@@ -214,6 +214,11 @@ class Instagram implements AsyncIterableIterator<object> {
                 this.postBufferLock.release();
                 yield post;
             } else {
+                await this.postBufferLock.acquireAsync();
+                while (this.postBuffer.length > 0) {
+                    yield this.postBuffer.shift();
+                }
+                this.postBufferLock.release();
                 this.logger.info("No more posts available");
                 break;
             }
