@@ -212,7 +212,6 @@ class Instagram implements AsyncIterableIterator<object> {
                 await this.postBufferLock.acquireAsync();
                 post = this.postBuffer.shift();
                 this.postBufferLock.release();
-                this.index++;
                 yield post;
             } else {
                 this.logger.info("No more posts available");
@@ -371,7 +370,7 @@ class Instagram implements AsyncIterableIterator<object> {
                 }
 
                 // Add to postBuffer
-                if (this.index < this.total || this.total == 0) {
+                if (this.index++ < this.total || this.total == 0) {
                     await this.postBufferLock.acquireAsync();
                     this.postBuffer.push(post);
                     this.postBufferLock.release()

@@ -1,4 +1,6 @@
 node_modules/
+downloads/
 *.map
 *.js
 *.log
+*.csv

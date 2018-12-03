@@ -2,7 +2,8 @@
 
 import winston = require("winston");
 
-import {Hashtag, Location, User, ApiOptions} from "./api"
+import {Hashtag, Location, User, ApiOptions} from "./src/api"
+import {download, toCSV} from "./src/download";
 
 
 /**
@@ -103,12 +104,15 @@ async function spawn(args) {
         logger: logger
     };
 
+    logger.info("Starting API");
     let obj = new api(args['id'], options);
-    // console.log("Beginning");
     await obj.start();
     let posts = [];
-    for await (const post of obj.itr()) {
+    for await (let post of obj.itr()) {
         posts.push(post);
+        download(post.node.thumbnail_src, post.node.shortcode, args['downdir'], () => {})
     }
+
+    toCSV(posts, args['filename'])
 }
 
