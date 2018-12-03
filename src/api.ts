@@ -380,7 +380,8 @@ class Instagram implements AsyncIterableIterator<object> {
                 }
 
                 // Add to postBuffer
-                if (this.index++ < this.total || this.total == 0) {
+                if (this.index < this.total || this.total == 0) {
+                    this.index++;
                     await this.postBufferLock.acquireAsync();
                     this.postBuffer.push(post);
                     this.postBufferLock.release()

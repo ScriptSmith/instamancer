@@ -76,4 +76,9 @@ export function toCSV(posts, path) {
     fs.writeFileSync(path, csv);
 }
 
-
+/**
+ * Save list of posts to a JSON file
+ */
+export function toJSON(posts, path) {
+    fs.writeFileSync(path, JSON.stringify(posts));
+}

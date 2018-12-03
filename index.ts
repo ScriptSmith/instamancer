@@ -3,7 +3,7 @@
 import winston = require("winston");
 
 import {Hashtag, Location, User, ApiOptions} from "./src/api"
-import {download, toCSV} from "./src/download";
+import {download, toCSV, toJSON} from "./src/download";
 
 
 /**
@@ -48,13 +48,13 @@ require('yargs')
         },
         'filename': {
             alias: ['file', 'f', 'out'],
-            default: "out.csv",
+            default: "[id]",
             describe: "Name of the output file"
         },
         'filetype': {
             alias: ['type', 't'],
-            default: 'csv',
-            choices: ['csv', 'json'],
+            default: 'json',
+            choices: ['csv', 'json', 'both'],
             describe: "Type of output file "
         },
         'downdir': {
@@ -121,7 +121,13 @@ async function spawn(args) {
         }
     }
 
-    // Save to CSV
-    toCSV(posts, args['filename'])
+    let filename = args['filename'].replace('[id]', args['id']);
+
+    if (args['filetype'] != 'json') {
+        toCSV(posts, filename + '.csv');
+    }
+    if (args['filetype'] != 'csv') {
+        toJSON(posts, filename + '.json');
+    }
 }
 
