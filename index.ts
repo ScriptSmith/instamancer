@@ -5,7 +5,10 @@ import winston = require("winston");
 import {Hashtag, Location, User, ApiOptions} from "./api"
 
 
-let argv = require('yargs')
+/**
+ * Build argument parser
+ */
+require('yargs')
     .command(
         'hashtag [id]',
         'Scrape a hashtag',
@@ -70,6 +73,10 @@ let argv = require('yargs')
     .demandCommand()
     .argv;
 
+/**
+ * Spawn an instance of the API
+ * @param args
+ */
 async function spawn(args) {
     let logger = winston.createLogger({
         level: args['logging'],
@@ -99,7 +106,7 @@ async function spawn(args) {
     let obj = new api(args['id'], options);
     // console.log("Beginning");
     await obj.start();
-    let posts = []
+    let posts = [];
     for await (const post of obj.itr()) {
         posts.push(post);
     }

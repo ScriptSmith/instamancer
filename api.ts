@@ -45,15 +45,25 @@ class PostIdQueue {
      * @return true if the id was already in the queue, false if not.
      */
     public add(id: string): boolean {
+        // Check if already in list
         let contains = this.ids.includes(id);
+
+        // Pop id when size limit reached
         if (this.ids.length >= this.size) {
             this.ids.shift()
         }
+
+        // Add id
         this.ids.push(id);
+
+        // Return if id was already in list
         return contains;
     }
 }
 
+/**
+ * Optional arguments for the API
+ */
 export interface ApiOptions {
     total?: number;
     headless?: boolean;
@@ -143,11 +153,13 @@ class Instagram implements AsyncIterableIterator<object> {
      * Create the browser and page, then visit the url
      */
     async constructPage() {
+        // Launch browser
         this.progress(Progress.LAUNCHING);
         this.browser = await puppeteer.launch({
             headless: this.headless
         });
 
+        // Visit page
         this.page = await this.browser.newPage();
         this.progress(Progress.OPENING);
         await this.page.goto(this.url);
@@ -161,10 +173,13 @@ class Instagram implements AsyncIterableIterator<object> {
         // Build page and visit url
         await this.constructPage();
 
+        // Add event listeners for requests and responses
         await this.page.setRequestInterception(true);
         this.page.on("request", (req) => this.interceptRequest(req));
         this.page.on("response", (res) => this.interceptResponse(res));
         this.page.on("requestfailed", (res) => this.interceptFailure(res));
+
+        // Ignore dialog boxes
         this.page.on("dialog", (dialog) => dialog.dismiss());
 
     }
@@ -173,7 +188,7 @@ class Instagram implements AsyncIterableIterator<object> {
      * Close the page and browser
      */
     async stop() {
-        this.progress(Progress.CLOSING)
+        this.progress(Progress.CLOSING);
         // Clear request buffers
         await this.requestBufferLock.acquireAsync();
         this.requestBuffer = [];
