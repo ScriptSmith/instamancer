@@ -79,13 +79,13 @@ class Instagram implements AsyncIterableIterator<object> {
     private readonly id: string;
 
     // List of scraped posts and lock
-    private postBuffer: Array<object> = new Array<object>();
+    private postBuffer: Array<object> = [];
     private postBufferLock: AwaitLock = new AwaitLock();
 
     // Request and Response buffers and locks
-    private requestBuffer: Array<Request> = new Array<Request>();
+    private requestBuffer: Array<Request> = [];
     private requestBufferLock: AwaitLock = new AwaitLock();
-    private responseBuffer: Array<Response> = new Array<Response>();
+    private responseBuffer: Array<Response> = [];
     private responseBufferLock: AwaitLock = new AwaitLock();
 
     // Grafting state
@@ -208,12 +208,19 @@ class Instagram implements AsyncIterableIterator<object> {
             // Get more posts, then yield the posts in the buffer
             let more = await this.getNext();
             if (more) {
+                // Yield post from buffer
                 let post;
                 await this.postBufferLock.acquireAsync();
                 post = this.postBuffer.shift();
                 this.postBufferLock.release();
                 yield post;
             } else {
+                // Yield leftover posts from buffer
+                await this.postBufferLock.acquireAsync();
+                while (this.postBuffer.length > 0) {
+                    yield this.postBuffer.shift();
+                }
+                this.postBufferLock.release();
                 this.logger.info("No more posts available");
                 break;
             }
@@ -244,6 +251,8 @@ class Instagram implements AsyncIterableIterator<object> {
         if (repeatCount > 0) {
             padding = " ".repeat(repeatCount)
         }
+
+        // Update output length
         if (out.length > this.outputLength) {
             this.outputLength = out.length;
         }
@@ -414,7 +423,7 @@ class Instagram implements AsyncIterableIterator<object> {
 
     /**
      * Halt execution
-     * @param time seconds
+     * @param time Seconds
      */
     private async sleep(time) {
         for (let i = time; i > 0; i--) {
