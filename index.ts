@@ -117,7 +117,7 @@ function buildParser(args, callback) {
                 describe: 'Level of logger'
             },
             'logfile': {
-                default: 'socialcreaper.log',
+                default: 'socialcreaper2.log',
                 describe: 'Name of the log file'
             }
         })
@@ -168,10 +168,15 @@ async function spawn(args) {
     // Download posts
     let posts = [];
     for await (let post of obj.itr()) {
+        // Wait if paused
+        await waitResume();
+
+        // Save post
         posts.push(post);
+
+        // Download thumbnail
         if (args['download']) {
-            download(post.node.thumbnail_src, post.node.shortcode, args['downdir'], () => {
-            });
+            download(post.node.thumbnail_src, post.node.shortcode, args['downdir'], () => null);
         }
     }
 
@@ -187,5 +192,35 @@ async function spawn(args) {
     }
 }
 
-buildParser(process.argv.slice(2), () => {
+/**
+ * Wait until not paused
+ */
+async function waitResume() {
+    function f() {
+        return new Promise(
+            resolve => {
+                setTimeout(resolve, 1000)
+            }
+        );
+    }
+
+    while (pause == true) {
+        await f();
+    }
+}
+
+// Catch key presses
+readline.emitKeypressEvents(process.stdin);
+if ('setRawMode' in process.stdin)
+    process.stdin.setRawMode(true);
+
+// Toggle pause on key press
+let pause = false;
+process.stdin.on('keypress', (str, key) => {
+    if (key.name == 'space') {
+        pause = !pause;
+    }
 });
+
+// Parse args
+buildParser(process.argv.slice(2), () => null);
