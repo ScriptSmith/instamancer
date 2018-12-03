@@ -137,7 +137,8 @@ async function spawn(args) {
         silent: args['logging'] == "none",
         transports: [
             new winston.transports.File({
-                filename: args['logfile']
+                filename: args['logfile'],
+                silent: args['logging'] == 'none'
             })
         ]
     });
