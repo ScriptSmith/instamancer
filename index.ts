@@ -110,7 +110,9 @@ async function spawn(args) {
     let posts = [];
     for await (let post of obj.itr()) {
         posts.push(post);
-        download(post.node.thumbnail_src, post.node.shortcode, args['downdir'], () => {})
+        if (args['download']) {
+            download(post.node.thumbnail_src, post.node.shortcode, args['downdir'], () => {});
+        }
     }
 
     toCSV(posts, args['filename'])
