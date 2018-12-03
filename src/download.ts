@@ -43,10 +43,23 @@ export function download(url, name, directory, callback) {
     })
 }
 
+let fields = ['node.comments_disabled', 'node.__typename', 'node.id', 'node.edge_media_to_caption.edges.0.node.text',
+    'node.shortcode', 'node.edge_media_to_comment.count', 'node.taken_at_timestamp', 'node.dimensions.height',
+    'node.dimensions.width', 'node.display_url', 'node.edge_liked_by.count', 'node.edge_media_preview_like.count',
+    'node.owner.id', 'node.thumbnail_src', 'node.thumbnail_resources.0.src', 'node.thumbnail_resources.0.config_width',
+    'node.thumbnail_resources.0.config_height', 'node.thumbnail_resources.1.src',
+    'node.thumbnail_resources.1.config_width', 'node.thumbnail_resources.1.config_height',
+    'node.thumbnail_resources.2.src', 'node.thumbnail_resources.2.config_width',
+    'node.thumbnail_resources.2.config_height', 'node.thumbnail_resources.3.src',
+    'node.thumbnail_resources.3.config_width', 'node.thumbnail_resources.3.config_height',
+    'node.thumbnail_resources.4.src', 'node.thumbnail_resources.4.config_width',
+    'node.thumbnail_resources.4.config_height', 'node.is_video', 'node.video_view_count', 'node.accessibility_caption'];
+
+
 export function toCSV(data, path) {
-    let parser = new json2csv.Parser();
+    let parser = new json2csv.Parser({fields});
     let csv = parser.parse(data);
-    console.log(csv)
+    fs.writeFileSync(path, csv);
 }
 
 
