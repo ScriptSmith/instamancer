@@ -157,10 +157,18 @@ export class Instagram implements AsyncIterableIterator<object> {
      * Create the browser and page, then visit the url
      */
     async constructPage() {
+        // Browser args
+        let args = [];
+        if (process.env.NO_SANDBOX) {
+            args.push('--no-sandbox');
+            args.push('--disable-setuid-sandbox');
+        }
+
         // Launch browser
         this.progress(Progress.LAUNCHING);
         this.browser = await puppeteer.launch({
-            headless: this.headless
+            headless: this.headless,
+            args: args
         });
 
         // Visit page
