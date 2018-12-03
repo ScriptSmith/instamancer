@@ -33,12 +33,8 @@ enum Progress {
  * A fixed-size queue of post ids
  */
 class PostIdQueue {
-    private ids: Array<string>;
-    private size: number = 1300;
-
-    constructor() {
-        this.ids = new Array<string>();
-    }
+    private size: number = 1000;
+    private ids: Array<string> = new Array<string>(this.size);
 
     /**
      * Add a post id to the queue. The least-recently inserted id is popped off the queue when it reaches its max size
