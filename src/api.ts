@@ -63,13 +63,15 @@ class PostIdQueue {
 export interface ApiOptions {
     total?: number;
     headless?: boolean;
-    logger?: Logger
+    logger?: Logger;
+    silent?: boolean;
+    sleepTime?: number;
 }
 
 /**
  * An Instagram API object
  */
-class Instagram implements AsyncIterableIterator<object> {
+export class Instagram implements AsyncIterableIterator<object> {
     // Puppeteer state
     private browser: Browser;
     private page: Page;
@@ -119,11 +121,15 @@ class Instagram implements AsyncIterableIterator<object> {
     private jumps: number = 0;
     private jumpMod: number = 50;
 
-    // Size of output string
+    // Output
     private outputLength: number = 0;
+    private silent: boolean = false;
 
     // Sleep time remaining
-    private sleepTime: number = 0;
+    private sleepRemaining: number = 0;
+
+    // Length of time to sleep for
+    private readonly sleepTime: number = 2;
 
     // Logging object
     private logger: Logger;
@@ -136,6 +142,8 @@ class Instagram implements AsyncIterableIterator<object> {
         this.edgeQuery = edgeQuery;
         this.headless = options.headless;
         this.logger = options.logger;
+        this.silent = options.silent;
+        this.sleepTime = options.sleepTime;
     }
 
     /**
@@ -239,11 +247,16 @@ class Instagram implements AsyncIterableIterator<object> {
      * Print progress to stdout
      */
     private progress(state: Progress) {
+        // End if silent
+        if (this.silent) {
+            return;
+        }
+
         // Calculate total
         let total = this.total == 0 ? "Unlimited" : this.total;
 
         // Generate output string
-        let out = `Id: ${this.id} | State: ${state} | Sleeping: ${this.sleepTime} | Total: ${total} | Scraped: ${this.index}`;
+        let out = `Id: ${this.id} | State: ${state} | Sleeping: ${this.sleepRemaining} | Total: ${total} | Scraped: ${this.index}`;
 
         // Calculate empty padding
         let repeatCount = out.length - this.outputLength;
@@ -428,7 +441,7 @@ class Instagram implements AsyncIterableIterator<object> {
      */
     private async sleep(time) {
         for (let i = time; i > 0; i--) {
-            this.sleepTime = i;
+            this.sleepRemaining = i;
             this.progress(Progress.SCRAPING);
             await this.sleepPromise();
         }
@@ -493,7 +506,7 @@ class Instagram implements AsyncIterableIterator<object> {
             }
 
             // Sleep
-            await this.sleep(2);
+            await this.sleep(this.sleepTime);
 
             // Hibernate if rate-limited
             if (this.hibernate) {

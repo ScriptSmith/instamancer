@@ -157,7 +157,8 @@ async function spawn(args) {
     let options: ApiOptions = {
         total: args['count'],
         headless: !args['visible'],
-        logger: logger
+        logger: logger,
+        silent: false
     };
 
     // Start API
