@@ -67,7 +67,7 @@ export interface ApiOptions {
 }
 
 /**
- * An instagram API object
+ * An Instagram API object
  */
 class Instagram implements AsyncIterableIterator<object> {
     // Puppeteer state
@@ -278,6 +278,7 @@ class Instagram implements AsyncIterableIterator<object> {
      */
     private async interceptFailure(req: Request) {
         this.logger.info("Failed: " + req.url());
+        this.progress(Progress.ABORTED);
     }
 
     /**
@@ -374,6 +375,9 @@ class Instagram implements AsyncIterableIterator<object> {
                     await this.postBufferLock.acquireAsync();
                     this.postBuffer.push(post);
                     this.postBufferLock.release()
+                } else {
+                    this.finished = true;
+                    break;
                 }
             }
         }
