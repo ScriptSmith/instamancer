@@ -121,8 +121,10 @@ async function spawn(args) {
         }
     }
 
+    // Replace filename
     let filename = args['filename'].replace('[id]', args['id']);
 
+    // Save file
     if (args['filetype'] != 'json') {
         toCSV(posts, filename + '.csv');
     }
