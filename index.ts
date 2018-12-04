@@ -15,6 +15,7 @@ import {download, toCSV, toJSON} from "./src/download";
 function buildParser(args, callback) {
     require('yargs')
     (args)
+        .usage("Usage: $0 <command> [options]")
         .command(
             'hashtag [id]',
             'Scrape a hashtag',
@@ -108,7 +109,7 @@ function buildParser(args, callback) {
                 describe: "Type of output file "
             },
             'downdir': {
-                default: 'downloads',
+                default: 'downloads/[endpoint]/[id]',
                 describe: 'Directory to save thumbnails'
             },
             'logging': {
@@ -117,11 +118,18 @@ function buildParser(args, callback) {
                 describe: 'Level of logger'
             },
             'logfile': {
-                default: 'socialcreaper2.log',
+                default: 'socialcreaper.log',
                 describe: 'Name of the log file'
             }
         })
         .demandCommand()
+        .example("$0 hashtag instagood -d",
+            "Download all the available posts, and their thumbnails from #instagood")
+        .example("$0 location 644269022 --count 200",
+            "Download 200 posts tagged as being at the Arc Du Triomphe")
+        .example("$0 user arianagrande --filetype=csv --loging=info --visible",
+            "Download Ariana Grande's posts to a CSV file with a non-headless browser, and log all events")
+        .epilog("Source code available at https://github.com/ScriptSmith/socialcreaper")
         .argv;
 }
 
@@ -170,6 +178,9 @@ async function spawn(args) {
     // Add pause callback
     pauseCallback(obj);
 
+    // Replace downdir
+    let downdir = args['downdir'].replace('[id]', args['id']).replace('[endpoint]', args['_']);
+
     // Download posts
     let posts = [];
     for await (let post of obj.itr()) {
@@ -178,12 +189,12 @@ async function spawn(args) {
 
         // Download thumbnail
         if (args['download'] && 'node' in post) {
-            download(post.node.thumbnail_src, post.node.shortcode, args['downdir'], () => null);
+            download(post.node.thumbnail_src, post.node.shortcode, downdir, () => null);
         }
     }
 
     // Replace filename
-    let filename = args['filename'].replace('[id]', args['id']);
+    let filename = args['filename'].replace('[id]', args['id']).replace('[endpoint]', args['_']);
 
     // Save file
     if (args['filetype'] != 'json') {
@@ -199,9 +210,11 @@ readline.emitKeypressEvents(process.stdin);
 if ('setRawMode' in process.stdin)
     process.stdin.setRawMode(true);
 
-// Toggle pause on key press
-let pause = false;
 
+/**
+ * Call obj.pause() when spacebar pressed, send sigint when Ctrl + c pressed
+ * @param obj
+ */
 function pauseCallback(obj) {
     process.stdin.on('keypress', (str, key) => {
         if (key.name == 'space') {
@@ -213,5 +226,5 @@ function pauseCallback(obj) {
 }
 
 // Parse args
-buildParser(process.argv.slice(2), () => null);
+buildParser(process.argv.slice(2), () => process.exit(0));
 
