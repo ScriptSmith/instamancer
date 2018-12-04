@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc --outDir bin",
     "compile": "tsc",
-    "test": "jest"
+    "test": "jest --testPathIgnorePatterns='bin'"
   },
   "author": "ScriptSmith",
   "license": "MIT",

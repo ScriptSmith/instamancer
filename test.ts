@@ -29,7 +29,7 @@ let data = [
 jest.setTimeout(20 * 60 * 1000);
 
 async function runTests(endpoints) {
-    test('Download posts from API', async () => {
+    test('API', async () => {
         for (let endpoint of endpoints) {
             // Get params
             let API = endpoint[0];
