@@ -198,6 +198,8 @@ export class Instagram implements AsyncIterableIterator<object> {
         // Ignore dialog boxes
         this.page.on("dialog", (dialog) => dialog.dismiss());
 
+        // Log errors
+        this.page.on("error", (error) => this.logger.error(error))
     }
 
     /**
