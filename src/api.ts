@@ -408,7 +408,7 @@ export class Instagram implements AsyncIterableIterator<object> {
             }
 
             // Check for rate limiting
-            if ('status' in data && data['status'] == 'fail') {
+            if (data && 'status' in data && data['status'] == 'fail') {
                 this.logger.info('Rate limited');
                 this.hibernate = true;
                 continue;
