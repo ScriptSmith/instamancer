@@ -271,18 +271,18 @@ export class Instagram implements AsyncIterableIterator<object> {
             let more = await this.getNext();
             if (more) {
                 // Pop post from buffer
-                let post = this.postPop();
+                let post = await this.postPop();
 
                 // Yield valid post, else continue and wait for more
-                if (post != null) {
+                if (post) {
                     yield post;
                 }
             } else {
                 // Yield leftover posts from buffer
-                let post = this.postPop();
-                while (post != null) {
+                let post = await this.postPop();
+                while (post) {
                     yield post;
-                    post = this.postPop();
+                    post = await this.postPop();
                 }
                 this.logger.info("No more posts available");
                 break;
