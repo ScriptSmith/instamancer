@@ -1,80 +1,94 @@
-import {Hashtag, Location, User, ApiOptions} from "./src/api"
+import {Hashtag, Location, User, ApiOptions, Instagram} from "./src/api"
 import * as winston from "winston";
+import {Hash} from "crypto";
 
 let hashtags = ["beach", "gym", "puppies", "party", "throwback"];
 let locations = ["1110037669039751", "212988663", "933522", "213385402", "228001889"];
 let users = ["snoopdogg", "arianagrande", "bbc", "whitehouse", "australia"];
 
-let smallSize = 50, mediumSize = 500, largeSize = 5000;
+let smallSize = 30, mediumSize = 300, largeSize = 3000;
+
+let data = [
+    [
+        Hashtag,
+        hashtags,
+        [smallSize, mediumSize, largeSize]
+    ],
+    [
+        Location,
+        locations,
+        [smallSize, mediumSize, largeSize]
+    ],
+    [
+        User,
+        users,
+        [smallSize, mediumSize]
+    ]
+];
 
 jest.setTimeout(20 * 60 * 1000);
 
-function testSize(endpoint, ids: Array<string>, size: number, callback) {
-    // Specify API options
-    let options: ApiOptions = {
-        total: size,
-        headless: true,
-        logger: winston.createLogger({
-            level: 'error',
-            format: winston.format.json(),
-            silent: true,
-            transports: []
-        }),
-        silent: true,
-        sleepTime: 2 * ids.length
-    };
+async function runTests(endpoints) {
+    test('Download posts from API', async () => {
+        for (let endpoint of endpoints) {
+            // Get params
+            let API = endpoint[0];
+            let ids = endpoint[1];
+            let sizes = endpoint[2];
 
-    for (let id of ids) {
-        test(`Download ${size} posts from ${endpoint} ${id}`, async () => {
-            // Create API
-            let api = new endpoint(id, options);
-            await api.start();
+            for (let size of sizes) {
+                // Decide how many ids to test based on size
+                let sizeIds;
+                let splitLen = 5;
+                if (size == mediumSize) {
+                    splitLen = 3;
+                } else if (size == largeSize) {
+                    splitLen = 1;
+                }
+                sizeIds = ids.slice(0, splitLen);
 
-            // Get posts
-            let posts = [];
-            let postIds = new Set();
-            for await (let post of api.itr()) {
-                postIds.add(post.node.id);
-                posts.push(post);
+                for (let id of sizeIds) {
+                    console.log(`Testing ${id} ${API} ${size}`);
+                    // Specify API options
+                    let options: ApiOptions = {
+                        total: size,
+                        headless: true,
+                        logger: winston.createLogger({
+                            level: 'error',
+                            format: winston.format.json(),
+                            silent: true,
+                            transports: []
+                        }),
+                        silent: false,
+                        sleepTime: 2
+                    };
+
+                    // Create API
+                    let api = new API(id, options);
+                    await api.start();
+
+                    // Get posts
+                    let posts = [];
+                    let postIds = new Set();
+                    for await (let post of api.itr()) {
+                        postIds.add(post.node.id);
+                        posts.push(post);
+                    }
+
+                    // Assert sizes
+                    expect(posts.length).toBe(size);
+
+                    // Check duplicates
+                    expect(posts.length).toBe(postIds.size);
+                }
             }
 
-            // Assert sizes
-            expect(posts.length).toBe(size);
 
-            // Check duplicates
-            expect(posts.length).toBe(postIds.size);
-        });
-    }
-
-    callback();
+        }
+    });
 }
 
-let functionParams = [];
-
-// Hashtags
-functionParams.push([Hashtag, hashtags, smallSize]);
-functionParams.push([Hashtag, hashtags.slice(0, 3), mediumSize]);
-functionParams.push([Hashtag, hashtags.slice(0, 1), largeSize]);
-
-// Locations
-functionParams.push([Location, locations, smallSize]);
-functionParams.push([Location, locations.slice(0, 3), mediumSize]);
-functionParams.push([Location, locations.slice(0, 1), largeSize]);
-
-// Users
-functionParams.push([User, users, smallSize]);
-functionParams.push([User, users.slice(0, 3), mediumSize]);
-functionParams.push([User, users.slice(0, 1), largeSize]);
-
-let functions = functionParams.map((params) =>
-    () =>
-        new Promise(res =>
-            testSize(params[0], params[1], params[2], res)
-        )
-);
 
 (async () => {
-    for (let f of functions) {
-        await f();
-    }
+    await runTests(data);
 })();
