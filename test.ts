@@ -26,7 +26,7 @@ let data = [
     ]
 ];
 
-jest.setTimeout(20 * 60 * 1000);
+jest.setTimeout(120 * 60 * 1000);
 
 async function runTests(endpoints) {
     test('API', async () => {
