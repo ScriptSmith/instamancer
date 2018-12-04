@@ -82,8 +82,6 @@ async function runTests(endpoints) {
                     expect(posts.length).toBe(postIds.size);
                 }
             }
-
-
         }
     });
 }
