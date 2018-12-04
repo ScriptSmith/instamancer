@@ -26,6 +26,7 @@ enum Progress {
     GRAFTING = "Grafting",
     CLOSING = "Closing",
 
+    PAUSED = "Paused",
     ABORTED = "Request aborted"
 }
 
@@ -131,6 +132,9 @@ export class Instagram implements AsyncIterableIterator<object> {
     // Length of time to sleep for
     private readonly sleepTime: number = 2;
 
+    // Scraping paused
+    private paused: boolean = false;
+
     // Logging object
     private logger: Logger;
 
@@ -217,12 +221,41 @@ export class Instagram implements AsyncIterableIterator<object> {
     }
 
     /**
+     * Toggle pausing data collection
+     */
+    public pause() {
+        this.paused = !this.paused;
+    }
+
+    /**
+     * Pause and wait until resumed
+     */
+    async waitResume() {
+        // Pause for 200 milliseconds
+        function f() {
+            return new Promise(
+                resolve => {
+                    setTimeout(resolve, 200)
+                }
+            );
+        }
+
+        // Pause until pause toggled
+        while (this.paused == true) {
+            this.progress(Progress.PAUSED);
+            await f();
+        }
+    }
+
+
+    /**
      * Generator of posts on page
      */
     public async* itr() {
         while (true) {
             // Get more posts, then yield the posts in the buffer
             let more = await this.getNext();
+            console.log(more);
             if (more) {
                 // Yield post from buffer
                 let post;
@@ -439,8 +472,6 @@ export class Instagram implements AsyncIterableIterator<object> {
         let width = this.page.viewport()['width'];
         let height = this.page.viewport()['height'];
         await this.page.mouse.move(Math.round(width * Math.random()), Math.round(height * Math.random()));
-
-        this.jumps += 1;
     }
 
     /**
@@ -501,6 +532,9 @@ export class Instagram implements AsyncIterableIterator<object> {
                 break;
             }
 
+            // Pause if paused
+            await this.waitResume();
+
             // Interact with page to stimulate request
             await this.jump();
 
@@ -509,7 +543,7 @@ export class Instagram implements AsyncIterableIterator<object> {
             await this.processResponses();
 
             // Enable grafting if required
-            if (this.jumps % this.jumpMod == 0) {
+            if (++this.jumps % this.jumpMod == 0) {
                 await this.initiateGraft();
             }
 

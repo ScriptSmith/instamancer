@@ -166,12 +166,12 @@ async function spawn(args) {
     let obj = new api(args['id'], options);
     await obj.start();
 
+    // Add pause callback
+    pauseCallback(obj);
+
     // Download posts
     let posts = [];
     for await (let post of obj.itr()) {
-        // Wait if paused
-        await waitResume();
-
         // Save post
         posts.push(post);
 
@@ -193,23 +193,6 @@ async function spawn(args) {
     }
 }
 
-/**
- * Wait until not paused
- */
-async function waitResume() {
-    function f() {
-        return new Promise(
-            resolve => {
-                setTimeout(resolve, 1000)
-            }
-        );
-    }
-
-    while (pause == true) {
-        await f();
-    }
-}
-
 // Catch key presses
 readline.emitKeypressEvents(process.stdin);
 if ('setRawMode' in process.stdin)
@@ -217,13 +200,17 @@ if ('setRawMode' in process.stdin)
 
 // Toggle pause on key press
 let pause = false;
-process.stdin.on('keypress', (str, key) => {
-    if (key.name == 'space') {
-        pause = !pause;
-    } else if (key.name == 'c' && key.ctrl) {
-        process.kill(process.pid, "SIGINT");
-    }
-});
+
+function pauseCallback(obj) {
+    process.stdin.on('keypress', (str, key) => {
+        if (key.name == 'space') {
+            obj.pause();
+        } else if (key.name == 'c' && key.ctrl) {
+            process.kill(process.pid, "SIGINT");
+        }
+    });
+}
 
 // Parse args
 buildParser(process.argv.slice(2), () => null);
+
