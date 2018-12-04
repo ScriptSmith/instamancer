@@ -48,7 +48,7 @@ async function runTests(endpoints) {
                 sizeIds = ids.slice(0, splitLen);
 
                 for (let id of sizeIds) {
-                    console.log(`Testing ${id} ${API} ${size}`);
+                    console.log(`Testing ${id} ${size}`);
                     // Specify API options
                     let options: ApiOptions = {
                         total: size,
