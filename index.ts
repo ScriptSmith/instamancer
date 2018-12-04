@@ -220,6 +220,8 @@ let pause = false;
 process.stdin.on('keypress', (str, key) => {
     if (key.name == 'space') {
         pause = !pause;
+    } else if (key.name == 'c' && key.ctrl) {
+        process.kill(process.pid, "SIGINT");
     }
 });
 
