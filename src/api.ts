@@ -247,6 +247,18 @@ export class Instagram implements AsyncIterableIterator<object> {
         }
     }
 
+    /**
+     * Pop a post of the postBuffer (using locks). Returns null if no posts in buffer
+     */
+    async postPop() {
+        let post = null;
+        await this.postBufferLock.acquireAsync();
+        if (this.postBuffer.length > 0) {
+            post = this.postBuffer.shift();
+        }
+        this.postBufferLock.release();
+        return post;
+    }
 
     /**
      * Generator of posts on page
@@ -256,19 +268,20 @@ export class Instagram implements AsyncIterableIterator<object> {
             // Get more posts, then yield the posts in the buffer
             let more = await this.getNext();
             if (more) {
-                // Yield post from buffer
-                let post;
-                await this.postBufferLock.acquireAsync();
-                post = this.postBuffer.shift();
-                this.postBufferLock.release();
-                yield post;
+                // Pop post from buffer
+                let post = this.postPop();
+
+                // Yield valid post, else continue and wait for more
+                if (post != null) {
+                    yield post;
+                }
             } else {
                 // Yield leftover posts from buffer
-                await this.postBufferLock.acquireAsync();
-                while (this.postBuffer.length > 0) {
-                    yield this.postBuffer.shift();
+                let post = this.postPop();
+                while (post != null) {
+                    yield post;
+                    post = this.postPop();
                 }
-                this.postBufferLock.release();
                 this.logger.info("No more posts available");
                 break;
             }
