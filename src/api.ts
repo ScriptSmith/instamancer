@@ -35,7 +35,7 @@ enum Progress {
  */
 class PostIdQueue {
     private size: number = 10000;
-    private ids: Array<string> = new Array<string>(this.size);
+    private ids: Set<string> = new Set<string>();
 
     /**
      * Add a post id to the queue. The least-recently inserted id is popped off the queue when it reaches its max size
@@ -43,18 +43,23 @@ class PostIdQueue {
      */
     public add(id: string): boolean {
         // Check if already in list
-        let contains = this.ids.includes(id);
+        let contains = this.ids.has(id);
 
         // Pop id when size limit reached
-        if (this.ids.length >= this.size) {
-            this.ids.shift()
+        if (this.ids.size >= this.size) {
+            this.pop();
         }
 
         // Add id
-        this.ids.push(id);
+        this.ids.add(id);
 
         // Return if id was already in list
         return contains;
+    }
+
+    pop() {
+        for (let i of this.ids)
+            return this.ids.delete(i);
     }
 }
 
