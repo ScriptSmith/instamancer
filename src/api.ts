@@ -34,7 +34,7 @@ enum Progress {
  * A fixed-size queue of post ids
  */
 class PostIdQueue {
-    private size: number = 1000;
+    private size: number = 10000;
     private ids: Array<string> = new Array<string>(this.size);
 
     /**
