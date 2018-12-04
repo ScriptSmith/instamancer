@@ -255,7 +255,6 @@ export class Instagram implements AsyncIterableIterator<object> {
         while (true) {
             // Get more posts, then yield the posts in the buffer
             let more = await this.getNext();
-            console.log(more);
             if (more) {
                 // Yield post from buffer
                 let post;
@@ -472,6 +471,8 @@ export class Instagram implements AsyncIterableIterator<object> {
         let width = this.page.viewport()['width'];
         let height = this.page.viewport()['height'];
         await this.page.mouse.move(Math.round(width * Math.random()), Math.round(height * Math.random()));
+
+        ++this.jumps;
     }
 
     /**
@@ -543,7 +544,7 @@ export class Instagram implements AsyncIterableIterator<object> {
             await this.processResponses();
 
             // Enable grafting if required
-            if (++this.jumps % this.jumpMod == 0) {
+            if (this.jumps % this.jumpMod == 0) {
                 await this.initiateGraft();
             }
 

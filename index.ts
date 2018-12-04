@@ -158,7 +158,8 @@ async function spawn(args) {
         total: args['count'],
         headless: !args['visible'],
         logger: logger,
-        silent: false
+        silent: false,
+        sleepTime: 2
     };
 
     // Start API
