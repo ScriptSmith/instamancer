@@ -535,6 +535,10 @@ export class Instagram implements AsyncIterableIterator<object> {
     private async getNext() {
         this.progress(Progress.SCRAPING);
         while (true) {
+            // Process results (if any)
+            await this.processRequests();
+            await this.processResponses();
+
             // Check if posts gathered
             await this.postBufferLock.acquireAsync();
             if (this.postBuffer.length > 0) {
@@ -553,10 +557,6 @@ export class Instagram implements AsyncIterableIterator<object> {
 
             // Interact with page to stimulate request
             await this.jump();
-
-            // Process results (if any)
-            await this.processRequests();
-            await this.processResponses();
 
             // Enable grafting if required
             if (this.jumps % this.jumpMod == 0) {
