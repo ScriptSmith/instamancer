@@ -466,7 +466,8 @@ export class Instagram implements AsyncIterableIterator<object> {
             }
 
             // Check for next page
-            if (!_.get(data, this.pageQuery, false)) {
+            if (!(_.get(data, this.pageQuery + ".has_next_page", false)
+                && _.get(data, this.pageQuery + ".end_cursor", false))) {
                 this.logger.info("No posts remaining");
                 this.finished = true;
             }
@@ -613,7 +614,7 @@ export class Instagram implements AsyncIterableIterator<object> {
  */
 export class Hashtag extends Instagram {
     constructor(id: string, options: object = {}) {
-        const pageQuery = "data.hashtag.edge_hashtag_to_media.page_info.end_cursor";
+        const pageQuery = "data.hashtag.edge_hashtag_to_media.page_info";
         const edgeQuery = "data.hashtag.edge_hashtag_to_media.edges";
         super(Endpoints.HASHTAG, id, pageQuery, edgeQuery, options);
     }
@@ -624,7 +625,7 @@ export class Hashtag extends Instagram {
  */
 export class Location extends Instagram {
     constructor(id: string, options: object = {}) {
-        const pageQuery = "data.location.edge_location_to_media.page_info.end_cursor";
+        const pageQuery = "data.location.edge_location_to_media.page_info";
         const edgeQuery = "data.location.edge_location_to_media.edges";
         super(Endpoints.LOCATION, id, pageQuery, edgeQuery, options);
     }
@@ -635,7 +636,7 @@ export class Location extends Instagram {
  */
 export class User extends Instagram {
     constructor(id: string, options: object = {}) {
-        const pageQuery = "data.user.edge_owner_to_timeline_media.page_info.end_cursor";
+        const pageQuery = "data.user.edge_owner_to_timeline_media.page_info";
         const edgeQuery = "data.user.edge_owner_to_timeline_media.edges";
         super(Endpoints.USER, id, pageQuery, edgeQuery, options);
     }
