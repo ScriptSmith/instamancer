@@ -186,6 +186,11 @@ export class Instagram implements AsyncIterableIterator<object> {
             }
         }
         await this.stop();
+
+        // Add newline to end of output
+        if (!this.silent) {
+            process.stdout.write("\n");
+        }
     }
 
     /**
@@ -324,11 +329,6 @@ export class Instagram implements AsyncIterableIterator<object> {
 
         // Print output
         process.stdout.write("\r" + out + padding);
-
-        // Add newline if closing
-        if (state === Progress.CLOSING) {
-            process.stdout.write("\n");
-        }
     }
 
     /**
