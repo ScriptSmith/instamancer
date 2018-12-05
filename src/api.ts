@@ -171,23 +171,17 @@ export class Instagram implements AsyncIterableIterator<object> {
     public async* itr() {
         while (true) {
             // Get more posts, then yield the posts in the buffer
-            const more = await this.getNext();
-            if (more) {
-                // Pop post from buffer
-                const post = await this.postPop();
+            await this.getNext();
 
-                // Yield valid post, else continue and wait for more
-                if (post) {
-                    yield post;
-                }
-            } else {
-                // Yield leftover posts from buffer
-                let post = await this.postPop();
-                while (post) {
-                    yield post;
-                    post = await this.postPop();
-                }
-                this.logger.info("No more posts available");
+            // Yield posts from buffer
+            let post = await this.postPop();
+            while (post) {
+                yield post;
+                post = await this.postPop();
+            }
+
+            // End loop when finished and posts in buffer exhausted
+            if (this.finished) {
                 break;
             }
         }
@@ -582,9 +576,6 @@ export class Instagram implements AsyncIterableIterator<object> {
                 this.hibernate = false;
             }
         }
-
-        // Return whether finished
-        return !this.finished;
     }
 }
 
