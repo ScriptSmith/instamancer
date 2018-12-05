@@ -342,12 +342,12 @@ export class Instagram implements AsyncIterableIterator<object> {
 
         // Generate output string
         const idStr = chalk.bgBlack(` Id: ${this.id} `);
-        const stateStr = chalk.bgBlack(` State: ${state} `);
+        const totalStr = chalk.bgBlack(` Total: ${total} `);
+        const stateStr = chalk.bgWhite.black(` State: ${state} `);
         const sleepStr = chalk.bgWhite.black(` Sleeping: ${this.sleepRemaining} `);
-        const totalStr = chalk.bgWhite.black(` Total: ${total} `);
         const indexStr = chalk.bgWhite.black(` Scraped: ${this.index} `);
 
-        const out = `${idStr}${stateStr}${sleepStr}${totalStr}${indexStr}`;
+        const out = `${idStr}${totalStr}${stateStr}${sleepStr}${indexStr}`;
         const outLength = stringlength(out);
 
         // Calculate empty padding
