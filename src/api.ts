@@ -591,13 +591,8 @@ export class Instagram implements AsyncIterableIterator<object> {
             }
         }
 
-        // Check if posts in buffer
-        await this.postBufferLock.acquireAsync();
-        let postBufferEmpty = this.postBuffer.length > 0;
-        await this.postBufferLock.release();
-
-        // Return true if more data, false otherwise
-        return !(postBufferEmpty && this.finished);
+        // Return whether finished
+        return !this.finished;
     }
 }
 
