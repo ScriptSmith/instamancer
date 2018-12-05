@@ -1,137 +1,138 @@
 #!/usr/bin/env node
 
-import * as readline from 'readline';
-import * as fs from 'fs';
+import * as fs from "fs";
+import * as readline from "readline";
+import * as winston from "winston";
+import * as yargs from "yargs";
 
-import winston = require("winston");
-
-import {Hashtag, Location, User, IApiOptions} from "./src/api"
+import {Hashtag, IApiOptions, Location, User} from "./src/api";
 import {download, toCSV, toJSON} from "./src/download";
-
 
 /**
  * Build argument parser
  */
 function buildParser(args, callback) {
-    require('yargs')
+    /* tslint:disable:no-unused-expression */
+    require("yargs")
     (args)
         .usage("Usage: $0 <command> [options]")
         .command(
-            'hashtag [id]',
-            'Scrape a hashtag',
+            "hashtag [id]",
+            "Scrape a hashtag",
             {},
-            async (args) => {
-                await spawn(args);
+            async (handleArgs) => {
+                await spawn(handleArgs);
                 callback();
-            }
+            },
         )
         .command(
-            'location [id]',
-            'Scrape a location',
+            "location [id]",
+            "Scrape a location",
             {},
-            async (args) => {
-                await spawn(args);
+            async (handleArgs) => {
+                await spawn(handleArgs);
                 callback();
-            }
+            },
         )
         .command(
-            'user [id]',
-            'Scrape a user',
+            "user [id]",
+            "Scrape a user",
             {},
-            async (args) => {
-                await spawn(args);
+            async (handleArgs) => {
+                await spawn(handleArgs);
                 callback();
-            }
+            },
         )
         .command(
-            'batch [batchfile]',
-            'Read a list of arguments from a file',
+            "batch [batchfile]",
+            "Read a list of arguments from a file",
             {},
             () => {
                 // A list of functions which create new Promises that are
                 // resolved by buildParser when the spawn commands are
                 // finished
                 // See https://stackoverflow.com/a/45951080/7435520
-                let functions = [];
+                const functions = [];
 
                 // Read the list of commands from file
                 readline.createInterface({
+                    crlfDelay: Infinity,
                     input: fs.createReadStream(args[1]),
-                    crlfDelay: Infinity
                 })
-                    .on('line',
+                    .on("line",
                         // For each line, create a new function which
                         // creates a new promise to be resolved by
                         // buildParser
                         (line) => {
                             functions.push(
-                                () => new Promise(res =>
-                                    buildParser(line, res)
-                                )
+                                () => new Promise((res) =>
+                                    buildParser(line, res),
+                                ),
                             );
                         })
-                    .on('close',
+                    .on("close",
                         // When all lines have been read, synchronously
                         // execute the commands by waiting for their
                         // promises to be resolved
                         async () => {
-                            for (let i = 0; i < functions.length; i++) {
-                                await functions[i]();
+                            for (const f of functions) {
+                                await f();
                             }
                         });
-            }
+            },
         )
+        /* tslint:disable:object-literal-sort-keys */
         .options({
-            'count': {
-                alias: 'c',
+            count: {
+                alias: "c",
                 default: 0,
-                describe: 'Number of posts to download. 0 to download all'
+                describe: "Number of posts to download. 0 to download all",
             },
-            'visible': {
+            visible: {
                 default: false,
-                describe: 'Show browser on the screen'
+                describe: "Show browser on the screen",
             },
-            'download': {
-                alias: 'd',
+            download: {
+                alias: "d",
                 boolean: true,
                 default: false,
-                describe: "Save images and videos from posts"
+                describe: "Save images and videos from posts",
             },
-            'graft': {
-                alias: 'g',
+            graft: {
+                alias: "g",
                 boolean: true,
                 default: true,
-                describe: "Enable grafting"
+                describe: "Enable grafting",
             },
-            'silent': {
+            silent: {
                 boolean: true,
                 default: false,
                 describe: "Disable progress output",
             },
-            'filename': {
-                alias: ['file', 'f', 'out'],
+            filename: {
+                alias: ["file", "f", "out"],
                 default: "[id]",
-                describe: "Name of the output file"
+                describe: "Name of the output file",
             },
-            'filetype': {
-                alias: ['type', 't'],
-                default: 'json',
-                choices: ['csv', 'json', 'both'],
-                describe: "Type of output file "
+            filetype: {
+                alias: ["type", "t"],
+                default: "json",
+                choices: ["csv", "json", "both"],
+                describe: "Type of output file ",
             },
-            'downdir': {
-                default: 'downloads/[endpoint]/[id]',
-                describe: 'Directory to save thumbnails'
+            downdir: {
+                default: "downloads/[endpoint]/[id]",
+                describe: "Directory to save thumbnails",
             },
-            'logging': {
-                default: 'none',
-                choices: ['none', 'info', 'debug'],
-                describe: 'Level of logger'
+            logging: {
+                default: "none",
+                choices: ["none", "info", "debug"],
+                describe: "Level of logger",
             },
-            'logfile': {
-                default: 'socialcreaper.log',
-                describe: 'Name of the log file'
-            }
+            logfile: {
+                default: "socialcreaper.log",
+                describe: "Name of the log file",
+            },
         })
         .demandCommand()
         .example("$0 hashtag instagood -d",
@@ -144,94 +145,93 @@ function buildParser(args, callback) {
         .argv;
 }
 
-
 /**
  * Spawn an instance of the API
  * @param args
  */
 async function spawn(args) {
     // Initiate logger
-    let logger = winston.createLogger({
-        level: args['logging'],
-        silent: args['logging'] == "none",
+    const logger = winston.createLogger({
+        level: args["logging"],
+        silent: args["logging"] === "none",
         transports: [
             new winston.transports.File({
-                filename: args['logfile'],
-                silent: args['logging'] == 'none'
-            })
-        ]
+                filename: args["logfile"],
+                silent: args["logging"] === "none",
+            }),
+        ],
     });
 
     // Pick endpoint
     let api;
-    if (args['_'] == "hashtag") {
+    if (args["_"] === "hashtag") {
         api = Hashtag;
-    } else if (args['_'] == "location") {
+    } else if (args["_"] === "location") {
         api = Location;
-    } else if (args['_'] == "user") {
+    } else if (args["_"] === "user") {
         api = User;
     }
 
     // Define options
-    let options: IApiOptions = {
-        total: args['count'],
-        headless: !args['visible'],
-        logger: logger,
-        silent: args['silent'],
+    const options: IApiOptions = {
+        total: args["count"],
+        headless: !args["visible"],
+        logger,
+        silent: args["silent"],
         sleepTime: 2,
-        enableGrafting: args['graft']
+        enableGrafting: args["graft"],
     };
 
     // Start API
     logger.info("Starting API");
-    let obj = new api(args['id'], options);
+    const obj = new api(args["id"], options);
     await obj.start();
 
     // Add pause callback
     pauseCallback(obj);
 
     // Replace downdir
-    let downdir = args['downdir'].replace('[id]', args['id']).replace('[endpoint]', args['_']);
+    const downdir = args["downdir"].replace("[id]", args["id"]).replace("[endpoint]", args["_"]);
 
     // Download posts
-    let posts = [];
-    for await (let post of obj.itr()) {
+    const posts = [];
+    for await (const post of obj.itr()) {
         // Save post
         posts.push(post);
 
         // Download thumbnail
-        if (args['download'] && 'node' in post) {
+        if (args["download"] && "node" in post) {
             download(post.node.thumbnail_src, post.node.shortcode, downdir, () => null);
         }
     }
 
     // Replace filename
-    let filename = args['filename'].replace('[id]', args['id']).replace('[endpoint]', args['_']);
+    const filename = args["filename"].replace("[id]", args["id"]).replace("[endpoint]", args["_"]);
 
     // Save file
-    if (args['filetype'] != 'json') {
-        toCSV(posts, filename + '.csv');
+    if (args["filetype"] !== "json") {
+        toCSV(posts, filename + ".csv");
     }
-    if (args['filetype'] != 'csv') {
-        toJSON(posts, filename + '.json');
+    if (args["filetype"] !== "csv") {
+        toJSON(posts, filename + ".json");
     }
 }
 
 // Catch key presses
 readline.emitKeypressEvents(process.stdin);
-if ('setRawMode' in process.stdin)
+if ("setRawMode" in process.stdin) {
     process.stdin.setRawMode(true);
-
+}
 
 /**
  * Call obj.pause() when spacebar pressed, send sigint when Ctrl + c pressed
  * @param obj
  */
 function pauseCallback(obj) {
-    process.stdin.on('keypress', (str, key) => {
-        if (key.name == 'space') {
+    process.stdin.on("keypress", (str, key) => {
+        if (key.name === "space") {
             obj.pause();
-        } else if (key.name == 'c' && key.ctrl) {
+        } else if (key.name === "c" && key.ctrl) {
             process.kill(process.pid, "SIGINT");
         }
     });
@@ -239,4 +239,3 @@ function pauseCallback(obj) {
 
 // Parse args
 buildParser(process.argv.slice(2), () => process.exit(0));
-
