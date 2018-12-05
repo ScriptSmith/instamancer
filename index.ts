@@ -5,7 +5,7 @@ import * as fs from 'fs';
 
 import winston = require("winston");
 
-import {Hashtag, Location, User, ApiOptions} from "./src/api"
+import {Hashtag, Location, User, IApiOptions} from "./src/api"
 import {download, toCSV, toJSON} from "./src/download";
 
 
@@ -173,7 +173,7 @@ async function spawn(args) {
     }
 
     // Define options
-    let options: ApiOptions = {
+    let options: IApiOptions = {
         total: args['count'],
         headless: !args['visible'],
         logger: logger,

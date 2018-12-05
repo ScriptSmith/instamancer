@@ -1,11 +1,10 @@
-import * as puppeteer from 'puppeteer';
-import {Browser, Page, Request, Response, Headers} from "puppeteer";
+import * as puppeteer from "puppeteer";
+import {Browser, Headers, Page, Request, Response} from "puppeteer";
 
 import AwaitLock = require("await-lock");
 import _ = require("lodash/object");
 
 import {Logger} from "winston";
-
 
 /**
  * The endpoints that are available for scraping. (Hashtags, Locations, Users)
@@ -13,7 +12,7 @@ import {Logger} from "winston";
 enum Endpoints {
     HASHTAG = "https://instagram.com/explore/tags/",
     LOCATION = "https://instagram.com/explore/locations/",
-    USER = "https://instagram.com/"
+    USER = "https://instagram.com/",
 }
 
 /**
@@ -27,7 +26,7 @@ enum Progress {
     CLOSING = "Closing",
 
     PAUSED = "Paused",
-    ABORTED = "Request aborted"
+    ABORTED = "Request aborted",
 }
 
 /**
@@ -43,7 +42,7 @@ class PostIdQueue {
      */
     public add(id: string): boolean {
         // Check if already in list
-        let contains = this.ids.has(id);
+        const contains = this.ids.has(id);
 
         // Pop id when size limit reached
         if (this.ids.size >= this.size) {
@@ -57,16 +56,17 @@ class PostIdQueue {
         return contains;
     }
 
-    pop() {
-        for (let i of this.ids)
+    private pop() {
+        for (const i of this.ids) {
             return this.ids.delete(i);
+        }
     }
 }
 
 /**
  * Optional arguments for the API
  */
-export interface ApiOptions {
+export interface IApiOptions {
     total?: number;
     headless?: boolean;
     logger?: Logger;
@@ -88,13 +88,13 @@ export class Instagram implements AsyncIterableIterator<object> {
     private readonly id: string;
 
     // List of scraped posts and lock
-    private postBuffer: Array<object> = [];
+    private postBuffer: object[] = [];
     private postBufferLock: AwaitLock = new AwaitLock();
 
     // Request and Response buffers and locks
-    private requestBuffer: Array<Request> = [];
+    private requestBuffer: Request[] = [];
     private requestBufferLock: AwaitLock = new AwaitLock();
-    private responseBuffer: Array<Response> = [];
+    private responseBuffer: Response[] = [];
     private responseBufferLock: AwaitLock = new AwaitLock();
 
     // Grafting state
@@ -145,10 +145,10 @@ export class Instagram implements AsyncIterableIterator<object> {
     // Logging object
     private logger: Logger;
 
-    constructor(endpoint: Endpoints, id: string, pageQuery: string, edgeQuery: string, options: ApiOptions = {}) {
+    constructor(endpoint: Endpoints, id: string, pageQuery: string, edgeQuery: string, options: IApiOptions = {}) {
         this.id = id;
         this.total = options.total;
-        this.url = Instagram.constructURL(endpoint, id);
+        this.url = endpoint + id;
         this.pageQuery = pageQuery;
         this.edgeQuery = edgeQuery;
         this.headless = options.headless;
@@ -159,115 +159,10 @@ export class Instagram implements AsyncIterableIterator<object> {
     }
 
     /**
-     * Create url from endpoint and id
-     */
-    static constructURL(endpoint: Endpoints, id: String) {
-        return endpoint + id;
-    }
-
-    /**
-     * Create the browser and page, then visit the url
-     */
-    async constructPage() {
-        // Browser args
-        let args = [];
-        if (process.env.NO_SANDBOX) {
-            args.push('--no-sandbox');
-            args.push('--disable-setuid-sandbox');
-        }
-
-        // Launch browser
-        this.progress(Progress.LAUNCHING);
-        this.browser = await puppeteer.launch({
-            headless: this.headless,
-            args: args
-        });
-
-        // Visit page
-        this.page = await this.browser.newPage();
-        this.progress(Progress.OPENING);
-        await this.page.goto(this.url);
-    }
-
-
-    /**
-     * Construct page and add listeners
-     */
-    async start() {
-        // Build page and visit url
-        await this.constructPage();
-
-        // Add event listeners for requests and responses
-        await this.page.setRequestInterception(true);
-        this.page.on("request", (req) => this.interceptRequest(req));
-        this.page.on("response", (res) => this.interceptResponse(res));
-        this.page.on("requestfailed", (res) => this.interceptFailure(res));
-
-        // Ignore dialog boxes
-        this.page.on("dialog", (dialog) => dialog.dismiss());
-
-        // Log errors
-        this.page.on("error", (error) => this.logger.error(error))
-    }
-
-    /**
-     * Close the page and browser
-     */
-    async stop() {
-        this.progress(Progress.CLOSING);
-        // // Clear request buffers
-        // await this.requestBufferLock.acquireAsync();
-        // this.requestBuffer = [];
-        // this.requestBufferLock.release();
-        //
-        // // Clear response buffers
-        // await this.responseBufferLock.acquireAsync();
-        // this.responseBuffer = [];
-        // this.responseBufferLock.release();
-
-        // Close page and browser
-        await this.page.close();
-        await this.browser.close();
-    }
-
-    /**
      * Toggle pausing data collection
      */
     public pause() {
         this.paused = !this.paused;
-    }
-
-    /**
-     * Pause and wait until resumed
-     */
-    async waitResume() {
-        // Pause for 200 milliseconds
-        function f() {
-            return new Promise(
-                resolve => {
-                    setTimeout(resolve, 200)
-                }
-            );
-        }
-
-        // Pause until pause toggled
-        while (this.paused == true) {
-            this.progress(Progress.PAUSED);
-            await f();
-        }
-    }
-
-    /**
-     * Pop a post of the postBuffer (using locks). Returns null if no posts in buffer
-     */
-    async postPop() {
-        let post = null;
-        await this.postBufferLock.acquireAsync();
-        if (this.postBuffer.length > 0) {
-            post = this.postBuffer.shift();
-        }
-        this.postBufferLock.release();
-        return post;
     }
 
     /**
@@ -276,10 +171,10 @@ export class Instagram implements AsyncIterableIterator<object> {
     public async* itr() {
         while (true) {
             // Get more posts, then yield the posts in the buffer
-            let more = await this.getNext();
+            const more = await this.getNext();
             if (more) {
                 // Pop post from buffer
-                let post = await this.postPop();
+                const post = await this.postPop();
 
                 // Yield valid post, else continue and wait for more
                 if (post) {
@@ -300,6 +195,103 @@ export class Instagram implements AsyncIterableIterator<object> {
     }
 
     /**
+     * Create the browser and page, then visit the url
+     */
+    private async constructPage() {
+        // Browser args
+        const args = [];
+        if (process.env.NO_SANDBOX) {
+            args.push("--no-sandbox");
+            args.push("--disable-setuid-sandbox");
+        }
+
+        // Launch browser
+        this.progress(Progress.LAUNCHING);
+        this.browser = await puppeteer.launch({
+            args,
+            headless: this.headless,
+        });
+
+        // Visit page
+        this.page = await this.browser.newPage();
+        this.progress(Progress.OPENING);
+        await this.page.goto(this.url);
+    }
+
+    /**
+     * Construct page and add listeners
+     */
+    private async start() {
+        // Build page and visit url
+        await this.constructPage();
+
+        // Add event listeners for requests and responses
+        await this.page.setRequestInterception(true);
+        this.page.on("request", (req) => this.interceptRequest(req));
+        this.page.on("response", (res) => this.interceptResponse(res));
+        this.page.on("requestfailed", (res) => this.interceptFailure(res));
+
+        // Ignore dialog boxes
+        this.page.on("dialog", (dialog) => dialog.dismiss());
+
+        // Log errors
+        this.page.on("error", (error) => this.logger.error(error));
+    }
+
+    /**
+     * Close the page and browser
+     */
+    private async stop() {
+        this.progress(Progress.CLOSING);
+        // // Clear request buffers
+        // await this.requestBufferLock.acquireAsync();
+        // this.requestBuffer = [];
+        // this.requestBufferLock.release();
+        //
+        // // Clear response buffers
+        // await this.responseBufferLock.acquireAsync();
+        // this.responseBuffer = [];
+        // this.responseBufferLock.release();
+
+        // Close page and browser
+        await this.page.close();
+        await this.browser.close();
+    }
+
+    /**
+     * Pause and wait until resumed
+     */
+    private async waitResume() {
+        // Pause for 200 milliseconds
+        function f() {
+            return new Promise(
+                (resolve) => {
+                    setTimeout(resolve, 200);
+                },
+            );
+        }
+
+        // Pause until pause toggled
+        while (this.paused === true) {
+            this.progress(Progress.PAUSED);
+            await f();
+        }
+    }
+
+    /**
+     * Pop a post of the postBuffer (using locks). Returns null if no posts in buffer
+     */
+    private async postPop() {
+        let post = null;
+        await this.postBufferLock.acquireAsync();
+        if (this.postBuffer.length > 0) {
+            post = this.postBuffer.shift();
+        }
+        this.postBufferLock.release();
+        return post;
+    }
+
+    /**
      * Match the url to the url used in API requests
      */
     private matchURL(url: string) {
@@ -316,16 +308,17 @@ export class Instagram implements AsyncIterableIterator<object> {
         }
 
         // Calculate total
-        let total = this.total == 0 ? "Unlimited" : this.total;
+        const total = this.total === 0 ? "Unlimited" : this.total;
 
         // Generate output string
-        let out = `Id: ${this.id} | State: ${state} | Sleeping: ${this.sleepRemaining} | Total: ${total} | Scraped: ${this.index}`;
+        const out = `Id: ${this.id} | State: ${state} | Sleeping: ${this.sleepRemaining} |` +
+            ` Total: ${total} | Scraped: ${this.index}`;
 
         // Calculate empty padding
-        let repeatCount = out.length - this.outputLength;
+        const repeatCount = out.length - this.outputLength;
         let padding = "  ";
         if (repeatCount > 0 && this.outputLength > 0) {
-            padding = " ".repeat(repeatCount)
+            padding = " ".repeat(repeatCount);
         }
 
         // Update output length
@@ -339,11 +332,10 @@ export class Instagram implements AsyncIterableIterator<object> {
         process.stdout.write("\r" + out + padding);
 
         // Add newline if closing
-        if (state == Progress.CLOSING) {
-            process.stdout.write('\n');
+        if (state === Progress.CLOSING) {
+            process.stdout.write("\n");
         }
     }
-
 
     /**
      * Add request to the request buffer
@@ -378,7 +370,7 @@ export class Instagram implements AsyncIterableIterator<object> {
         await this.requestBufferLock.acquireAsync();
 
         let disableGraft = false;
-        for (let req of this.requestBuffer) {
+        for (const req of this.requestBuffer) {
             // Match url
             if (!this.matchURL(req.url())) {
                 continue;
@@ -399,9 +391,9 @@ export class Instagram implements AsyncIterableIterator<object> {
 
             // Get response
             await req.continue({
+                headers: reqHeaders,
                 url: reqURL,
-                headers: reqHeaders
-            })
+            });
         }
 
         // Switch off grafting if enabled and requests processed
@@ -420,7 +412,7 @@ export class Instagram implements AsyncIterableIterator<object> {
     private async processResponses() {
         await this.responseBufferLock.acquireAsync();
 
-        for (let res of this.responseBuffer) {
+        for (const res of this.responseBuffer) {
             // Match url
             if (!this.matchURL(res.url())) {
                 continue;
@@ -436,36 +428,36 @@ export class Instagram implements AsyncIterableIterator<object> {
             }
 
             // Check for rate limiting
-            if (data && 'status' in data && data['status'] == 'fail') {
-                this.logger.info('Rate limited');
+            if (data && "status" in data && data["status"] === "fail") {
+                this.logger.info("Rate limited");
                 this.hibernate = true;
                 continue;
             }
 
             // Check for next page
             if (!_.get(data, this.pageQuery, false) || _.get(data, this.edgeQuery, []) == []) {
-                this.logger.info('No posts remaining');
+                this.logger.info("No posts remaining");
                 this.finished = true;
             }
 
             // Get posts
-            let posts = _.get(data, this.edgeQuery, []);
-            for (let post of posts) {
-                let postId = post['node']['id'];
+            const posts = _.get(data, this.edgeQuery, []);
+            for (const post of posts) {
+                const postId = post["node"]["id"];
 
                 // Check it hasn't already been cached
-                let contains = this.postIds.add(postId);
+                const contains = this.postIds.add(postId);
                 if (contains) {
                     this.logger.info("Duplicate id found: " + postId);
                     continue;
                 }
 
                 // Add to postBuffer
-                if (this.index < this.total || this.total == 0) {
+                if (this.index < this.total || this.total === 0) {
                     this.index++;
                     await this.postBufferLock.acquireAsync();
                     this.postBuffer.push(post);
-                    this.postBufferLock.release()
+                    this.postBufferLock.release();
                 } else {
                     this.finished = true;
                     break;
@@ -496,8 +488,8 @@ export class Instagram implements AsyncIterableIterator<object> {
         });
 
         // Move mouse randomly
-        let width = this.page.viewport()['width'];
-        let height = this.page.viewport()['height'];
+        const width = this.page.viewport()["width"];
+        const height = this.page.viewport()["height"];
         await this.page.mouse.move(Math.round(width * Math.random()), Math.round(height * Math.random()));
 
         ++this.jumps;
@@ -520,9 +512,9 @@ export class Instagram implements AsyncIterableIterator<object> {
      */
     private async sleepPromise() {
         return new Promise(
-            resolve => {
-                setTimeout(resolve, 1000)
-            }
+            (resolve) => {
+                setTimeout(resolve, 1000);
+            },
         );
     }
 
@@ -532,7 +524,7 @@ export class Instagram implements AsyncIterableIterator<object> {
     private async initiateGraft() {
         // Check if enabled
         if (!this.enableGrafting) {
-            return
+            return;
         }
 
         this.progress(Progress.GRAFTING);
@@ -561,7 +553,7 @@ export class Instagram implements AsyncIterableIterator<object> {
             await this.postBufferLock.acquireAsync();
             if (this.postBuffer.length > 0) {
                 this.postBufferLock.release();
-                break
+                break;
             }
             this.postBufferLock.release();
 
@@ -577,7 +569,7 @@ export class Instagram implements AsyncIterableIterator<object> {
             await this.jump();
 
             // Enable grafting if required
-            if (this.jumps % this.jumpMod == 0) {
+            if (this.jumps % this.jumpMod === 0) {
                 await this.initiateGraft();
             }
 
@@ -601,8 +593,8 @@ export class Instagram implements AsyncIterableIterator<object> {
  */
 export class Hashtag extends Instagram {
     constructor(id: string, options: object = {}) {
-        let pageQuery = "data.hashtag.edge_hashtag_to_media.page_info.has_next_page";
-        let edgeQuery = "data.hashtag.edge_hashtag_to_media.edges";
+        const pageQuery = "data.hashtag.edge_hashtag_to_media.page_info.has_next_page";
+        const edgeQuery = "data.hashtag.edge_hashtag_to_media.edges";
         super(Endpoints.HASHTAG, id, pageQuery, edgeQuery, options)
     }
 }
@@ -612,8 +604,8 @@ export class Hashtag extends Instagram {
  */
 export class Location extends Instagram {
     constructor(id: string, options: object = {}) {
-        let pageQuery = "data.location.edge_location_to_media.page_info.has_next_page";
-        let edgeQuery = "data.location.edge_location_to_media.edges";
+        const pageQuery = "data.location.edge_location_to_media.page_info.has_next_page";
+        const edgeQuery = "data.location.edge_location_to_media.edges";
         super(Endpoints.LOCATION, id, pageQuery, edgeQuery, options)
     }
 }
@@ -623,8 +615,8 @@ export class Location extends Instagram {
  */
 export class User extends Instagram {
     constructor(id: string, options: object = {}) {
-        let pageQuery = "data.user.edge_owner_to_timeline_media.page_info.has_next_page";
-        let edgeQuery = "data.user.edge_owner_to_timeline_media.edges";
+        const pageQuery = "data.user.edge_owner_to_timeline_media.page_info.has_next_page";
+        const edgeQuery = "data.user.edge_owner_to_timeline_media.edges";
         super(Endpoints.USER, id, pageQuery, edgeQuery, options)
     }
 }

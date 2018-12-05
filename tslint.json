@@ -1,0 +1,15 @@
+{
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:recommended"
+  ],
+  "jsRules": {},
+  "rules": {
+    // Could eventually be re-enabled by removing Hashtag Location User classes
+    "max-classes-per-file": [false],
+
+    // This needs to be robust enough to support API changes without refactoring
+    "no-string-literal": false
+  },
+  "rulesDirectory": []
+}

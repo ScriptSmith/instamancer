@@ -1,4 +1,4 @@
-import {Hashtag, Location, User, ApiOptions, Instagram} from "./src/api"
+import {Hashtag, Location, User, IApiOptions, Instagram} from "./src/api"
 import * as winston from "winston";
 import {Hash} from "crypto";
 
@@ -50,7 +50,7 @@ async function runTests(endpoints) {
                 for (let id of sizeIds) {
                     console.log(`Testing ${id} ${size}`);
                     // Specify API options
-                    let options: ApiOptions = {
+                    let options: IApiOptions = {
                         total: size,
                         headless: true,
                         logger: winston.createLogger({
