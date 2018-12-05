@@ -97,6 +97,17 @@ function buildParser(args, callback) {
                 default: false,
                 describe: "Save images and videos from posts"
             },
+            'graft': {
+                alias: 'g',
+                boolean: true,
+                default: true,
+                describe: "Enable grafting"
+            },
+            'silent': {
+                boolean: true,
+                default: false,
+                describe: "Disable progress output",
+            },
             'filename': {
                 alias: ['file', 'f', 'out'],
                 default: "[id]",
@@ -166,8 +177,9 @@ async function spawn(args) {
         total: args['count'],
         headless: !args['visible'],
         logger: logger,
-        silent: false,
-        sleepTime: 2
+        silent: args['silent'],
+        sleepTime: 2,
+        enableGrafting: args['graft']
     };
 
     // Start API

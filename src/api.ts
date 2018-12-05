@@ -72,6 +72,7 @@ export interface ApiOptions {
     logger?: Logger;
     silent?: boolean;
     sleepTime?: number;
+    enableGrafting?: boolean;
 }
 
 /**
@@ -97,6 +98,7 @@ export class Instagram implements AsyncIterableIterator<object> {
     private responseBufferLock: AwaitLock = new AwaitLock();
 
     // Grafting state
+    private readonly enableGrafting: boolean = true;
     private graft: boolean = false;
     private lastURL: string;
     private lastHeaders: Headers;
@@ -152,6 +154,7 @@ export class Instagram implements AsyncIterableIterator<object> {
         this.headless = options.headless;
         this.logger = options.logger;
         this.silent = options.silent;
+        this.enableGrafting = options.enableGrafting;
         this.sleepTime = options.sleepTime;
     }
 
@@ -334,6 +337,11 @@ export class Instagram implements AsyncIterableIterator<object> {
 
         // Print output
         process.stdout.write("\r" + out + padding);
+
+        // Add newline if closing
+        if (state == Progress.CLOSING) {
+            process.stdout.write('\n');
+        }
     }
 
 
@@ -421,7 +429,7 @@ export class Instagram implements AsyncIterableIterator<object> {
             // Get JSON data
             let data: JSON;
             try {
-                data = await res.json()
+                data = await res.json();
             } catch (e) {
                 this.logger.error("Error processing response JSON");
                 this.logger.error(e);
@@ -522,6 +530,11 @@ export class Instagram implements AsyncIterableIterator<object> {
      * Clear request and response buffers
      */
     private async initiateGraft() {
+        // Check if enabled
+        if (!this.enableGrafting) {
+            return
+        }
+
         this.progress(Progress.GRAFTING);
 
         // Close browser and page

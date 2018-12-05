@@ -60,7 +60,8 @@ async function runTests(endpoints) {
                             transports: []
                         }),
                         silent: false,
-                        sleepTime: 2
+                        sleepTime: 2,
+                        enableGrafting: true
                     };
 
                     // Create API
