@@ -351,16 +351,13 @@ export class Instagram implements AsyncIterableIterator<object> {
         const outLength = stringlength(out);
 
         // Calculate empty padding
-        const repeatCount = outLength - this.outputLength;
-        let padding = "   ";
+        const repeatCount = this.outputLength - outLength;
+        let padding = "";
         if (repeatCount > 0 && this.outputLength > 0) {
             padding = " ".repeat(repeatCount);
         }
 
-        // Update output length
-        if (outLength > this.outputLength) {
-            this.outputLength = outLength;
-        }
+        this.outputLength = outLength;
 
         this.logger.info(out);
 
