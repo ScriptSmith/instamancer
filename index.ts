@@ -142,6 +142,7 @@ function buildParser(args, callback) {
             "Download Ariana Grande's posts to a CSV file with a non-headless browser, and log all events")
         .epilog("Source code available at https://github.com/ScriptSmith/socialcreaper")
         .argv;
+    /* tslint:enable:no-unused-expression */
 }
 
 /**
