@@ -33,20 +33,24 @@ enum Progress {
  * A fixed-size queue of post ids
  */
 class PostIdQueue {
-    private size: number = 10000;
+    private readonly size: number;
     private ids: Set<string> = new Set<string>();
 
+    constructor(size: number) {
+        this.size = size;
+    }
+
     /**
-     * Add a post id to the queue. The least-recently inserted id is popped off the queue when it reaches its max size
+     * Add a post id to the queue. The least-recently inserted id is de-queued when it reaches max size
      * @return true if the id was already in the queue, false if not.
      */
-    public add(id: string): boolean {
+    public enqueue(id: string): boolean {
         // Check if already in list
         const contains = this.ids.has(id);
 
         // Pop id when size limit reached
         if (this.ids.size >= this.size) {
-            this.pop();
+            this.dequeue();
         }
 
         // Add id
@@ -56,7 +60,7 @@ class PostIdQueue {
         return contains;
     }
 
-    private pop() {
+    private dequeue() {
         for (const i of this.ids) {
             return this.ids.delete(i);
         }
@@ -73,6 +77,7 @@ export interface IApiOptions {
     silent?: boolean;
     sleepTime?: number;
     enableGrafting?: boolean;
+    duplicates?: number;
 }
 
 /**
@@ -121,13 +126,14 @@ export class Instagram implements AsyncIterableIterator<object> {
     private finished: boolean;
 
     // Cache of post ids
-    private postIds: PostIdQueue = new PostIdQueue();
+    private postIds: PostIdQueue;
 
     // Iteration variables
     private readonly total: number;
     private index: number = 0;
     private jumps: number = 0;
     private jumpMod: number = 100;
+    private readonly duplicates: number = 50000;
 
     // Output
     private outputLength: number = 0;
@@ -156,6 +162,8 @@ export class Instagram implements AsyncIterableIterator<object> {
         this.silent = options.silent;
         this.enableGrafting = options.enableGrafting;
         this.sleepTime = options.sleepTime;
+        this.duplicates = options.duplicates;
+        this.postIds = new PostIdQueue(this.duplicates);
     }
 
     /**
@@ -456,7 +464,7 @@ export class Instagram implements AsyncIterableIterator<object> {
                 const postId = post["node"]["id"];
 
                 // Check it hasn't already been cached
-                const contains = this.postIds.add(postId);
+                const contains = this.postIds.enqueue(postId);
                 if (contains) {
                     this.logger.info("Duplicate id found: " + postId);
                     continue;

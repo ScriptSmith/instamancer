@@ -54,6 +54,7 @@ async function runTests(endpoints) {
                     console.log(`Testing ${id} ${size}`);
                     // Specify API options
                     const options: IApiOptions = {
+                        duplicates: largeSize,
                         enableGrafting: true,
                         headless: true,
                         logger: winston.createLogger({
