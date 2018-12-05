@@ -124,9 +124,9 @@ function buildParser(args, callback) {
                 describe: "Directory to save thumbnails",
             },
             dup: {
-               alias: ["duplicate-check"],
-               default: 50000,
-               describe: "The number of posts to check for and ignore duplicate ids",
+                alias: ["duplicate-check"],
+                default: 50000,
+                describe: "The number of posts to check for and ignore duplicate ids",
             },
             logging: {
                 default: "none",
@@ -146,7 +146,7 @@ function buildParser(args, callback) {
         .example("$0 user arianagrande --filetype=csv --logging=info --visible",
             "Download Ariana Grande's posts to a CSV file with a non-headless browser, and log all events")
         .epilog("Source code available at https://github.com/ScriptSmith/socialcreaper")
-        .strict()   
+        .strict()
         .argv;
     /* tslint:enable:no-unused-expression */
 }
