@@ -211,10 +211,26 @@ export class Instagram implements AsyncIterableIterator<object> {
             headless: this.headless,
         });
 
-        // Visit page
+        // New page
         this.page = await this.browser.newPage();
         this.progress(Progress.OPENING);
-        await this.page.goto(this.url);
+
+        // Attempt to visit URL
+        try {
+            await this.page.goto(this.url);
+        } catch (e) {
+            // Log error and wait
+            this.logger.error(e);
+            this.progress(Progress.ABORTED);
+            await this.sleep(60);
+
+            // Close existing attempt
+            await this.page.close();
+            await this.browser.close();
+
+            // Retry
+            await this.constructPage();
+        }
     }
 
     /**
@@ -429,7 +445,7 @@ export class Instagram implements AsyncIterableIterator<object> {
             }
 
             // Check for next page
-            if (!_.get(data, this.pageQuery, false) || _.get(data, this.edgeQuery, []) === []) {
+            if (!_.get(data, this.pageQuery, false)) {
                 this.logger.info("No posts remaining");
                 this.finished = true;
             }
@@ -576,7 +592,7 @@ export class Instagram implements AsyncIterableIterator<object> {
  */
 export class Hashtag extends Instagram {
     constructor(id: string, options: object = {}) {
-        const pageQuery = "data.hashtag.edge_hashtag_to_media.page_info.has_next_page";
+        const pageQuery = "data.hashtag.edge_hashtag_to_media.page_info.end_cursor";
         const edgeQuery = "data.hashtag.edge_hashtag_to_media.edges";
         super(Endpoints.HASHTAG, id, pageQuery, edgeQuery, options);
     }
@@ -587,7 +603,7 @@ export class Hashtag extends Instagram {
  */
 export class Location extends Instagram {
     constructor(id: string, options: object = {}) {
-        const pageQuery = "data.location.edge_location_to_media.page_info.has_next_page";
+        const pageQuery = "data.location.edge_location_to_media.page_info.end_cursor";
         const edgeQuery = "data.location.edge_location_to_media.edges";
         super(Endpoints.LOCATION, id, pageQuery, edgeQuery, options);
     }
@@ -598,7 +614,7 @@ export class Location extends Instagram {
  */
 export class User extends Instagram {
     constructor(id: string, options: object = {}) {
-        const pageQuery = "data.user.edge_owner_to_timeline_media.page_info.has_next_page";
+        const pageQuery = "data.user.edge_owner_to_timeline_media.page_info.end_cursor";
         const edgeQuery = "data.user.edge_owner_to_timeline_media.edges";
         super(Endpoints.USER, id, pageQuery, edgeQuery, options);
     }
