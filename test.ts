@@ -91,7 +91,6 @@ async function runTests(endpoints) {
     });
 }
 
-
 (async () => {
     await runTests(data);
 })();
