@@ -164,11 +164,11 @@ async function spawn(args) {
 
     // Pick endpoint
     let api;
-    if (args["_"] === "hashtag") {
+    if (args["_"][0] === "hashtag") {
         api = Hashtag;
-    } else if (args["_"] === "location") {
+    } else if (args["_"][0] === "location") {
         api = Location;
-    } else if (args["_"] === "user") {
+    } else if (args["_"][0] === "user") {
         api = User;
     }
 
