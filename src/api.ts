@@ -543,14 +543,6 @@ export class Instagram implements AsyncIterableIterator<object> {
             await this.processRequests();
             await this.processResponses();
 
-            // Check if posts gathered
-            await this.postBufferLock.acquireAsync();
-            if (this.postBuffer.length > 0) {
-                this.postBufferLock.release();
-                break;
-            }
-            this.postBufferLock.release();
-
             // Check if finished
             if (this.finished) {
                 break;
