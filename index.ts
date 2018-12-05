@@ -3,7 +3,6 @@
 import * as fs from "fs";
 import * as readline from "readline";
 import * as winston from "winston";
-import * as yargs from "yargs";
 
 import {Hashtag, IApiOptions, Location, User} from "./src/api";
 import {download, toCSV, toJSON} from "./src/download";

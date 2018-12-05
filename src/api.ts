@@ -295,7 +295,7 @@ export class Instagram implements AsyncIterableIterator<object> {
      * Match the url to the url used in API requests
      */
     private matchURL(url: string) {
-        return url.slice(0, this.catchURL.length) == this.catchURL
+        return url.slice(0, this.catchURL.length) === this.catchURL;
     }
 
     /**
@@ -435,7 +435,7 @@ export class Instagram implements AsyncIterableIterator<object> {
             }
 
             // Check for next page
-            if (!_.get(data, this.pageQuery, false) || _.get(data, this.edgeQuery, []) == []) {
+            if (!_.get(data, this.pageQuery, false) || _.get(data, this.edgeQuery, []) === []) {
                 this.logger.info("No posts remaining");
                 this.finished = true;
             }
@@ -595,7 +595,7 @@ export class Hashtag extends Instagram {
     constructor(id: string, options: object = {}) {
         const pageQuery = "data.hashtag.edge_hashtag_to_media.page_info.has_next_page";
         const edgeQuery = "data.hashtag.edge_hashtag_to_media.edges";
-        super(Endpoints.HASHTAG, id, pageQuery, edgeQuery, options)
+        super(Endpoints.HASHTAG, id, pageQuery, edgeQuery, options);
     }
 }
 
@@ -606,7 +606,7 @@ export class Location extends Instagram {
     constructor(id: string, options: object = {}) {
         const pageQuery = "data.location.edge_location_to_media.page_info.has_next_page";
         const edgeQuery = "data.location.edge_location_to_media.edges";
-        super(Endpoints.LOCATION, id, pageQuery, edgeQuery, options)
+        super(Endpoints.LOCATION, id, pageQuery, edgeQuery, options);
     }
 }
 
@@ -617,6 +617,6 @@ export class User extends Instagram {
     constructor(id: string, options: object = {}) {
         const pageQuery = "data.user.edge_owner_to_timeline_media.page_info.has_next_page";
         const edgeQuery = "data.user.edge_owner_to_timeline_media.edges";
-        super(Endpoints.USER, id, pageQuery, edgeQuery, options)
+        super(Endpoints.USER, id, pageQuery, edgeQuery, options);
     }
 }
