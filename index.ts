@@ -146,6 +146,7 @@ function buildParser(args, callback) {
         .example("$0 user arianagrande --filetype=csv --logging=info --visible",
             "Download Ariana Grande's posts to a CSV file with a non-headless browser, and log all events")
         .epilog("Source code available at https://github.com/ScriptSmith/socialcreaper")
+        .strict()   
         .argv;
     /* tslint:enable:no-unused-expression */
 }
