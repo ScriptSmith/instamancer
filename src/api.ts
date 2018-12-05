@@ -6,6 +6,9 @@ import _ = require("lodash/object");
 
 import {Logger} from "winston";
 
+import chalk from "chalk";
+import * as stringlength from "string-length";
+
 /**
  * The endpoints that are available for scraping. (Hashtags, Locations, Users)
  */
@@ -138,6 +141,7 @@ export class Instagram implements AsyncIterableIterator<object> {
     // Output
     private outputLength: number = 0;
     private readonly silent: boolean = false;
+    private writeLock: AwaitLock = new AwaitLock();
 
     // Sleep time remaining
     private sleepRemaining: number = 0;
@@ -213,7 +217,7 @@ export class Instagram implements AsyncIterableIterator<object> {
         }
 
         // Launch browser
-        this.progress(Progress.LAUNCHING);
+        await this.progress(Progress.LAUNCHING);
         this.browser = await puppeteer.launch({
             args,
             headless: this.headless,
@@ -221,7 +225,7 @@ export class Instagram implements AsyncIterableIterator<object> {
 
         // New page
         this.page = await this.browser.newPage();
-        this.progress(Progress.OPENING);
+        await this.progress(Progress.OPENING);
 
         // Attempt to visit URL
         try {
@@ -229,7 +233,7 @@ export class Instagram implements AsyncIterableIterator<object> {
         } catch (e) {
             // Log error and wait
             this.logger.error(e);
-            this.progress(Progress.ABORTED);
+            await this.progress(Progress.ABORTED);
             await this.sleep(60);
 
             // Close existing attempt
@@ -265,7 +269,7 @@ export class Instagram implements AsyncIterableIterator<object> {
      * Close the page and browser
      */
     private async stop() {
-        this.progress(Progress.CLOSING);
+        await this.progress(Progress.CLOSING);
         // // Clear request buffers
         // await this.requestBufferLock.acquireAsync();
         // this.requestBuffer = [];
@@ -296,7 +300,7 @@ export class Instagram implements AsyncIterableIterator<object> {
 
         // Pause until pause toggled
         while (this.paused === true) {
-            this.progress(Progress.PAUSED);
+            await this.progress(Progress.PAUSED);
             await f();
         }
     }
@@ -324,7 +328,10 @@ export class Instagram implements AsyncIterableIterator<object> {
     /**
      * Print progress to stdout
      */
-    private progress(state: Progress) {
+    private async progress(state: Progress) {
+        // Lock
+        await this.writeLock.acquireAsync();
+
         // End if silent
         if (this.silent) {
             return;
@@ -334,25 +341,34 @@ export class Instagram implements AsyncIterableIterator<object> {
         const total = this.total === 0 ? "Unlimited" : this.total;
 
         // Generate output string
-        const out = `Id: ${this.id} | State: ${state} | Sleeping: ${this.sleepRemaining} |` +
-            ` Total: ${total} | Scraped: ${this.index}`;
+        const idStr = chalk.bgBlack(` Id: ${this.id} `);
+        const stateStr = chalk.bgBlack(` State: ${state} `);
+        const sleepStr = chalk.bgWhite.black(` Sleeping: ${this.sleepRemaining} `);
+        const totalStr = chalk.bgWhite.black(` Total: ${total} `);
+        const indexStr = chalk.bgWhite.black(` Scraped: ${this.index} `);
+
+        const out = `${idStr}${stateStr}${sleepStr}${totalStr}${indexStr}`;
+        const outLength = stringlength(out);
 
         // Calculate empty padding
-        const repeatCount = out.length - this.outputLength;
-        let padding = "  ";
+        const repeatCount = outLength - this.outputLength;
+        let padding = "   ";
         if (repeatCount > 0 && this.outputLength > 0) {
             padding = " ".repeat(repeatCount);
         }
 
         // Update output length
-        if (out.length > this.outputLength) {
-            this.outputLength = out.length;
+        if (outLength > this.outputLength) {
+            this.outputLength = outLength;
         }
 
         this.logger.info(out);
 
         // Print output
         process.stdout.write("\r" + out + padding);
+
+        // Release
+        this.writeLock.release();
     }
 
     /**
@@ -378,7 +394,7 @@ export class Instagram implements AsyncIterableIterator<object> {
      */
     private async interceptFailure(req: Request) {
         this.logger.info("Failed: " + req.url());
-        this.progress(Progress.ABORTED);
+        await this.progress(Progress.ABORTED);
     }
 
     /**
@@ -520,7 +536,7 @@ export class Instagram implements AsyncIterableIterator<object> {
     private async sleep(time) {
         for (let i = time; i > 0; i--) {
             this.sleepRemaining = i;
-            this.progress(Progress.SCRAPING);
+            await this.progress(Progress.SCRAPING);
             await this.sleepPromise();
         }
     }
@@ -545,7 +561,7 @@ export class Instagram implements AsyncIterableIterator<object> {
             return;
         }
 
-        this.progress(Progress.GRAFTING);
+        await this.progress(Progress.GRAFTING);
 
         // Close browser and page
         await this.stop();
@@ -561,7 +577,7 @@ export class Instagram implements AsyncIterableIterator<object> {
      * Stimulate the page until responses gathered
      */
     private async getNext() {
-        this.progress(Progress.SCRAPING);
+        await this.progress(Progress.SCRAPING);
         while (true) {
             // Process results (if any)
             await this.processRequests();
