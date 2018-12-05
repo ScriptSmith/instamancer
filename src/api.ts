@@ -443,7 +443,7 @@ export class Instagram implements AsyncIterableIterator<object> {
             }
 
             // Check for next page
-            if (!_.get(data, this.pageQuery, false)) {
+            if (!_.get(data, this.pageQuery, false) || _.get(data, this.edgeQuery, []) == []) {
                 this.logger.info('No posts remaining');
                 this.finished = true;
             }
