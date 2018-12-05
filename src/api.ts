@@ -127,7 +127,7 @@ export class Instagram implements AsyncIterableIterator<object> {
     private readonly total: number;
     private index: number = 0;
     private jumps: number = 0;
-    private jumpMod: number = 50;
+    private jumpMod: number = 100;
 
     // Output
     private outputLength: number = 0;
