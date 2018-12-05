@@ -1,77 +1,80 @@
-import {Hashtag, Location, User, IApiOptions, Instagram} from "./src/api"
 import * as winston from "winston";
-import {Hash} from "crypto";
+import {Hashtag, IApiOptions, Location, User} from "./src/api";
 
-let hashtags = ["beach", "gym", "puppies", "party", "throwback"];
-let locations = ["1110037669039751", "212988663", "933522", "213385402", "228001889"];
-let users = ["snoopdogg", "arianagrande", "bbc", "whitehouse", "australia"];
+/* tslint:disable:no-console */
 
-let smallSize = 30, mediumSize = 300, largeSize = 3000;
+const hashtags = ["beach", "gym", "puppies", "party", "throwback"];
+const locations = ["1110037669039751", "212988663", "933522", "213385402", "228001889"];
+const users = ["snoopdogg", "arianagrande", "bbc", "whitehouse", "australia"];
 
-let data = [
+const smallSize = 30;
+const mediumSize = 300;
+const largeSize = 3000;
+
+const data = [
     [
         Hashtag,
         hashtags,
-        [smallSize, mediumSize, largeSize]
+        [smallSize, mediumSize, largeSize],
     ],
     [
         Location,
         locations,
-        [smallSize, mediumSize, largeSize]
+        [smallSize, mediumSize, largeSize],
     ],
     [
         User,
         users,
-        [smallSize, mediumSize]
-    ]
+        [smallSize, mediumSize],
+    ],
 ];
 
 jest.setTimeout(120 * 60 * 1000);
 
 async function runTests(endpoints) {
-    test('API', async () => {
-        for (let endpoint of endpoints) {
+    test("API", async () => {
+        for (const endpoint of endpoints) {
             // Get params
-            let API = endpoint[0];
-            let ids = endpoint[1];
-            let sizes = endpoint[2];
+            const API = endpoint[0];
+            const ids = endpoint[1];
+            const sizes = endpoint[2];
 
-            for (let size of sizes) {
+            for (const size of sizes) {
                 // Decide how many ids to test based on size
                 let sizeIds;
                 let splitLen = 5;
-                if (size == mediumSize) {
+                if (size === mediumSize) {
                     splitLen = 3;
-                } else if (size == largeSize) {
+                } else if (size === largeSize) {
                     splitLen = 1;
                 }
                 sizeIds = ids.slice(0, splitLen);
 
-                for (let id of sizeIds) {
+                for (const id of sizeIds) {
                     console.log(`Testing ${id} ${size}`);
                     // Specify API options
-                    let options: IApiOptions = {
-                        total: size,
+                    const options: IApiOptions = {
+                        enableGrafting: true,
                         headless: true,
                         logger: winston.createLogger({
-                            level: 'error',
                             format: winston.format.json(),
+                            level: "error",
                             silent: true,
-                            transports: []
+                            transports: [],
                         }),
                         silent: false,
                         sleepTime: 2,
-                        enableGrafting: true
+                        total: size,
                     };
 
                     // Create API
-                    let api = new API(id, options);
+                    const api = new API(id, options);
                     await api.start();
 
                     // Get posts
-                    let posts = [];
-                    let postIds = new Set();
-                    for await (let post of api.itr()) {
+                    const posts = [];
+                    const postIds = new Set();
+                    for await (const post of api.itr()) {
                         postIds.add(post.node.id);
                         posts.push(post);
                     }
