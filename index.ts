@@ -143,7 +143,7 @@ function buildParser(args, callback) {
             "Download all the available posts, and their thumbnails from #instagood")
         .example("$0 location 644269022 --count 200",
             "Download 200 posts tagged as being at the Arc Du Triomphe")
-        .example("$0 user arianagrande --filetype=csv --loging=info --visible",
+        .example("$0 user arianagrande --filetype=csv --logging=info --visible",
             "Download Ariana Grande's posts to a CSV file with a non-headless browser, and log all events")
         .epilog("Source code available at https://github.com/ScriptSmith/socialcreaper")
         .argv;
