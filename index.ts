@@ -195,7 +195,7 @@ async function spawn(args) {
 
     // Download posts
     const posts = [];
-    for await (const post of obj.itr()) {
+    for await (const post of obj.generator()) {
         // Save post
         posts.push(post);
 

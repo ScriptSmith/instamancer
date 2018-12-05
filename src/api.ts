@@ -168,9 +168,9 @@ export class Instagram implements AsyncIterableIterator<object> {
     /**
      * Generator of posts on page
      */
-    public async* itr() {
+    public async* generator() {
         while (true) {
-            // Get more posts, then yield the posts in the buffer
+            // Get more posts
             await this.getNext();
 
             // Yield posts from buffer

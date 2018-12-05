@@ -74,7 +74,7 @@ async function runTests(endpoints) {
                     // Get posts
                     const posts = [];
                     const postIds = new Set();
-                    for await (const post of api.itr()) {
+                    for await (const post of api.generator()) {
                         postIds.add(post.node.id);
                         posts.push(post);
                     }
