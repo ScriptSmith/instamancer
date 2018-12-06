@@ -63,7 +63,7 @@ class PostIdQueue {
         return contains;
     }
 
-    private dequeue() {
+    private dequeue(): boolean {
         for (const i of this.ids) {
             return this.ids.delete(i);
         }
@@ -510,9 +510,6 @@ export class Instagram implements AsyncIterableIterator<object> {
         await this.page.evaluate(() => {
             window.scrollTo(0, document.body.scrollHeight - 400);
         });
-
-        // Wait for execution
-        // await this.sleep(0.5);
 
         // Jump down
         await this.page.evaluate(() => {

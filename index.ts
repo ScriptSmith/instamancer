@@ -229,6 +229,9 @@ async function spawn(args) {
         }
         toJSON(posts, saveFile);
     }
+
+    // Remove pause callback
+    process.stdin.removeListener("keypress", () => undefined);
 }
 
 // Catch key presses
