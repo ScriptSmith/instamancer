@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import * as fs from "fs";
-import * as keypress from "keypress";
 import * as readline from "readline";
 import * as winston from "winston";
 
