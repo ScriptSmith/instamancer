@@ -1,7 +1,7 @@
 import * as fs from "fs";
-import * as https from "https";
 import * as json2csv from "json2csv";
 import * as path from "path";
+import * as request from "request";
 
 /**
  * Recursively create directories
@@ -45,14 +45,10 @@ function mkDirByPathSync(targetDir, {isRelativeToScript = false} = {}) {
  * @param directory The directory to save the file
  * @param callback Run upon completion
  */
-export function download(url, name, directory, callback) {
-    https.get(url, (response) => {
-        mkDirByPathSync(directory);
-        const file = fs.createWriteStream(directory + "/" + name);
-        response.pipe(file);
-        file.on("close", callback);
-        file.on("finish", () => file.close());
-    });
+export function download(url, name, directory) {
+    mkDirByPathSync(directory);
+    request.get(url)
+        .pipe(fs.createWriteStream(directory + "/" + name));
 }
 
 const fields = ["node.comments_disabled", "node.__typename", "node.id", "node.edge_media_to_caption.edges.0.node.text",

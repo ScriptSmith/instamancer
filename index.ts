@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import * as fs from "fs";
+import * as keypress from "keypress";
 import * as readline from "readline";
 import * as winston from "winston";
 
@@ -77,6 +78,7 @@ function buildParser(args, callback) {
                             for (const f of functions) {
                                 await f();
                             }
+                            process.stdin.destroy();
                         });
             },
         )
@@ -194,7 +196,15 @@ async function spawn(args) {
     await obj.start();
 
     // Add pause callback
-    pauseCallback(obj);
+    function handleKeypress(str, key) {
+        if (key.name === "space") {
+            obj.pause();
+        } else if (key.name === "c" && key.ctrl) {
+            process.kill(process.pid, "SIGINT");
+        }
+    }
+
+    process.stdin.on("keypress", handleKeypress);
 
     // Replace downdir
     const downdir = args["downdir"].replace("[id]", args["id"]).replace("[endpoint]", args["_"]);
@@ -207,7 +217,7 @@ async function spawn(args) {
 
         // Download thumbnail
         if (args["download"] && "node" in post) {
-            download(post.node.thumbnail_src, post.node.shortcode, downdir, () => null);
+            download(post.node.thumbnail_src, post.node.shortcode, downdir);
         }
     }
 
@@ -231,7 +241,8 @@ async function spawn(args) {
     }
 
     // Remove pause callback
-    process.stdin.removeListener("keypress", () => undefined);
+    process.stdin.removeAllListeners("keypress");
+    process.stdin.destroy();
 }
 
 // Catch key presses
@@ -240,19 +251,5 @@ if ("setRawMode" in process.stdin) {
     process.stdin.setRawMode(true);
 }
 
-/**
- * Call obj.pause() when spacebar pressed, send sigint when Ctrl + c pressed
- * @param obj
- */
-function pauseCallback(obj) {
-    process.stdin.on("keypress", (str, key) => {
-        if (key.name === "space") {
-            obj.pause();
-        } else if (key.name === "c" && key.ctrl) {
-            process.kill(process.pid, "SIGINT");
-        }
-    });
-}
-
 // Parse args
-buildParser(process.argv.slice(2), () => process.exit(0));
+buildParser(process.argv.slice(2), () => process.stdin.destroy());
