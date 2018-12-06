@@ -242,7 +242,6 @@ async function spawn(args) {
 
     // Remove pause callback
     process.stdin.removeAllListeners("keypress");
-    process.stdin.destroy();
 }
 
 // Catch key presses
