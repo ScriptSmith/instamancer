@@ -36,12 +36,7 @@ enum Progress {
  * A fixed-size queue of post ids
  */
 class PostIdQueue {
-    private readonly size: number;
     private ids: Set<string> = new Set<string>();
-
-    constructor(size: number) {
-        this.size = size;
-    }
 
     /**
      * Add a post id to the queue. The least-recently inserted id is de-queued when it reaches max size
@@ -50,11 +45,6 @@ class PostIdQueue {
     public enqueue(id: string): boolean {
         // Check if already in list
         const contains = this.ids.has(id);
-
-        // Pop id when size limit reached
-        if (this.ids.size >= this.size) {
-            this.dequeue();
-        }
 
         // Add id
         this.ids.add(id);
@@ -80,7 +70,6 @@ export interface IApiOptions {
     silent?: boolean;
     sleepTime?: number;
     enableGrafting?: boolean;
-    duplicates?: number;
 }
 
 /**
@@ -136,7 +125,6 @@ export class Instagram implements AsyncIterableIterator<object> {
     private index: number = 0;
     private jumps: number = 0;
     private jumpMod: number = 100;
-    private readonly duplicates: number = 50000;
 
     // Output
     private outputLength: number = 0;
@@ -166,8 +154,7 @@ export class Instagram implements AsyncIterableIterator<object> {
         this.silent = options.silent;
         this.enableGrafting = options.enableGrafting;
         this.sleepTime = options.sleepTime;
-        this.duplicates = options.duplicates;
-        this.postIds = new PostIdQueue(this.duplicates);
+        this.postIds = new PostIdQueue();
     }
 
     /**

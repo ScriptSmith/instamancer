@@ -126,11 +126,6 @@ function buildParser(args, callback) {
                 default: "downloads/[endpoint]/[id]",
                 describe: "Directory to save thumbnails",
             },
-            dup: {
-                alias: ["duplicate-check"],
-                default: 50000,
-                describe: "The number of posts to check for and ignore duplicate ids",
-            },
             logging: {
                 default: "none",
                 choices: ["none", "info", "debug"],
