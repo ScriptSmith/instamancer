@@ -63,11 +63,13 @@ function buildParser(args, callback) {
                         // creates a new promise to be resolved by
                         // buildParser
                         (line) => {
-                            functions.push(
-                                () => new Promise((res) =>
-                                    buildParser(line, res),
-                                ),
-                            );
+                            if (line.length > 0 && line.charAt(0) !== "#") {
+                                functions.push(
+                                    () => new Promise((res) =>
+                                        buildParser(line, res),
+                                    ),
+                                );
+                            }
                         })
                     .on("close",
                         // When all lines have been read, synchronously
