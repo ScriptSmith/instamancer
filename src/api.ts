@@ -531,8 +531,13 @@ export class Instagram implements AsyncIterableIterator<object> {
         });
         postPage.on("requestfailed", async (req) => undefined);
 
+        let data;
         try {
             await postPage.goto("https://instagram.com/p/" + post);
+
+            data = await postPage.evaluate(() => {
+                return JSON.stringify(window["_sharedData"].entry_data.PostPage[0].graphql);
+            });
         } catch (e) {
             // Log error and wait
             this.logger.error(e);
@@ -545,11 +550,6 @@ export class Instagram implements AsyncIterableIterator<object> {
             // Retry
             await this.postPage(post);
         }
-
-        // Find metadata
-        const data = await postPage.evaluate(() => {
-            return JSON.stringify(window["_sharedData"].entry_data.PostPage[0].graphql);
-        });
 
         await this.addToPostBuffer(JSON.parse(data));
 
