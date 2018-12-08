@@ -1,52 +1,16 @@
 import * as fs from "fs";
 import * as json2csv from "json2csv";
-import * as path from "path";
+import * as mkdirp from "mkdirp";
 import * as request from "request";
-
-/**
- * Recursively create directories
- * @see https://stackoverflow.com/a/40686853/7435520
- * @param targetDir The path to create
- * @param isRelativeToScript Create path relative to this script
- */
-function mkDirByPathSync(targetDir, {isRelativeToScript = false} = {}) {
-    const sep = path.sep;
-    const initDir = path.isAbsolute(targetDir) ? sep : "";
-    const baseDir = isRelativeToScript ? __dirname : ".";
-
-    return targetDir.split(sep).reduce((parentDir, childDir) => {
-        const curDir = path.resolve(baseDir, parentDir, childDir);
-        try {
-            fs.mkdirSync(curDir);
-        } catch (err) {
-            if (err.code === "EEXIST") { // curDir already exists!
-                return curDir;
-            }
-
-            // To avoid `EISDIR` error on Mac and `EACCES`-->`ENOENT` and `EPERM` on Windows.
-            if (err.code === "ENOENT") { // Throw the original parentDir error on curDir `ENOENT` failure.
-                throw new Error(`EACCES: permission denied, mkdir '${parentDir}'`);
-            }
-
-            const caughtErr = ["EACCES", "EPERM", "EISDIR"].indexOf(err.code) > -1;
-            if (!caughtErr || caughtErr && curDir === path.resolve(targetDir)) {
-                throw err; // Throw if it's just the last created dir.
-            }
-        }
-
-        return curDir;
-    }, initDir);
-}
 
 /**
  * Download file
  * @param url The URL of the file
  * @param name The name used to identify the file
  * @param directory The directory to save the file
- * @param callback Run upon completion
  */
 export function download(url, name, directory) {
-    mkDirByPathSync(directory);
+    mkdirp.sync(directory);
     request.get(url)
         .pipe(fs.createWriteStream(directory + "/" + name));
 }
