@@ -328,7 +328,7 @@ export class Instagram implements AsyncIterableIterator<object> {
         const total = this.total === 0 ? "Unlimited" : this.total;
 
         // Generate output string
-        const idStr = chalk.bgBlack(` Id: ${this.id} `);
+        const idStr = chalk.bgYellow.black(` ${this.id} `);
         const totalStr = chalk.bgBlack(` Total: ${total} `);
         const stateStr = chalk.bgWhite.black(` State: ${state} `);
         const sleepStr = chalk.bgWhite.black(` Sleeping: ${this.sleepRemaining} `);
