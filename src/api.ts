@@ -95,6 +95,10 @@ export class Instagram implements AsyncIterableIterator<object> {
     private responseBuffer: Response[] = [];
     private responseBufferLock: AwaitLock = new AwaitLock();
 
+    // Get full amount of data from API
+    private fullAPI: boolean = false;
+    private pagePromises: Array<Promise<void>> = new Array<Promise<null>>();
+
     // Grafting state
     private readonly enableGrafting: boolean = true;
     private graft: boolean = false;
@@ -156,6 +160,7 @@ export class Instagram implements AsyncIterableIterator<object> {
         this.enableGrafting = options.enableGrafting;
         this.sleepTime = options.sleepTime;
         this.postIds = new PostIdQueue();
+        this.fullAPI = options.fullAPI;
     }
 
     /**
@@ -268,6 +273,9 @@ export class Instagram implements AsyncIterableIterator<object> {
         // this.responseBuffer = [];
         // this.responseBufferLock.release();
 
+        // Finish page promises
+        await Promise.all(this.pagePromises);
+
         // Close page and browser
         await this.page.close();
         await this.browser.close();
@@ -310,7 +318,7 @@ export class Instagram implements AsyncIterableIterator<object> {
      * Match the url to the url used in API requests
      */
     private matchURL(url: string) {
-        return url.slice(0, this.catchURL.length) === this.catchURL;
+        return url.startsWith(this.catchURL) && !url.includes("include_reel");
     }
 
     /**
@@ -475,9 +483,11 @@ export class Instagram implements AsyncIterableIterator<object> {
                 // Add to postBuffer
                 if (this.index < this.total || this.total === 0) {
                     this.index++;
-                    await this.postBufferLock.acquireAsync();
-                    this.postBuffer.push(post);
-                    this.postBufferLock.release();
+                    if (this.fullAPI) {
+                        this.pagePromises.push(this.postPage(post["node"]["shortcode"]));
+                    } else {
+                        await this.addToPostBuffer(post);
+                    }
                 } else {
                     this.finished = true;
                     break;
@@ -485,9 +495,51 @@ export class Instagram implements AsyncIterableIterator<object> {
             }
         }
 
+        // Finish page promises
+        Promise.all(this.pagePromises);
+
         // Clear buffer and release
         this.responseBuffer = [];
         this.responseBufferLock.release();
+    }
+
+    /**
+     * Add post to buffer
+     */
+    private async addToPostBuffer(post) {
+        await this.postBufferLock.acquireAsync();
+        this.postBuffer.push(post);
+        this.postBufferLock.release();
+    }
+
+    /**
+     * Open a post in a new page, then extract its metadata
+     */
+    private async postPage(post) {
+        // Create page
+        const postPage = await this.browser.newPage();
+        await postPage.setRequestInterception(true);
+        postPage.on("request", async (req) => {
+            // if (!(req.url().endsWith(".png") || req.url().endsWith(".jpg"))) {
+            //     req.continue();
+            // }
+            if (!req.url().includes("/p/" + post)) {
+                await req.abort();
+            } else {
+                await req.continue();
+            }
+        });
+        postPage.on("requestfailed", async (req) => undefined);
+        await postPage.goto("https://instagram.com/p/" + post, {waitUntil: "networkidle2"});
+
+        // Find metadata
+        const data = await postPage.evaluate(() => {
+            return JSON.stringify(window["_sharedData"].entry_data.PostPage[0].graphql);
+        });
+
+        await this.addToPostBuffer(JSON.parse(data));
+
+        await postPage.close();
     }
 
     /**
@@ -495,12 +547,12 @@ export class Instagram implements AsyncIterableIterator<object> {
      */
     private async jump() {
         // Jump up
-        await this.page.evaluate(() => {
+        await this.page.evaluateHandle(() => {
             window.scrollTo(0, document.body.scrollHeight - 400);
         });
 
         // Jump down
-        await this.page.evaluate(() => {
+        await this.page.evaluateHandle(() => {
             window.scrollTo(0, document.body.scrollHeight);
         });
 

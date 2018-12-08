@@ -55,6 +55,7 @@ async function runTests(endpoints) {
                     // Specify API options
                     const options: IApiOptions = {
                         enableGrafting: true,
+                        fullAPI: false,
                         headless: true,
                         logger: winston.createLogger({
                             format: winston.format.json(),

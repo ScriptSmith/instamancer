@@ -106,6 +106,11 @@ function buildParser(args, callback) {
                 default: true,
                 describe: "Enable grafting",
             },
+            full: {
+                boolean: true,
+                default: false,
+                describe: "Get the full details about posts from the API",
+            },
             silent: {
                 boolean: true,
                 default: false,
@@ -184,6 +189,7 @@ async function spawn(args) {
         silent: args["silent"],
         sleepTime: 2,
         enableGrafting: args["graft"],
+        fullAPI: args["full"],
     };
 
     // Start API
@@ -196,6 +202,7 @@ async function spawn(args) {
         if (key.name === "space") {
             obj.pause();
         } else if (key.name === "c" && key.ctrl) {
+            process.stdout.write("\n");
             process.kill(process.pid, "SIGINT");
         }
     }
@@ -212,8 +219,18 @@ async function spawn(args) {
         posts.push(post);
 
         // Download thumbnail
-        if (args["download"] && "node" in post) {
-            download(post.node.thumbnail_src, post.node.shortcode, downdir);
+        if (args["download"] && ("node" in post || "shortcode_media" in post)) {
+            let imageUrl;
+            let shortcode;
+            if (args["full"]) {
+                const imageUrls = post.shortcode_media.display_resources;
+                imageUrl = imageUrls[imageUrls.length - 1].src;
+                shortcode = post.shortcode_media.shortcode;
+            } else {
+                imageUrl = post.node.thumbnail_src;
+                shortcode = post.node.shortcode;
+            }
+            download(imageUrl, shortcode, downdir);
         }
     }
 
@@ -247,4 +264,7 @@ if ("setRawMode" in process.stdin) {
 }
 
 // Parse args
-buildParser(process.argv.slice(2), () => process.stdin.destroy());
+buildParser(process.argv.slice(2), () => {
+    process.stdin.destroy();
+    process.stdout.write("\n");
+});
