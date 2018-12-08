@@ -530,7 +530,21 @@ export class Instagram implements AsyncIterableIterator<object> {
             }
         });
         postPage.on("requestfailed", async (req) => undefined);
-        await postPage.goto("https://instagram.com/p/" + post);
+
+        try {
+            await postPage.goto("https://instagram.com/p/" + post);
+        } catch (e) {
+            // Log error and wait
+            this.logger.error(e);
+            await this.progress(Progress.ABORTED);
+            await this.sleep(2);
+
+            // Close existing attempt
+            await postPage.close();
+
+            // Retry
+            await this.postPage(post);
+        }
 
         // Find metadata
         const data = await postPage.evaluate(() => {
