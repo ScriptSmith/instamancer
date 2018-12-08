@@ -70,6 +70,7 @@ export interface IApiOptions {
     silent?: boolean;
     sleepTime?: number;
     enableGrafting?: boolean;
+    fullAPI?: boolean;
 }
 
 /**
