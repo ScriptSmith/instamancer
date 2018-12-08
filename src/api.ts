@@ -540,6 +540,8 @@ export class Instagram implements AsyncIterableIterator<object> {
             });
 
             await this.addToPostBuffer(JSON.parse(data));
+
+            await postPage.close();
         } catch (e) {
             // Log error and wait
             this.logger.error(e);
@@ -552,8 +554,6 @@ export class Instagram implements AsyncIterableIterator<object> {
             // Retry
             await this.postPage(post);
         }
-
-        await postPage.close();
     }
 
     /**
