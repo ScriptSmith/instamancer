@@ -496,7 +496,7 @@ export class Instagram implements AsyncIterableIterator<object> {
         }
 
         // Finish page promises
-        Promise.all(this.pagePromises);
+        await Promise.all(this.pagePromises);
 
         // Clear buffer and release
         this.responseBuffer = [];
@@ -530,7 +530,7 @@ export class Instagram implements AsyncIterableIterator<object> {
             }
         });
         postPage.on("requestfailed", async (req) => undefined);
-        await postPage.goto("https://instagram.com/p/" + post, {waitUntil: "networkidle2"});
+        await postPage.goto("https://instagram.com/p/" + post);
 
         // Find metadata
         const data = await postPage.evaluate(() => {
