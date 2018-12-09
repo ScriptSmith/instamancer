@@ -25,6 +25,7 @@ enum Progress {
     LAUNCHING = "Launching",
     OPENING = "Navigating",
     SCRAPING = "Scraping",
+    BRANCHING = "Branching",
     GRAFTING = "Grafting",
     CLOSING = "Closing",
 
@@ -516,6 +517,8 @@ export class Instagram implements AsyncIterableIterator<object> {
      * Open a post in a new page, then extract its metadata
      */
     private async postPage(post) {
+        await this.progress(Progress.BRANCHING);
+
         // Create page
         const postPage = await this.browser.newPage();
         await postPage.setRequestInterception(true);
@@ -531,6 +534,7 @@ export class Instagram implements AsyncIterableIterator<object> {
         });
         postPage.on("requestfailed", async (req) => undefined);
 
+        // Visit post and read state
         let data;
         try {
             await postPage.goto("https://instagram.com/p/" + post);
@@ -588,6 +592,7 @@ export class Instagram implements AsyncIterableIterator<object> {
             await this.progress(Progress.SCRAPING);
             await this.sleepPromise();
         }
+        this.sleepRemaining = 0;
     }
 
     /**
