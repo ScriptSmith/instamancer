@@ -97,7 +97,7 @@ export class Instagram implements AsyncIterableIterator<object> {
 
     // Get full amount of data from API
     private fullAPI: boolean = false;
-    private pagePromises: Array<Promise<void>> = new Array<Promise<null>>();
+    private pagePromises: Array<Promise<void>> = [];
 
     // Grafting state
     private readonly enableGrafting: boolean = true;
