@@ -396,13 +396,10 @@ export class Instagram implements AsyncIterableIterator<object> {
     private async processRequests() {
         await this.requestBufferLock.acquireAsync();
 
-        let disableGraft = false;
         for (const req of this.requestBuffer) {
             // Match url
             if (!this.matchURL(req.url())) {
                 continue;
-            } else {
-                disableGraft = true;
             }
 
             // Switch url and headers if grafting enabled, else store them
@@ -423,11 +420,6 @@ export class Instagram implements AsyncIterableIterator<object> {
             });
         }
 
-        // Switch off grafting if enabled and requests processed
-        if (this.graft && disableGraft) {
-            this.graft = false;
-        }
-
         // Clear buffer and release
         this.requestBuffer = [];
         this.requestBufferLock.release();
@@ -439,10 +431,13 @@ export class Instagram implements AsyncIterableIterator<object> {
     private async processResponses() {
         await this.responseBufferLock.acquireAsync();
 
+        let disableGraft = false;
         for (const res of this.responseBuffer) {
             // Match url
             if (!this.matchURL(res.url())) {
                 continue;
+            } else {
+                disableGraft = true;
             }
 
             // Get JSON data
@@ -493,6 +488,11 @@ export class Instagram implements AsyncIterableIterator<object> {
                     break;
                 }
             }
+        }
+
+        // Switch off grafting if enabled and responses processed
+        if (this.graft && disableGraft) {
+            this.graft = false;
         }
 
         // Finish page promises
