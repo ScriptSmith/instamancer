@@ -20,7 +20,6 @@
     "lodash": "^4.17.11",
     "mkdirp": "^0.5.1",
     "puppeteer": "^1.11.0",
-    "request": "^2.88.0",
     "string-length": "^2.0.0",
     "typescript": "^3.2.2",
     "winston": "^3.1.0",
@@ -31,12 +30,14 @@
     "url": "git@github.com:ScriptSmith/socialcreaper.git"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/jest": "^23.3.10",
     "@types/json2csv": "^4.2.0",
     "@types/mkdirp": "^0.5.2",
     "@types/puppeteer": "^1.11.1",
     "@types/request": "^2.48.1",
     "@types/yargs": "^12.0.1",
+    "axios": "^0.18.0",
     "jest": "^23.6.0",
     "ts-jest": "^23.10.5"
   }

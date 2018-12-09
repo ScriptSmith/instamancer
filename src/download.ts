@@ -1,7 +1,7 @@
+import axios from "axios";
 import * as fs from "fs";
 import * as json2csv from "json2csv";
 import * as mkdirp from "mkdirp";
-import * as request from "request";
 
 /**
  * Download file
@@ -9,10 +9,15 @@ import * as request from "request";
  * @param name The name used to identify the file
  * @param directory The directory to save the file
  */
-export function download(url, name, directory) {
+export async function download(url, name, directory) {
     mkdirp.sync(directory);
-    request.get(url)
-        .pipe(fs.createWriteStream(directory + "/" + name));
+    await axios({
+        method: "get",
+        responseType: "stream",
+        url,
+    }).then((response) => {
+        response.data.pipe(fs.createWriteStream(directory + "/" + name));
+    });
 }
 
 const fields = ["node.comments_disabled", "node.__typename", "node.id", "node.edge_media_to_caption.edges.0.node.text",
