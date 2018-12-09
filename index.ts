@@ -230,7 +230,7 @@ async function spawn(args) {
                 imageUrl = post.node.thumbnail_src;
                 shortcode = post.node.shortcode;
             }
-            await download(imageUrl, shortcode, downdir);
+            await download(imageUrl, shortcode, downdir, logger);
         }
     }
 

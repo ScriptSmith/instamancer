@@ -8,16 +8,22 @@ import * as mkdirp from "mkdirp";
  * @param url The URL of the file
  * @param name The name used to identify the file
  * @param directory The directory to save the file
+ * @param logger Logging object
  */
-export async function download(url, name, directory) {
+export async function download(url, name, directory, logger) {
     mkdirp.sync(directory);
-    await axios({
-        method: "get",
-        responseType: "stream",
-        url,
-    }).then((response) => {
-        response.data.pipe(fs.createWriteStream(directory + "/" + name));
-    });
+    try {
+        await axios({
+            method: "get",
+            responseType: "stream",
+            url,
+        }).then((response) => {
+            response.data.pipe(fs.createWriteStream(directory + "/" + name));
+        });
+    } catch (e) {
+        logger.info(`Downloading ${url} failed`);
+        logger.debug(e);
+    }
 }
 
 const fields = ["node.comments_disabled", "node.__typename", "node.id", "node.edge_media_to_caption.edges.0.node.text",
