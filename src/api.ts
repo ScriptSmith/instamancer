@@ -656,6 +656,14 @@ export class Instagram implements AsyncIterableIterator<object> {
                 await this.sleep(this.hibernationTime);
                 this.hibernate = false;
             }
+
+            // Break if posts in buffer
+            await this.postBufferLock.acquireAsync();
+            const posts = this.postBuffer.length;
+            this.postBufferLock.release();
+            if (posts > 0) {
+                break;
+            }
         }
     }
 }
