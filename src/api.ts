@@ -97,8 +97,9 @@ export class Instagram implements AsyncIterableIterator<object> {
     private responseBufferLock: AwaitLock = new AwaitLock();
 
     // Get full amount of data from API
-    private fullAPI: boolean = false;
+    private readonly fullAPI: boolean = false;
     private pagePromises: Array<Promise<void>> = [];
+    private readonly pagePromiseChunks: number = 10;
 
     // Grafting state
     private readonly enableGrafting: boolean = true;
@@ -497,7 +498,9 @@ export class Instagram implements AsyncIterableIterator<object> {
         }
 
         // Finish page promises
-        await Promise.all(this.pagePromises);
+        for (let i = 0; i < this.pagePromises.length; i += this.pagePromiseChunks) {
+            await Promise.all(this.pagePromises.slice(i, i + this.pagePromiseChunks));
+        }
 
         // Clear buffer and release
         this.responseBuffer = [];
