@@ -498,6 +498,7 @@ export class Instagram implements AsyncIterableIterator<object> {
         }
 
         // Finish page promises
+        await this.progress(Progress.BRANCHING);
         for (let i = 0; i < this.pagePromises.length; i += this.pagePromiseChunks) {
             await Promise.all(this.pagePromises.slice(i, i + this.pagePromiseChunks));
         }
@@ -520,8 +521,6 @@ export class Instagram implements AsyncIterableIterator<object> {
      * Open a post in a new page, then extract its metadata
      */
     private async postPage(post) {
-        await this.progress(Progress.BRANCHING);
-
         // Create page
         const postPage = await this.browser.newPage();
         await postPage.setRequestInterception(true);
