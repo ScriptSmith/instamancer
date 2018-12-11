@@ -498,8 +498,8 @@ export class Instagram implements AsyncIterableIterator<object> {
         }
 
         // Finish page promises
-        await this.progress(Progress.BRANCHING);
         for (let i = 0; i < this.pagePromises.length; i += this.pagePromiseChunks) {
+            await this.progress(Progress.BRANCHING);
             await Promise.all(this.pagePromises.slice(i, i + this.pagePromiseChunks));
         }
 
