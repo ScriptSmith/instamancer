@@ -187,7 +187,7 @@ async function spawn(args) {
         headless: !args["visible"],
         logger,
         silent: args["silent"],
-        sleepTime: args["full"] ? 0 : 2,
+        sleepTime: args["full"] ? 1 : 2,
         enableGrafting: args["graft"],
         fullAPI: args["full"],
     };

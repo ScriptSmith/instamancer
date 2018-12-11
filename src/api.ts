@@ -595,6 +595,7 @@ export class Instagram implements AsyncIterableIterator<object> {
             await this.sleepPromise();
         }
         this.sleepRemaining = 0;
+        await this.progress(Progress.SCRAPING);
     }
 
     /**
