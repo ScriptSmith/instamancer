@@ -25,4 +25,4 @@ install:
 script:
   - tsc
   - npm test
-  - instamancer hastag beach --count=100 --full -f=/dev/null
+  - instamancer hashtag beach --count=100 --full -f=/dev/null
