@@ -431,8 +431,6 @@ export class Instagram implements AsyncIterableIterator<object> {
             // Match url
             if (!this.matchURL(res.url())) {
                 continue;
-            } else {
-                disableGraft = true;
             }
 
             // Get JSON data
@@ -472,6 +470,7 @@ export class Instagram implements AsyncIterableIterator<object> {
 
                 // Add to postBuffer
                 if (this.index < this.total || this.total === 0) {
+                    disableGraft = true;
                     this.index++;
                     if (this.fullAPI) {
                         this.pagePromises.push(this.postPage(post["node"]["shortcode"]));
