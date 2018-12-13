@@ -53,12 +53,6 @@ class PostIdQueue {
         // Return if id was already in list
         return contains;
     }
-
-    private dequeue(): boolean {
-        for (const i of this.ids) {
-            return this.ids.delete(i);
-        }
-    }
 }
 
 /**
@@ -99,7 +93,6 @@ export class Instagram implements AsyncIterableIterator<object> {
     // Get full amount of data from API
     private readonly fullAPI: boolean = false;
     private pagePromises: Array<Promise<void>> = [];
-    private readonly pagePromiseChunks: number = 10;
 
     // Grafting state
     private readonly enableGrafting: boolean = true;
@@ -497,12 +490,6 @@ export class Instagram implements AsyncIterableIterator<object> {
             this.graft = false;
         }
 
-        // Finish page promises
-        for (let i = 0; i < this.pagePromises.length; i += this.pagePromiseChunks) {
-            await this.progress(Progress.BRANCHING);
-            await Promise.all(this.pagePromises.slice(i, i + this.pagePromiseChunks));
-        }
-
         // Clear buffer and release
         this.responseBuffer = [];
         this.responseBufferLock.release();
@@ -534,7 +521,7 @@ export class Instagram implements AsyncIterableIterator<object> {
                 await req.continue();
             }
         });
-        postPage.on("requestfailed", async (req) => undefined);
+        postPage.on("requestfailed", async () => undefined);
 
         // Visit post and read state
         let data;
@@ -658,6 +645,11 @@ export class Instagram implements AsyncIterableIterator<object> {
 
             // Sleep
             await this.sleep(this.sleepTime);
+
+            // Finish page promises
+            await this.progress(Progress.BRANCHING);
+            await Promise.all(this.pagePromises);
+            this.pagePromises = [];
 
             // Hibernate if rate-limited
             if (this.hibernate) {
