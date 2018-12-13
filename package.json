@@ -1,6 +1,6 @@
 {
-  "name": "socialcreaper",
-  "version": "2.0.0",
+  "name": "instamancer",
+  "version": "1.0.0",
   "description": "Scrape the Instagram API with Puppeteer",
   "main": "socialcreaper.js",
   "bin": {
@@ -28,7 +28,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:ScriptSmith/socialcreaper.git"
+    "url": "git@github.com:ScriptSmith/instamancer.git"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",

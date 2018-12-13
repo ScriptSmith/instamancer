@@ -137,7 +137,7 @@ function buildParser(args, callback) {
                 describe: "Level of logger",
             },
             logfile: {
-                default: "socialcreaper.log",
+                default: "instamancer.log",
                 describe: "Name of the log file",
             },
         })
@@ -148,7 +148,7 @@ function buildParser(args, callback) {
             "Download 200 posts tagged as being at the Arc Du Triomphe")
         .example("$0 user arianagrande --filetype=csv --logging=info --visible",
             "Download Ariana Grande's posts to a CSV file with a non-headless browser, and log all events")
-        .epilog("Source code available at https://github.com/ScriptSmith/socialcreaper")
+        .epilog("Source code available at https://github.com/ScriptSmith/instamancer")
         .strict()
         .argv;
     /* tslint:enable:no-unused-expression */
