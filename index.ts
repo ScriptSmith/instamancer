@@ -133,7 +133,7 @@ function buildParser(args, callback) {
             },
             logging: {
                 default: "none",
-                choices: ["none", "info", "debug"],
+                choices: ["error", "none", "info", "debug"],
                 describe: "Level of logger",
             },
             logfile: {
