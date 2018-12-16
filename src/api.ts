@@ -536,15 +536,7 @@ export class Instagram implements AsyncIterableIterator<object> {
      * Manipulate the page to stimulate a request
      */
     private async jump() {
-        // Jump up
-        await this.page.evaluateHandle(() => {
-            window.scrollTo(0, document.body.scrollHeight - 400);
-        });
-
-        // Jump down
-        await this.page.evaluateHandle(() => {
-            window.scrollTo(0, document.body.scrollHeight);
-        });
+        await this.page.keyboard.press("End");
 
         // Move mouse randomly
         const width = this.page.viewport()["width"];
