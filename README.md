@@ -39,6 +39,8 @@ Options:
   --download, -d                 Save images and videos from posts
                                                       [boolean] [default: false]
   --graft, -g                    Enable grafting       [boolean] [default: true]
+  --full                         Get the full details about posts from the API
+                                                      [boolean] [default: false]
   --silent                       Disable progress output
                                                       [boolean] [default: false]
   --filename, --file, -f, --out  Name of the output file       [default: "[id]"]
@@ -47,17 +49,17 @@ Options:
   --downdir                      Directory to save thumbnails
                                           [default: "downloads/[endpoint]/[id]"]
   --logging                      Level of logger
-                            [choices: "none", "info", "debug"] [default: "none"]
+                   [choices: "error", "none", "info", "debug"] [default: "none"]
   --logfile                      Name of the log file
-                                                  [default: "instamancer.log"]
+                                                    [default: "instamancer.log"]
 
 Examples:
-  instamancer hashtag instagood -d        Download all the available posts,
+  instamancer hashtag instagood -d          Download all the available posts,
                                             and their thumbnails from #instagood
-  instamancer location 644269022 --count  Download 200 posts tagged as being
+  instamancer location 644269022 --count    Download 200 posts tagged as being
   200                                       at the Arc Du Triomphe
-  socialcreaper user arianagrande           Download Ariana Grande's posts to a
-  --filetype=csv --logging=info --visible    CSV file with a non-headless
+  instamancer user arianagrande             Download Ariana Grande's posts to a
+  --filetype=csv --logging=info --visible   CSV file with a non-headless
                                             browser, and log all events
 
 Source code available at https://github.com/ScriptSmith/instamancer
