@@ -107,7 +107,7 @@ export class Instagram implements AsyncIterableIterator<object> {
     // The endpoint URL used for scraping
     private readonly url: string;
 
-    // URL containing API information
+    // URL for API calls
     private readonly catchURL: string = "https://www.instagram.com/graphql/query";
 
     // Strings denoting the access methods of API objects
@@ -513,9 +513,6 @@ export class Instagram implements AsyncIterableIterator<object> {
         const postPage = await this.browser.newPage();
         await postPage.setRequestInterception(true);
         postPage.on("request", async (req) => {
-            // if (!(req.url().endsWith(".png") || req.url().endsWith(".jpg"))) {
-            //     req.continue();
-            // }
             if (!req.url().includes("/p/" + post)) {
                 await req.abort();
             } else {
