@@ -15,7 +15,7 @@ Scrape the Instagram API with Puppeteer.
 ## Install
 ```
 npm install
-npm run-script build
+npm run build
 sudo npm install -g
 ``` 
 
