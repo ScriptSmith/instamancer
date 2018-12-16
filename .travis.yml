@@ -21,8 +21,8 @@ install:
   # Install instamancer and deps
   - npm install
   - npm run-script build
-  - npm install -g
+  - sudo npm install -g
 script:
+  - instamancer hashtag beach --count=100 --full -f=/dev/null
   - tsc
   - npm test
-  - instamancer hashtag beach --count=100 --full -f=/dev/null
