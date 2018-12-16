@@ -30,7 +30,6 @@
     "url": "git@github.com:ScriptSmith/instamancer.git"
   },
   "devDependencies": {
-    "@types/axios": "^0.14.0",
     "@types/jest": "^23.3.10",
     "@types/json2csv": "^4.2.0",
     "@types/mkdirp": "^0.5.2",

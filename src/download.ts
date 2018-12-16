@@ -18,6 +18,7 @@ export async function download(url, name, directory, logger) {
             responseType: "stream",
             url,
         }).then((response) => {
+            // noinspection TypeScriptValidateJSTypes
             response.data.pipe(fs.createWriteStream(directory + "/" + name));
         });
     } catch (e) {
