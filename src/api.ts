@@ -1,13 +1,9 @@
-import * as puppeteer from "puppeteer";
-import {Browser, Headers, Page, Request, Response} from "puppeteer";
+import {Browser, Headers, launch, Page, Request, Response} from "puppeteer";
 
 import AwaitLock = require("await-lock");
-import _ = require("lodash/object");
-
-import {Logger} from "winston";
-
 import chalk from "chalk";
-import * as stringlength from "string-length";
+import _ = require("lodash/object");
+import {Logger} from "winston";
 
 /**
  * The endpoints that are available for scraping. (Hashtags, Locations, Users)
@@ -127,7 +123,6 @@ export class Instagram implements AsyncIterableIterator<object> {
     private jumpMod: number = 100;
 
     // Output
-    private outputLength: number = 0;
     private readonly silent: boolean = false;
     private writeLock: AwaitLock = new AwaitLock();
 
@@ -206,7 +201,7 @@ export class Instagram implements AsyncIterableIterator<object> {
 
         // Launch browser
         await this.progress(Progress.LAUNCHING);
-        this.browser = await puppeteer.launch({
+        this.browser = await launch({
             args,
             headless: this.headless,
         });
@@ -340,21 +335,11 @@ export class Instagram implements AsyncIterableIterator<object> {
         const indexStr = chalk.bgWhite.black(` Scraped: ${this.index} `);
 
         const out = `${idStr}${totalStr}${stateStr}${sleepStr}${indexStr}`;
-        const outLength = stringlength(out);
-
-        // Calculate empty padding
-        const repeatCount = this.outputLength - outLength;
-        let padding = "";
-        if (repeatCount > 0 && this.outputLength > 0) {
-            padding = " ".repeat(repeatCount);
-        }
-
-        this.outputLength = outLength;
 
         this.logger.info(out);
 
         // Print output
-        process.stdout.write("\r" + out + padding);
+        process.stdout.write("\r" + out + "\u001B[K");
 
         // Release
         this.writeLock.release();
