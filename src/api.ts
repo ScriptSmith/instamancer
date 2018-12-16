@@ -336,7 +336,7 @@ export class Instagram implements AsyncIterableIterator<object> {
 
         const out = `${idStr}${totalStr}${stateStr}${sleepStr}${indexStr}`;
 
-        this.logger.info(out);
+        this.logger.debug(out);
 
         // Print output
         process.stdout.write("\r" + out + "\u001B[K");
