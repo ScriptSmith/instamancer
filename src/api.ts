@@ -258,15 +258,6 @@ export class Instagram implements AsyncIterableIterator<object> {
      */
     private async stop() {
         await this.progress(Progress.CLOSING);
-        // // Clear request buffers
-        // await this.requestBufferLock.acquireAsync();
-        // this.requestBuffer = [];
-        // this.requestBufferLock.release();
-        //
-        // // Clear response buffers
-        // await this.responseBufferLock.acquireAsync();
-        // this.responseBuffer = [];
-        // this.responseBufferLock.release();
 
         // Finish page promises
         await Promise.all(this.pagePromises);
@@ -274,6 +265,16 @@ export class Instagram implements AsyncIterableIterator<object> {
         // Close page and browser
         await this.page.close();
         await this.browser.close();
+
+        // Clear request buffers
+        await this.requestBufferLock.acquireAsync();
+        this.requestBuffer = [];
+        this.requestBufferLock.release();
+
+        // Clear response buffers
+        await this.responseBufferLock.acquireAsync();
+        this.responseBuffer = [];
+        this.responseBufferLock.release();
     }
 
     /**
