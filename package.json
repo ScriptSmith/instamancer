@@ -4,12 +4,12 @@
   "description": "Scrape the Instagram API with Puppeteer",
   "main": "index.js",
   "bin": {
-    "instamancer": "./bin/index.js"
+    "instamancer": "./index.js"
   },
   "scripts": {
-    "build": "tsc --outDir bin",
-    "compile": "tsc",
-    "test": "jest --testPathIgnorePatterns='bin'"
+    "build": "tsc",
+    "prepare": "tsc",
+    "test": "jest"
   },
   "author": "ScriptSmith",
   "license": "MIT",
