@@ -1,9 +1,9 @@
 # Instamancer
 [![Build Status](https://travis-ci.com/ScriptSmith/instamancer.svg?token=s9KJfKerUtoC75SEgCjT&branch=master)](https://travis-ci.com/ScriptSmith/instamancer)
 
-Scrape the Instagram API with Puppeteer.
+<img src="logo.png" height="200" align="right">
 
-<img src="logo.png" height="200" align="left">
+Scrape the Instagram API with Puppeteer.
 
 ## Features
 - Scrape hashtags, locations and users
