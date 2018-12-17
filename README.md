@@ -1,9 +1,10 @@
+<img src="logo.png" height="100" align="right" title="Icon made by Freepik (www.freepik.com) from www.flaticon.com is licensed by CC 3.0 BY (http://creativecommons.org/licenses/by/3.0/)">
+
+
 # Instamancer
 [![Build Status](https://travis-ci.com/ScriptSmith/instamancer.svg?token=s9KJfKerUtoC75SEgCjT&branch=master)](https://travis-ci.com/ScriptSmith/instamancer)
 
 Scrape the Instagram API with Puppeteer.
-
-<img src="logo.png" height="200" align="left">
 
 ## Features
 - Scrape hashtags, locations and users
@@ -66,5 +67,3 @@ Examples:
 
 Source code available at https://github.com/ScriptSmith/instamancer
 ```
-
-<div style="font-style: italic; font-size: 10pt">Icon made by <a href="https://www.freepik.com/" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
