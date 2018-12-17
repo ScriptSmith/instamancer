@@ -1,4 +1,4 @@
-<img src="logo.png" height="100" align="right" title="Icon made by Freepik (www.freepik.com) from www.flaticon.com is licensed by CC 3.0 BY (http://creativecommons.org/licenses/by/3.0/)">
+<img src="logo.png" height="150" align="right" title="Icon made by Freepik (www.freepik.com) from www.flaticon.com is licensed by CC 3.0 BY (http://creativecommons.org/licenses/by/3.0/)">
 
 
 # Instamancer
