@@ -52,5 +52,15 @@ export function toCSV(posts, filePath) {
  * Save list of posts to a JSON file
  */
 export function toJSON(posts, filePath) {
-    fs.writeFileSync(filePath, JSON.stringify(posts));
+    let first = true;
+    fs.writeFileSync(filePath, "[");
+    for (const post of posts) {
+        if (first) {
+            first = false;
+        } else {
+            fs.appendFileSync(filePath, ", ");
+        }
+        fs.appendFileSync(filePath, JSON.stringify(post));
+    }
+    fs.appendFileSync(filePath, "]");
 }
