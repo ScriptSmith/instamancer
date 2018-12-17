@@ -3,6 +3,8 @@
 
 Scrape the Instagram API with Puppeteer.
 
+<img src="logo.png" height="200" align="left">
+
 ## Features
 - Scrape hashtags, locations and users
 - Use the actual GraphQL API by manipulating the page and intercepting requests, not reading the DOM
