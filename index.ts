@@ -240,14 +240,14 @@ async function spawn(args) {
     // Save file
     if (args["filetype"] !== "json") {
         let saveFile = filename;
-        if (args["filetype"] === "both") {
+        if (args["filetype"] === "both" || args["filename"] === "[id]") {
             saveFile += ".csv";
         }
         toCSV(posts, saveFile);
     }
     if (args["filetype"] !== "csv") {
         let saveFile = filename;
-        if (args["filetype"] === "both") {
+        if (args["filetype"] === "both" || args["filename"] === "[id]") {
             saveFile += ".json";
         }
         toJSON(posts, saveFile);
