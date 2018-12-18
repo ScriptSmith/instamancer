@@ -316,13 +316,13 @@ export class Instagram implements AsyncIterableIterator<object> {
      * Print progress to stdout
      */
     private async progress(state: Progress) {
-        // Lock
-        await this.writeLock.acquireAsync();
-
         // End if silent
         if (this.silent) {
             return;
         }
+        
+        // Lock
+        await this.writeLock.acquireAsync();
 
         // Calculate total
         const total = this.total === 0 ? "Unlimited" : this.total;
