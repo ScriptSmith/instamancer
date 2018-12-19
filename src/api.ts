@@ -2,7 +2,7 @@ import {Browser, Headers, launch, Page, Request, Response} from "puppeteer";
 
 import AwaitLock = require("await-lock");
 import chalk from "chalk";
-import _ = require("lodash/object");
+import * as _ from "lodash/object";
 import {Logger} from "winston";
 
 /**
