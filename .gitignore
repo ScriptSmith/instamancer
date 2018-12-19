@@ -1,5 +1,6 @@
 .idea/
 node_modules/
+coverage/
 downloads/
 *.map
 *.js
