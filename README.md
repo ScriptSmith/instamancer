@@ -4,7 +4,10 @@
 
 <h1 align="center">Instamancer</h1>
 
-[![Build Status](https://travis-ci.com/ScriptSmith/instamancer.svg?token=s9KJfKerUtoC75SEgCjT&branch=master)](https://travis-ci.com/ScriptSmith/instamancer) [![docs](https://img.shields.io/badge/docs-available-blue.svg)](FAQ.md) [![](https://img.shields.io/gitter/room/instamancer/instamancer.svg)](https://gitter.im/instamancer)
+[![Build Status](https://travis-ci.com/ScriptSmith/instamancer.svg?token=s9KJfKerUtoC75SEgCjT&branch=master)](https://travis-ci.com/ScriptSmith/instamancer)
+![Coverage](https://img.shields.io/codecov/c/github/scriptsmith/instamancer.svg)
+[![Docs](https://img.shields.io/badge/docs-available-blue.svg)](FAQ.md)
+[![Chat](https://img.shields.io/gitter/room/instamancer/instamancer.svg)](https://gitter.im/instamancer) 
 
 Scrape Instagram's API with Puppeteer.
 
