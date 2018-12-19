@@ -63,7 +63,7 @@ Commands:
   instamancer hashtag [id]       Scrape a hashtag
   instamancer location [id]      Scrape a location
   instamancer user [id]          Scrape a user
-  instamancer batch [batchfile]  Read a list of arguments from a file
+  instamancer batch [batchfile]  Read newline-separated arguments from a file
 
 Options:
   --help                         Show help                             [boolean]

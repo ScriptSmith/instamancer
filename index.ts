@@ -44,7 +44,7 @@ function buildParser(args, callback) {
         )
         .command(
             "batch [batchfile]",
-            "Read a list of arguments from a file",
+            "Read newline-separated arguments from a file",
             {},
             () => {
                 // A list of functions which create new Promises that are
