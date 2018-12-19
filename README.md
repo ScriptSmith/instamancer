@@ -41,7 +41,6 @@ Instamancer also comes with some clever tricks:
 git clone https://github.com/ScriptSmith/instamancer.git
 cd instamancer
 npm install
-npm run build
 sudo npm install -g
 ``` 
 
