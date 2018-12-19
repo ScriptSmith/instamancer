@@ -6,17 +6,18 @@
 
 [![Build Status](https://travis-ci.com/ScriptSmith/instamancer.svg?token=s9KJfKerUtoC75SEgCjT&branch=master)](https://travis-ci.com/ScriptSmith/instamancer)
 ![Coverage](https://img.shields.io/codecov/c/github/scriptsmith/instamancer.svg)
-[![Docs](https://img.shields.io/badge/docs-available-blue.svg)](FAQ.md)
 [![Chat](https://img.shields.io/gitter/room/instamancer/instamancer.svg)](https://gitter.im/instamancer) 
+
+###### [Install](#Install) | [Usage](#Usage) | [FAQ](FAQ.md)
 
 Scrape Instagram's API with Puppeteer.
 
 ## Features
 - Scrape hashtags, locations and users
 - JSON, CSV output
-- Download images
+- Image downloading
 - Batch scraping
-- Run headlessly
+- Headless mode
 
 
 Traditional Instagram scrapers either use a browser to access a web-page and read the DOM, or they manually reimplement the requests that browsers make to an API endpoint. This isn't ideal because:
@@ -25,7 +26,7 @@ Traditional Instagram scrapers either use a browser to access a web-page and rea
 2. Reimplementing requests requires the deciphering and reproduction of pagination and authentication mechanisms.
 3. Both methods don't easily tolerate changes to the front and back end.
 
-Instamancer is unique because it doesn't read the DOM or reimplement requests. Using [Puppeteer](https://github.com/GoogleChrome/puppeteer/) it interacts with Instagram.com, then intercepts and saves the responses to requests that the page's JavaScript initiates. This means that it can retrieve the full amount of information from the API while tolerating failed requests and rate limits, without having to reimplement client-side code. This makes it much more tolerant to changes made to the interface and API.
+Instamancer is unique because it doesn't read the DOM or reimplement requests. Using [Puppeteer](https://github.com/GoogleChrome/puppeteer/) it interacts with Instagram.com, then intercepts and saves the responses to requests that the page's JavaScript initiates. This means that it can retrieve the full amount of information from the API while tolerating failed requests and rate limits, without having to reimplement client-side code. This makes it much better at withstanding regular changes to the interface and API.
 
 As browsers become more and more like black boxes, this new scraping method will become increasingly relevant.
 
@@ -36,15 +37,18 @@ Instamancer also comes with some clever tricks:
 
 
 ## Install
+Instamancer requires [TypeScript](https://github.com/Microsoft/TypeScript#installing)
+
+#### From this repository
+
 ```
-# Requires TypeScript
 git clone https://github.com/ScriptSmith/instamancer.git
 cd instamancer
 npm install
-sudo npm install -g
+npm install -g
 ``` 
 
-or
+#### From NPX
 
 ```
 npx instamancer
