@@ -320,7 +320,7 @@ export class Instagram implements AsyncIterableIterator<object> {
         if (this.silent) {
             return;
         }
-        
+
         // Lock
         await this.writeLock.acquireAsync();
 
@@ -554,21 +554,13 @@ export class Instagram implements AsyncIterableIterator<object> {
         for (let i = time; i > 0; i--) {
             this.sleepRemaining = i;
             await this.progress(Progress.SCRAPING);
-            await this.sleepPromise();
+            await new Promise(
+                (resolve) => {
+                    setTimeout(resolve, 1000);
+                });
         }
         this.sleepRemaining = 0;
         await this.progress(Progress.SCRAPING);
-    }
-
-    /**
-     * Promise to sleep for one second
-     */
-    private async sleepPromise() {
-        return new Promise(
-            (resolve) => {
-                setTimeout(resolve, 1000);
-            },
-        );
     }
 
     /**
