@@ -8,6 +8,14 @@ No, Instamancer only works from the command-line. In the future, I might impleme
 ## Do I need to log in?
 No. Instamancer scrapes data that Instagram makes publicly available.
 
+## How quickly does it run?
+It processes between 2-3 posts per second. 
+
+## Can I make it run faster?
+Running without the `--full` and `-d` arguments is faster.
+
+Reducing the time between interactions with the page only seems to induce rate limiting. Additionally, scraping does not appear to be parallelisable because the pagination between requests doesn't use time codes.
+
 ## Can I run multiple instances at the same time rather than batch scraping?
 No. Instagram will probably rate-limit your IP address and then Instamancer will have to pause until the limit is lifted.
 
@@ -27,15 +35,10 @@ hashtag summer -f=data.json
 location 3001373 -t csv --downdir=tsquare -d
 ```
 
-## Can I make it run faster?
-Running without the `--full` and `-d` arguments is faster.
-
-Reducing the time between interactions with the page only seems to induce rate limiting. Additionally, scraping does not appear to be parallelisable because the pagination between requests doesn't use time codes.
-
 ## Why is the maximum number of posts that I'm able to scrape inconsistent?
 I'm not certain. This seems to only occur where you are able to gather tens of thousands of posts. I believe it is because of some clandestine IP-based policy that limits the number of requests you can make in a day to a particular endpoint. It could also be a bug in Instamancer.
 
 ## Why does the code have so many comments?
-Instamancer was originally written in Python and used the [Pyppeteer](https://github.com/miyakogi/pyppeteer) clone of Puppeteer. This version was too error-prone because of the complicated asyncio code and Pyppeteer's instability when communicating via websockets during long scraping jobs. 
+Instamancer was originally part of another project written in Python that used the [Pyppeteer](https://github.com/miyakogi/pyppeteer) clone of Puppeteer. This version was too error-prone because of the complicated asyncio code and Pyppeteer's instability when communicating via websockets during long scraping jobs. 
 
 I decided to rewrite Instamancer in TypeScript in order to be more stable and in-sync with Puppeter. It was the first time I'd written any serious TypeScript, so the zealous commenting helped me learn, and allowed me to figure out bugs in my algorithm and the grafting process. The comments aren't a permanent fixture and may be removed in a future commit.
