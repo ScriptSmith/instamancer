@@ -6,15 +6,6 @@ import * as _ from "lodash/object";
 import {Logger} from "winston";
 
 /**
- * The endpoints that are available for scraping. (Hashtags, Locations, Users)
- */
-enum Endpoints {
-    HASHTAG = "https://instagram.com/explore/tags/",
-    LOCATION = "https://instagram.com/explore/locations/",
-    USER = "https://instagram.com/",
-}
-
-/**
  * The states of progress that the API can be in
  */
 enum Progress {
@@ -138,7 +129,7 @@ export class Instagram implements AsyncIterableIterator<object> {
     // Logging object
     private logger: Logger;
 
-    constructor(endpoint: Endpoints, id: string, pageQuery: string, edgeQuery: string, options: IApiOptions = {}) {
+    constructor(endpoint: string, id: string, pageQuery: string, edgeQuery: string, options: IApiOptions = {}) {
         this.id = id;
         this.total = options.total;
         this.url = endpoint + id;
@@ -640,9 +631,10 @@ export class Instagram implements AsyncIterableIterator<object> {
  */
 export class Hashtag extends Instagram {
     constructor(id: string, options: object = {}) {
+        const endpoint = "https://instagram.com/explore/tags/";
         const pageQuery = "data.hashtag.edge_hashtag_to_media.page_info";
         const edgeQuery = "data.hashtag.edge_hashtag_to_media.edges";
-        super(Endpoints.HASHTAG, id, pageQuery, edgeQuery, options);
+        super(endpoint, id, pageQuery, edgeQuery, options);
     }
 }
 
@@ -651,9 +643,10 @@ export class Hashtag extends Instagram {
  */
 export class Location extends Instagram {
     constructor(id: string, options: object = {}) {
+        const endpoint = "https://instagram.com/explore/locations/";
         const pageQuery = "data.location.edge_location_to_media.page_info";
         const edgeQuery = "data.location.edge_location_to_media.edges";
-        super(Endpoints.LOCATION, id, pageQuery, edgeQuery, options);
+        super(endpoint, id, pageQuery, edgeQuery, options);
     }
 }
 
@@ -662,8 +655,9 @@ export class Location extends Instagram {
  */
 export class User extends Instagram {
     constructor(id: string, options: object = {}) {
+        const endpoint = "https://instagram.com/";
         const pageQuery = "data.user.edge_owner_to_timeline_media.page_info";
         const edgeQuery = "data.user.edge_owner_to_timeline_media.edges";
-        super(Endpoints.USER, id, pageQuery, edgeQuery, options);
+        super(endpoint, id, pageQuery, edgeQuery, options);
     }
 }
