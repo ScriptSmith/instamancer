@@ -3,7 +3,7 @@ import {Browser, Headers, launch, Page, Request, Response} from "puppeteer";
 import AwaitLock = require("await-lock");
 import chalk from "chalk";
 import * as _ from "lodash/object";
-import {Logger} from "winston";
+import * as winston from "winston";
 
 /**
  * The states of progress that the API can be in
@@ -48,7 +48,7 @@ class PostIdQueue {
 export interface IApiOptions {
     total?: number;
     headless?: boolean;
-    logger?: Logger;
+    logger?: winston.Logger;
     silent?: boolean;
     sleepTime?: number;
     enableGrafting?: boolean;
@@ -59,6 +59,34 @@ export interface IApiOptions {
  * An Instagram API object
  */
 export class Instagram implements AsyncIterableIterator<object> {
+    /**
+     * Apply defaults to undefined options
+     */
+    private static defaultOptions(options: IApiOptions) {
+        if (options.enableGrafting === undefined) {
+            options.enableGrafting = true;
+        }
+        if (options.fullAPI === undefined) {
+            options.fullAPI = false;
+        }
+        if (options.headless === undefined) {
+            options.headless = true;
+        }
+        if (options.logger === undefined) {
+            options.logger = winston.createLogger();
+        }
+        if (options.silent === undefined) {
+            options.silent = false;
+        }
+        if (options.sleepTime === undefined) {
+            options.sleepTime = 2;
+        }
+        if (options.total === undefined) {
+            options.total = 0;
+        }
+        return options;
+    }
+
     // Puppeteer state
     private browser: Browser;
     private page: Page;
@@ -127,12 +155,15 @@ export class Instagram implements AsyncIterableIterator<object> {
     private paused: boolean = false;
 
     // Logging object
-    private logger: Logger;
+    private logger: winston.Logger;
 
     constructor(endpoint: string, id: string, pageQuery: string, edgeQuery: string, options: IApiOptions = {}) {
         this.id = id;
-        this.total = options.total;
+        this.postIds = new PostIdQueue();
         this.url = endpoint + id;
+
+        options = Instagram.defaultOptions(options);
+        this.total = options.total;
         this.pageQuery = pageQuery;
         this.edgeQuery = edgeQuery;
         this.headless = options.headless;
@@ -140,7 +171,6 @@ export class Instagram implements AsyncIterableIterator<object> {
         this.silent = options.silent;
         this.enableGrafting = options.enableGrafting;
         this.sleepTime = options.sleepTime;
-        this.postIds = new PostIdQueue();
         this.fullAPI = options.fullAPI;
     }
 
