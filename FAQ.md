@@ -12,7 +12,7 @@ No. Instamancer scrapes data that Instagram makes publicly available.
 It processes between 2-3 posts per second. 
 
 ## Can I make it run faster?
-Running without the `--full` and `-d` arguments is faster.
+Running without the `--full` and `-d` arguments is faster. Disabling grafting with `-g=false` will also make the scraping quicker.
 
 Reducing the time between interactions with the page only seems to induce rate limiting. Additionally, scraping does not appear to be parallelisable because the pagination between requests doesn't use time codes.
 
