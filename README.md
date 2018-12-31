@@ -55,6 +55,8 @@ npx instamancer
 ```
 
 ## Usage
+
+### Command Line
 ```
 $ instamancer
 Usage: instamancer <command> [options]
@@ -98,4 +100,27 @@ Examples:
                                             browser, and log all events
 
 Source code available at https://github.com/ScriptSmith/instamancer
+```
+
+### Library
+
+Typescript example:
+```typescript
+import * as Instamancer from "instamancer";
+
+const options: Instamancer.IOptions = {total: 100};
+
+// Synchronous hashtag
+const hashtag = new Instamancer.Hashtag("beach", options);
+for (const post of hashtag.toArray()) {
+    console.log(post);
+}
+
+// Asynchronous user
+const user = new Instamancer.User("arianagrande", options);
+(async () => {
+    for await (const post of user.generator()) {
+        console.log(post);
+    }
+})();
 ```
