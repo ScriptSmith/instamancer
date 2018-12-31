@@ -1,2 +1,2 @@
 // Export
-export {Hashtag, Location, User} from "./src/api";
+export {Hashtag, Location, User, IOptions} from "./src/api";

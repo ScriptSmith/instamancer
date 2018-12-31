@@ -1,6 +1,6 @@
 import * as winston from "winston";
 import * as Instamancer from ".";
-import {Hashtag, IApiOptions, Location, User} from "./src/api";
+import {Hashtag, IOptions, Location, User} from "./src/api";
 
 /* tslint:disable:no-console */
 
@@ -35,7 +35,7 @@ class InstagramEndpoint {
     }
 }
 
-const libraryTestOptions: IApiOptions = {
+const libraryTestOptions: IOptions = {
     logger: winston.createLogger({
         format: winston.format.json(),
         level: "error",
@@ -92,7 +92,7 @@ test("API", async () => {
             for (const id of sizeIds) {
                 console.log(`Testing ${id} ${size}`);
                 // Specify API options
-                const options: IApiOptions = {
+                const options: IOptions = {
                     enableGrafting: true,
                     fullAPI: false,
                     headless: true,

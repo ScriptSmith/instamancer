@@ -4,7 +4,7 @@ import * as fs from "fs";
 import * as readline from "readline";
 import * as winston from "winston";
 
-import {Hashtag, IApiOptions, Location, User} from "./src/api";
+import {Hashtag, IOptions, Location, User} from "./src/api";
 import {download, toCSV, toJSON} from "./src/download";
 
 /**
@@ -187,7 +187,7 @@ async function spawn(args) {
     }
 
     // Define options
-    const options: IApiOptions = {
+    const options: IOptions = {
         total: args["count"],
         headless: !args["visible"],
         logger,

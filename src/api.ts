@@ -45,7 +45,7 @@ class PostIdQueue {
 /**
  * Optional arguments for the API
  */
-export interface IApiOptions {
+export interface IOptions {
     total?: number;
     headless?: boolean;
     logger?: winston.Logger;
@@ -62,7 +62,7 @@ export class Instagram implements AsyncIterableIterator<object> {
     /**
      * Apply defaults to undefined options
      */
-    private static defaultOptions(options: IApiOptions) {
+    private static defaultOptions(options: IOptions) {
         if (options.enableGrafting === undefined) {
             options.enableGrafting = true;
         }
@@ -158,7 +158,7 @@ export class Instagram implements AsyncIterableIterator<object> {
     // Logging object
     private logger: winston.Logger;
 
-    constructor(endpoint: string, id: string, pageQuery: string, edgeQuery: string, options: IApiOptions = {}) {
+    constructor(endpoint: string, id: string, pageQuery: string, edgeQuery: string, options: IOptions = {}) {
         this.id = id;
         this.postIds = new PostIdQueue();
         this.url = endpoint + id;
@@ -213,6 +213,17 @@ export class Instagram implements AsyncIterableIterator<object> {
         if (!this.silent) {
             process.stdout.write("\n");
         }
+    }
+
+    /**
+     * Create list of posts
+     */
+    public async toArray() {
+        const array: object[] = [];
+        for await (const post of this.generator()) {
+            array.push(post);
+        }
+        return array;
     }
 
     /**
