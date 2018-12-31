@@ -273,3 +273,6 @@ buildParser(process.argv.slice(2), () => {
     process.stdin.destroy();
     process.stdout.write("\n");
 });
+
+// Export
+export {Hashtag, Location, User} from "./src/api";
