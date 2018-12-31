@@ -4,7 +4,7 @@
   "description": "Scrape the Instagram API with Puppeteer",
   "main": "index.js",
   "bin": {
-    "instamancer": "./index.js"
+    "instamancer": "./cli.js"
   },
   "scripts": {
     "build": "tsc",

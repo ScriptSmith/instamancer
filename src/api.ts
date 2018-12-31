@@ -88,6 +88,7 @@ export class Instagram implements AsyncIterableIterator<object> {
     }
 
     // Puppeteer state
+    private started: boolean = false;
     private browser: Browser;
     private page: Page;
     private readonly headless: boolean;
@@ -185,6 +186,11 @@ export class Instagram implements AsyncIterableIterator<object> {
      * Generator of posts on page
      */
     public async* generator() {
+        // Start if haven't done so already
+        if (!this.started) {
+            await this.start();
+        }
+
         while (true) {
             // Get more posts
             await this.getNext();
@@ -253,6 +259,8 @@ export class Instagram implements AsyncIterableIterator<object> {
      * Construct page and add listeners
      */
     private async start() {
+        this.started = true;
+
         // Build page and visit url
         await this.constructPage();
 
