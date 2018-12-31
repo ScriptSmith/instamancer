@@ -171,6 +171,11 @@ async function spawn(args) {
         ],
     });
 
+    // Check id
+    if (args["id"] === undefined) {
+        throw new Error("Id required");
+    }
+
     // Pick endpoint
     let api;
     if (args["_"][0] === "hashtag") {
