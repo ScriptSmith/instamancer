@@ -216,17 +216,6 @@ export class Instagram implements AsyncIterableIterator<object> {
     }
 
     /**
-     * Create list of posts
-     */
-    public async toArray() {
-        const array: object[] = [];
-        for await (const post of this.generator()) {
-            array.push(post);
-        }
-        return array;
-    }
-
-    /**
      * Create the browser and page, then visit the url
      */
     private async constructPage() {

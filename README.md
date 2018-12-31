@@ -110,16 +110,10 @@ import * as Instamancer from "instamancer";
 
 const options: Instamancer.IOptions = {total: 100};
 
-// Synchronous hashtag
-const hashtag = new Instamancer.Hashtag("beach", options);
-for (const post of hashtag.toArray()) {
-    console.log(post);
-}
-
-// Asynchronous user
-const user = new Instamancer.User("arianagrande", options);
+// Asynchronous hashtag
+const hashtag = new Instamancer.hashtag("beach", options);
 (async () => {
-    for await (const post of user.generator()) {
+    for await (const post of hashtag.generator()) {
         console.log(post);
     }
 })();
