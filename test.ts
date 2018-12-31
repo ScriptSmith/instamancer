@@ -25,11 +25,9 @@ class ApiTestConditions {
 }
 
 class InstagramEndpoint {
-    private options: object;
-    private id: string;
     constructor(id: string, options: object = {}) {
-        this.id = id;
-        this.options = options;
+        id = null;
+        options = null;
     }
 
     public async* generator() {
