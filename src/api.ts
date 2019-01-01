@@ -565,6 +565,7 @@ export class Instagram implements AsyncIterableIterator<object> {
      * Manipulate the page to stimulate a request
      */
     private async jump() {
+        await this.page.keyboard.press("PageUp");
         await this.page.keyboard.press("End");
 
         // Move mouse randomly
