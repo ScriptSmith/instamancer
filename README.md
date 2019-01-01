@@ -78,8 +78,12 @@ Options:
   --graft, -g                    Enable grafting       [boolean] [default: true]
   --full                         Get the full details about posts from the API
                                                       [boolean] [default: false]
+  --video                        Download videos. Only works in full mode
+                                                      [boolean] [default: false]
   --silent                       Disable progress output
                                                       [boolean] [default: false]
+  --waitDownload, -w             When true, media will only download once
+                                 scraping is finished [boolean] [default: false]
   --filename, --file, -f, --out  Name of the output file       [default: "[id]"]
   --filetype, --type, -t         Type of output file
                               [choices: "csv", "json", "both"] [default: "json"]
