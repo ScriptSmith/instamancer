@@ -225,17 +225,30 @@ async function spawn(args) {
 
         // Download thumbnail
         if (args["download"] && ("node" in post || "shortcode_media" in post)) {
-            let imageUrl;
-            let shortcode;
+            const downloadImages: Array<[string, string]> = new Array<[string, string]>();
+
+            // Check the scraping level
             if (args["full"]) {
-                const imageUrls = post.shortcode_media.display_resources;
-                imageUrl = imageUrls[imageUrls.length - 1].src;
-                shortcode = post.shortcode_media.shortcode;
+
+                // Check if album
+                const children = post.shortcode_media.edge_sidecar_to_children;
+                if (children !== undefined) {
+                    for (const child of children.edges) {
+                        const imageUrls = child.node.display_resources;
+                        downloadImages.push([imageUrls[imageUrls.length - 1].src, child.node.shortcode]);
+                    }
+                } else {
+                    const imageUrls = post.shortcode_media.display_resources;
+                    downloadImages.push([imageUrls[imageUrls.length - 1].src, post.shortcode_media.shortcode]);
+                }
             } else {
-                imageUrl = post.node.thumbnail_src;
-                shortcode = post.node.shortcode;
+                downloadImages.push([post.node.thumbnail_src, post.node.shortcode]);
             }
-            await download(imageUrl, shortcode, downdir, logger);
+
+            // Download the identified images
+            for (const image of downloadImages) {
+                await download(image[0], image[1], downdir, logger);
+            }
         }
     }
 
