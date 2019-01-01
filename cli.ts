@@ -121,6 +121,12 @@ function buildParser(args, callback) {
                 default: false,
                 describe: "Disable progress output",
             },
+            waitDownload: {
+                alias: "w",
+                boolean: true,
+                default: false,
+                describe: "When true, media will only download once scraping is finished",
+            },
             filename: {
                 alias: ["file", "f", "out"],
                 default: "[id]",
@@ -222,17 +228,17 @@ async function spawn(args) {
     // Replace downdir
     const downdir = args["downdir"].replace("[id]", args["id"]).replace("[endpoint]", args["_"]);
 
+    // Array of urls and filenames
+    let downloadMedia: Array<[string, string]> = new Array<[string, string]>();
+
     // Download posts
     const posts = [];
     for await (const post of obj.generator()) {
         // Save post
         posts.push(post);
 
-        // Download thumbnail
+        // Identify download urls
         if (args["download"] && ("node" in post || "shortcode_media" in post)) {
-            // Array of urls and filenames
-            const downloadMedia: Array<[string, string]> = new Array<[string, string]>();
-
             // Check the scraping level
             if (args["full"]) {
 
@@ -267,12 +273,20 @@ async function spawn(args) {
             } else {
                 downloadMedia.push([post.node.thumbnail_src, post.node.shortcode]);
             }
+        }
 
-            // Download the identified media
+        // Download the identified media
+        if (!args["waitDownload"]) {
             for (const asset of downloadMedia) {
                 await download(asset[0], asset[1], downdir, logger);
             }
+            downloadMedia = new Array<[string, string]>();
         }
+    }
+
+    // Download remaining media
+    for (const asset of downloadMedia) {
+        await download(asset[0], asset[1], downdir, logger);
     }
 
     // Replace filename
