@@ -111,6 +111,11 @@ function buildParser(args, callback) {
                 default: false,
                 describe: "Get the full details about posts from the API",
             },
+            video: {
+                boolean: true,
+                default: false,
+                describe: "Download videos. Only works in full mode",
+            },
             silent: {
                 boolean: true,
                 default: false,
@@ -225,7 +230,8 @@ async function spawn(args) {
 
         // Download thumbnail
         if (args["download"] && ("node" in post || "shortcode_media" in post)) {
-            const downloadImages: Array<[string, string]> = new Array<[string, string]>();
+            // Array of urls and filenames
+            const downloadMedia: Array<[string, string]> = new Array<[string, string]>();
 
             // Check the scraping level
             if (args["full"]) {
@@ -234,20 +240,37 @@ async function spawn(args) {
                 const children = post.shortcode_media.edge_sidecar_to_children;
                 if (children !== undefined) {
                     for (const child of children.edges) {
-                        const imageUrls = child.node.display_resources;
-                        downloadImages.push([imageUrls[imageUrls.length - 1].src, child.node.shortcode]);
+                        const shortcode = child.node.shortcode;
+
+                        // Check if video
+                        if (child.node.is_video && args["video"]) {
+                            const videoUrl = child.node.video_url;
+                            downloadMedia.push([videoUrl, shortcode]);
+                        } else {
+                            const imageUrls = child.node.display_resources;
+                            downloadMedia.push([imageUrls.pop().src, shortcode]);
+                        }
                     }
                 } else {
-                    const imageUrls = post.shortcode_media.display_resources;
-                    downloadImages.push([imageUrls[imageUrls.length - 1].src, post.shortcode_media.shortcode]);
+                    const shortcode = post.shortcode_media.shortcode;
+
+                    // Check if video
+                    if (post.shortcode_media.is_video && args["video"]) {
+                        const videoUrl = post.shortcode_media.video_url;
+                        downloadMedia.push([videoUrl, shortcode]);
+                    } else {
+                        const imageUrls = post.shortcode_media.display_resources;
+                        downloadMedia.push([imageUrls.pop().src, shortcode]);
+                    }
+
                 }
             } else {
-                downloadImages.push([post.node.thumbnail_src, post.node.shortcode]);
+                downloadMedia.push([post.node.thumbnail_src, post.node.shortcode]);
             }
 
-            // Download the identified images
-            for (const image of downloadImages) {
-                await download(image[0], image[1], downdir, logger);
+            // Download the identified media
+            for (const asset of downloadMedia) {
+                await download(asset[0], asset[1], downdir, logger);
             }
         }
     }
