@@ -320,6 +320,5 @@ if ("setRawMode" in process.stdin) {
 
 // Parse args
 buildParser(process.argv.slice(2), () => {
-    process.stdin.destroy();
-    process.stdout.write("\n");
+    process.exit(0);
 });
