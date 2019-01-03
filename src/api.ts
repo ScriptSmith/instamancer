@@ -6,7 +6,7 @@ import * as _ from "lodash/object";
 import * as winston from "winston";
 
 /**
- * The states of progress that the API can be in
+ * The states of progress that the API can be in. Used to output status.
  */
 enum Progress {
     LAUNCHING = "Launching",
@@ -21,23 +21,18 @@ enum Progress {
 }
 
 /**
- * A fixed-size queue of post ids
+ * A set of post ids used to detect duplicates
  */
-class PostIdQueue {
+class PostIdSet {
     private ids: Set<string> = new Set<string>();
 
     /**
-     * Add a post id to the queue. The least-recently inserted id is de-queued when it reaches max size
-     * @return true if the id was already in the queue, false if not.
+     * Add a post id to the set.
+     * @return true if the id was already in the set, false if not.
      */
-    public enqueue(id: string): boolean {
-        // Check if already in list
+    public add(id: string): boolean {
         const contains = this.ids.has(id);
-
-        // Add id
         this.ids.add(id);
-
-        // Return if id was already in list
         return contains;
     }
 }
@@ -46,17 +41,30 @@ class PostIdQueue {
  * Optional arguments for the API
  */
 export interface IOptions {
+    // Total posts to download. 0 for unlimited
     total?: number;
+
+    // Run Chrome in headless mode
     headless?: boolean;
+
+    // Logging events
     logger?: winston.Logger;
+
+    // Run without output to stdout
     silent?: boolean;
+
+    // Time to sleep between interactions with the page
     sleepTime?: number;
+
+    // Enable the grafting process
     enableGrafting?: boolean;
+
+    // Extract the full amount of information from the API
     fullAPI?: boolean;
 }
 
 /**
- * An Instagram API object
+ * Instagram API wrapper
  */
 export class Instagram implements AsyncIterableIterator<object> {
     /**
@@ -88,15 +96,15 @@ export class Instagram implements AsyncIterableIterator<object> {
     }
 
     // Puppeteer state
-    private started: boolean = false;
     private browser: Browser;
     private page: Page;
     private readonly headless: boolean;
 
-    // General information
+    // Resource identifier
     private readonly id: string;
+    private readonly url: string;
 
-    // List of scraped posts and lock
+    // Array of scraped posts and lock
     private postBuffer: object[] = [];
     private postBufferLock: AwaitLock = new AwaitLock();
 
@@ -118,23 +126,23 @@ export class Instagram implements AsyncIterableIterator<object> {
 
     // Hibernation due to rate limiting
     private hibernate: boolean = false;
-    private hibernationTime: number = 60 * 20;
+    private hibernationTime: number = 60 * 20; // 20 minutes
 
-    // The endpoint URL used for scraping
-    private readonly url: string;
-
-    // URL for API calls
+    // Instagram URLs
     private readonly catchURL: string = "https://www.instagram.com/graphql/query";
+    private readonly postURL: string = "https://instagram.com/p/";
 
     // Strings denoting the access methods of API objects
     private readonly pageQuery: string;
     private readonly edgeQuery: string;
 
-    // Iteration state is finished
-    private finished: boolean;
+    // Iteration state
+    private started: boolean = false;
+    private paused: boolean = false;
+    private finished: boolean = false;
 
     // Cache of post ids
-    private postIds: PostIdQueue;
+    private postIds: PostIdSet;
 
     // Iteration variables
     private readonly total: number;
@@ -152,15 +160,20 @@ export class Instagram implements AsyncIterableIterator<object> {
     // Length of time to sleep for
     private readonly sleepTime: number = 2;
 
-    // Scraping paused
-    private paused: boolean = false;
-
     // Logging object
     private logger: winston.Logger;
 
+    /**
+     * Create API wrapper instance
+     * @param endpoint the url for the type of resource to scrape
+     * @param id the identifier for the resource
+     * @param pageQuery the query to identify future pages in the nested API structure
+     * @param edgeQuery the query to identify posts in the nested API structure
+     * @param options configuration details
+     */
     constructor(endpoint: string, id: string, pageQuery: string, edgeQuery: string, options: IOptions = {}) {
         this.id = id;
-        this.postIds = new PostIdQueue();
+        this.postIds = new PostIdSet();
         this.url = endpoint + id;
 
         options = Instagram.defaultOptions(options);
@@ -322,7 +335,7 @@ export class Instagram implements AsyncIterableIterator<object> {
     }
 
     /**
-     * Pop a post of the postBuffer (using locks). Returns null if no posts in buffer
+     * Pop a post off the postBuffer (using locks). Returns null if no posts in buffer
      */
     private async postPop() {
         let post = null;
@@ -364,7 +377,6 @@ export class Instagram implements AsyncIterableIterator<object> {
         const indexStr = chalk.bgWhite.black(` Scraped: ${this.index} `);
 
         const out = `${idStr}${totalStr}${stateStr}${sleepStr}${indexStr}`;
-
         this.logger.debug(out);
 
         // Print output
@@ -479,7 +491,7 @@ export class Instagram implements AsyncIterableIterator<object> {
                 const postId = post["node"]["id"];
 
                 // Check it hasn't already been cached
-                const contains = this.postIds.enqueue(postId);
+                const contains = this.postIds.add(postId);
                 if (contains) {
                     this.logger.info("Duplicate id found: " + postId);
                     continue;
@@ -538,12 +550,12 @@ export class Instagram implements AsyncIterableIterator<object> {
         // Visit post and read state
         let data;
         try {
-            await postPage.goto("https://instagram.com/p/" + post);
+            await postPage.goto(this.postURL + post);
 
+            // Load data from memory
             data = await postPage.evaluate(() => {
                 return JSON.stringify(window["_sharedData"].entry_data.PostPage[0].graphql);
             });
-
             await this.addToPostBuffer(JSON.parse(data));
 
             await postPage.close();
