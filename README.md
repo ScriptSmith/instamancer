@@ -113,7 +113,7 @@ Typescript example:
 ```typescript
 import * as Instamancer from "instamancer";
 
-const options: Instamancer.IOptions = {total: 100};
+const options: Instamancer.IOptions = {total: 10, silent: true};
 
 // Asynchronous hashtag
 const hashtag = new Instamancer.Hashtag("beach", options);
