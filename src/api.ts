@@ -81,7 +81,9 @@ export class Instagram implements AsyncIterableIterator<object> {
             options.headless = true;
         }
         if (options.logger === undefined) {
-            options.logger = winston.createLogger();
+            options.logger = winston.createLogger({
+                silent: true,
+            });
         }
         if (options.silent === undefined) {
             options.silent = false;
