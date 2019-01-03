@@ -106,7 +106,7 @@ Options:
                                                       [boolean] [default: false]
   --waitDownload, -w             When true, media will only download once
                                  scraping is finished [boolean] [default: false]
-  --filename, --file, -f,        Name of the output file       [default: "[id]"]
+  --filename, --file, -f         Name of the output file       [default: "[id]"]
   --filetype, --type, -t         Type of output file
                               [choices: "csv", "json", "both"] [default: "json"]
   --downdir                      Directory to save thumbnails
