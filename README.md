@@ -39,9 +39,8 @@ Instamancer also comes with some clever tricks:
 
 
 ## Install
-Instamancer requires [TypeScript](https://github.com/Microsoft/TypeScript#installing)
-
 #### From this repository
+Requires [TypeScript](https://github.com/Microsoft/TypeScript#installing)
 
 ```
 git clone https://github.com/ScriptSmith/instamancer.git
@@ -50,11 +49,32 @@ npm install
 npm install -g
 ``` 
 
+#### From NPM
+
+```
+npm install -g instamancer
+```
+
 #### From NPX
 
 ```
 npx instamancer
 ```
+
+### Linux
+See [Puppeteer troubleshooting](https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#chrome-headless-fails-due-to-sandbox-issues)
+
+Enable user namespace cloning:
+```
+sudo sysctl -w kernel.unprivileged_userns_clone=1
+``` 
+
+or run without a sandbox (**WARNING: this is unsafe**)
+
+```
+export NO_SANDBOX=true
+```
+
 
 ## Usage
 
