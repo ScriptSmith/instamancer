@@ -79,7 +79,7 @@ function buildParser(args, callback) {
                             for (const f of functions) {
                                 await f();
                             }
-                            process.stdin.destroy();
+                            process.exit(0);
                         });
             },
         )
