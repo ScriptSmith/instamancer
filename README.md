@@ -39,29 +39,8 @@ Instamancer also comes with some clever tricks:
 
 
 ## Install
-#### From this repository
-Requires [TypeScript](https://github.com/Microsoft/TypeScript#installing)
 
-```
-git clone https://github.com/ScriptSmith/instamancer.git
-cd instamancer
-npm install
-npm install -g
-``` 
-
-#### From NPM
-
-```
-npm install -g instamancer
-```
-
-#### From NPX
-
-```
-npx instamancer
-```
-
-### Linux
+#### Linux
 See [Puppeteer troubleshooting](https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#chrome-headless-fails-due-to-sandbox-issues)
 
 Enable user namespace cloning:
@@ -75,6 +54,27 @@ or run without a sandbox (**WARNING: this is unsafe**)
 export NO_SANDBOX=true
 ```
 
+### From this repository
+Requires [TypeScript](https://github.com/Microsoft/TypeScript#installing)
+
+```
+git clone https://github.com/ScriptSmith/instamancer.git
+cd instamancer
+npm install
+npm install -g
+``` 
+
+### From NPM
+
+```
+npm install -g instamancer
+```
+
+### From NPX
+
+```
+npx instamancer
+```
 
 ## Usage
 
