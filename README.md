@@ -5,7 +5,7 @@
 <h1 align="center">Instamancer</h1>
 
 [![Build Status](https://travis-ci.com/ScriptSmith/instamancer.svg?token=s9KJfKerUtoC75SEgCjT&branch=master)](https://travis-ci.com/ScriptSmith/instamancer)
-![Coverage](https://img.shields.io/codecov/c/github/scriptsmith/instamancer.svg)
+[![Coverage](https://img.shields.io/codecov/c/github/scriptsmith/instamancer.svg)](https://codecov.io/gh/scriptsmith/instamancer/)
 [![Chat](https://img.shields.io/gitter/room/instamancer/instamancer.svg)](https://gitter.im/instamancer) 
 
 ###### [Install](#Install) | [Usage](#Usage) | [FAQ](FAQ.md)
