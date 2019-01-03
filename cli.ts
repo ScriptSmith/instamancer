@@ -128,7 +128,7 @@ function buildParser(args, callback) {
                 describe: "When true, media will only download once scraping is finished",
             },
             filename: {
-                alias: ["file", "f", "out"],
+                alias: ["file", "f"],
                 default: "[id]",
                 describe: "Name of the output file",
             },
