@@ -45,12 +45,13 @@ See [Puppeteer troubleshooting](https://github.com/GoogleChrome/puppeteer/blob/m
 
 Enable user namespace cloning:
 ```
-sudo sysctl -w kernel.unprivileged_userns_clone=1
+sysctl -w kernel.unprivileged_userns_clone=1
 ``` 
 
-or run without a sandbox (**WARNING: this is unsafe**)
+Or run without a sandbox:
 
 ```
+# WARNING: unsafe
 export NO_SANDBOX=true
 ```
 
