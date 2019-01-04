@@ -12,6 +12,45 @@ const smallSize = 30;
 const mediumSize = 300;
 const largeSize = 3000;
 
+const libraryTestOptions: IOptions = {
+    logger: winston.createLogger({
+        format: winston.format.json(),
+        level: "error",
+        silent: true,
+        transports: [],
+    }),
+    silent: true,
+    total: 10,
+};
+
+test("Library", async () => {
+    const testHashtag = new Instamancer.Hashtag(hashtags[0], libraryTestOptions);
+    const hashtagPosts = [];
+    const total = 10;
+
+    for await (const post of testHashtag.generator()) {
+        expect(post).toBeDefined();
+        hashtagPosts.push(post);
+    }
+    expect(hashtagPosts.length).toBe(total);
+
+    const testLocation = new Instamancer.Location(locations[0], libraryTestOptions);
+    const locationPosts = [];
+    for await (const post of testLocation.generator()) {
+        expect(post).toBeDefined();
+        locationPosts.push(post);
+    }
+    expect(locationPosts.length).toBe(total);
+
+    const testUser = new Instamancer.User(users[0], libraryTestOptions);
+    const userPosts = [];
+    for await (const post of testUser.generator()) {
+        expect(post).toBeDefined();
+        userPosts.push(post);
+    }
+    expect(userPosts.length).toBe(total);
+});
+
 class ApiTestConditions {
     public api: typeof InstagramEndpoint;
     public ids: string[];
@@ -35,34 +74,6 @@ class InstagramEndpoint {
     }
 }
 
-const libraryTestOptions: IOptions = {
-    logger: winston.createLogger({
-        format: winston.format.json(),
-        level: "error",
-        silent: true,
-        transports: [],
-    }),
-    silent: true,
-    total: 10,
-};
-
-test("Library", async () => {
-    const testHashtag = new Instamancer.Hashtag(hashtags[0], libraryTestOptions);
-    for await (const post of testHashtag.generator()) {
-        expect(post).toBeDefined();
-    }
-
-    const testLocation = new Instamancer.Location(locations[0], libraryTestOptions);
-    for await (const post of testLocation.generator()) {
-        expect(post).toBeDefined();
-    }
-
-    const testUser = new Instamancer.User(users[0], libraryTestOptions);
-    for await (const post of testUser.generator()) {
-        expect(post).toBeDefined();
-    }
-});
-
 const endpoints: ApiTestConditions[] = [
     new ApiTestConditions(Hashtag, hashtags, [smallSize, mediumSize, largeSize]),
     new ApiTestConditions(Location, locations, [smallSize, mediumSize, largeSize]),
@@ -71,7 +82,7 @@ const endpoints: ApiTestConditions[] = [
 
 jest.setTimeout(120 * 60 * 1000);
 
-test("API", async () => {
+test("Instagram API limits", async () => {
     for (const endpoint of endpoints) {
         // Get params
         const API = endpoint.api;
@@ -124,6 +135,47 @@ test("API", async () => {
                 // Check duplicates
                 expect(posts.length).toBe(postIds.size);
             }
+        }
+    }
+});
+
+const apiOptions: IOptions[] = [
+    {silent: true},
+    {sleepTime: 5},
+    {headless: false},
+    {enableGrafting: false},
+    {fullAPI: true},
+];
+
+test("API options", async () => {
+    const hashtagId = "vetinari";
+    const total = 50;
+    const options: IOptions[] = [];
+
+    // No options default
+    options.push({});
+
+    // Add options list
+    options.concat(apiOptions.map((option) => {
+        option.total = total;
+        return option;
+    }));
+
+    let first = true;
+    for (const option of options) {
+        const tag = new Hashtag(hashtagId, option);
+        const posts = [];
+
+        for await (const post of tag.generator()) {
+            expect(post).toBeDefined();
+            posts.push(post);
+        }
+
+        if (first) {
+            first = false;
+            expect(posts.length).toBeGreaterThan(total);
+        } else {
+            expect(posts.length).toBe(total);
         }
     }
 });
