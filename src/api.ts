@@ -638,6 +638,11 @@ export class Instagram implements AsyncIterableIterator<object> {
             await this.processRequests();
             await this.processResponses();
 
+            // Finish page promises
+            await this.progress(Progress.BRANCHING);
+            await Promise.all(this.pagePromises);
+            this.pagePromises = [];
+
             // Check if finished
             if (this.finished) {
                 break;
@@ -656,11 +661,6 @@ export class Instagram implements AsyncIterableIterator<object> {
 
             // Sleep
             await this.sleep(this.sleepTime);
-
-            // Finish page promises
-            await this.progress(Progress.BRANCHING);
-            await Promise.all(this.pagePromises);
-            this.pagePromises = [];
 
             // Hibernate if rate-limited
             if (this.hibernate) {
