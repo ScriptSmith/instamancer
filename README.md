@@ -15,8 +15,8 @@ Scrape Instagram's API with Puppeteer.
 
 ## Features
 - Scrape hashtags, locations and users
-- JSON, CSV output
-- Image downloading
+- Output JSON, CSV
+- Download media
 - Batch scraping
 - Headless mode
 
