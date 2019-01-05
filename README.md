@@ -33,7 +33,7 @@ As browsers become more and more like black boxes, this new scraping method will
 
 Instamancer also comes with some clever tricks:
 
-- Because using a browser consumes lots of memory in large scraping jobs, Instamancer will intercept and save the URL and headers of each request and then restart the browser after a certain number of interactions with the page. Once a new page initiates the first request to the API, its URL and headers are swapped on-the-fly with the most recently saved ones. The scraping continues without incident because the response from the API is in the correct form despite being for the incorrect data. This new (as far as I know) technique is called *grafting*.
+- Because using a browser consumes lots of memory in large scraping jobs, Instamancer employs a new scraping technique called *grafting*. It intercepts and saves the URL and headers of each request, and then after a certain number of interactions with the page it will restart the browser and navigate back to the same page. Once the page initiates the first request to the API, its URL and headers are swapped on-the-fly with the most recently saved ones. The scraping continues without incident because the response from the API is in the correct form despite being for the incorrect data.
 - Requests from pages for media and other non-API urls are intercepted and aborted to speed up scraping and conserve resources.
 - Instagram sends limited information through its feed API. To get extra information like the location, tagged users, and comments, Instamancer can open new tabs for each post that it scrapes, and then read the metadata from memory.
 
