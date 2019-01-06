@@ -13,7 +13,12 @@
   },
   "author": "ScriptSmith",
   "license": "MIT",
-  "keywords": ["instagram", "instagram api", "data mining", "scraping"],
+  "keywords": [
+    "instagram",
+    "instagram api",
+    "data mining",
+    "scraping"
+  ],
   "dependencies": {
     "await-lock": "^1.1.3",
     "axios": "^0.18.0",
@@ -33,6 +38,7 @@
   "devDependencies": {
     "@types/jest": "^23.3.11",
     "@types/json2csv": "^4.2.0",
+    "@types/node": "^10.12.18",
     "@types/mkdirp": "^0.5.2",
     "@types/puppeteer": "^1.11.1",
     "@types/request": "^2.48.1",
