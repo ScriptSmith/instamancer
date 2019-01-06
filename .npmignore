@@ -1,7 +1,0 @@
-tsconfig.json
-assets
-coverage
-node_modules
-src/
-*.md
-*.log
