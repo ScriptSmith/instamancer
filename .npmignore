@@ -1,0 +1,7 @@
+.idea/
+assets/
+coverage/
+test*
+.travis.yml
+ts*.json
+*.js.map
