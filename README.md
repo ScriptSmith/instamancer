@@ -71,6 +71,12 @@ npm install -g
 npm install -g instamancer
 ```
 
+If root is required on your system, use the following command:
+
+```
+sudo npm install -g instamancer --unsafe-perm=true
+```
+
 ### From NPX
 
 ```
