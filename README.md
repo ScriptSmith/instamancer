@@ -145,7 +145,7 @@ import * as Instamancer from "instamancer";
 const options: Instamancer.IOptions = {total: 10, silent: true};
 
 // Asynchronous hashtag
-const hashtag = new Instamancer.hashtag("beach", options);
+const hashtag = Instamancer.hashtag("beach", options);
 (async () => {
     for await (const post of hashtag) {
         console.log(post);
