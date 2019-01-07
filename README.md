@@ -6,7 +6,6 @@
 
 [![Build Status](https://travis-ci.com/ScriptSmith/instamancer.svg?token=s9KJfKerUtoC75SEgCjT&branch=master)](https://travis-ci.com/ScriptSmith/instamancer)
 [![NPM](https://img.shields.io/npm/v/instamancer.svg)](https://www.npmjs.com/package/instamancer)
-[![Coverage](https://img.shields.io/codecov/c/github/scriptsmith/instamancer.svg)](https://codecov.io/gh/scriptsmith/instamancer/)
 [![License](https://img.shields.io/github/license/scriptsmith/instamancer.svg)](https://github.com/ScriptSmith/instamancer/blob/master/LICENSE)
 [![Chat](https://img.shields.io/gitter/room/instamancer/instamancer.svg)](https://gitter.im/instamancer) 
 
