@@ -4,5 +4,6 @@ coverage/
 downloads/
 *.map
 *.js
+*.tgz
 *.log
 *.csv
