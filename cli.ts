@@ -209,7 +209,7 @@ async function spawn(args) {
     };
 
     // Start API
-    logger.info("Starting API");
+    logger.info("Starting API at " + Date.now());
     const obj = new api(args["id"], options);
     await obj.start();
 
