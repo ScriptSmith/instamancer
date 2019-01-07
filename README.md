@@ -71,7 +71,7 @@ npm install -g
 npm install -g instamancer
 ```
 
-If root is required on your system, use the following command:
+If you're using root to install globally, use the following command to install the Puppeteer dependency
 
 ```
 sudo npm install -g instamancer --unsafe-perm=true
