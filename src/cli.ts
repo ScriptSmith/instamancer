@@ -4,8 +4,8 @@ import * as fs from "fs";
 import * as readline from "readline";
 import * as winston from "winston";
 
-import {Hashtag, IOptions, Location, User} from "./src/api";
-import {download, toCSV, toJSON} from "./src/download";
+import {Hashtag, IOptions, Location, User} from "./api";
+import {download, toCSV, toJSON} from "./download";
 
 /**
  * Build argument parser
