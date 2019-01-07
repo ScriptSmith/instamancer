@@ -229,7 +229,7 @@ async function spawn(args) {
     const downdir = args["downdir"].replace("[id]", args["id"]).replace("[endpoint]", args["_"]);
 
     // Array of urls and filenames
-    let downloadMedia: Array<[string, string]> = new Array<[string, string]>();
+    let downloadMedia: Array<[string, string, FILETYPES]> = [];
 
     // Download posts
     const posts = [];
@@ -251,10 +251,10 @@ async function spawn(args) {
                         // Check if video
                         if (child.node.is_video && args["video"]) {
                             const videoUrl = child.node.video_url;
-                            downloadMedia.push([videoUrl, shortcode]);
+                            downloadMedia.push([videoUrl, shortcode, FILETYPES.VIDEO]);
                         } else {
                             const imageUrls = child.node.display_resources;
-                            downloadMedia.push([imageUrls.pop().src, shortcode]);
+                            downloadMedia.push([imageUrls.pop().src, shortcode, FILETYPES.IMAGE]);
                         }
                     }
                 } else {
@@ -263,30 +263,30 @@ async function spawn(args) {
                     // Check if video
                     if (post.shortcode_media.is_video && args["video"]) {
                         const videoUrl = post.shortcode_media.video_url;
-                        downloadMedia.push([videoUrl, shortcode]);
+                        downloadMedia.push([videoUrl, shortcode, FILETYPES.VIDEO]);
                     } else {
                         const imageUrls = post.shortcode_media.display_resources;
-                        downloadMedia.push([imageUrls.pop().src, shortcode]);
+                        downloadMedia.push([imageUrls.pop().src, shortcode, FILETYPES.IMAGE]);
                     }
 
                 }
             } else {
-                downloadMedia.push([post.node.thumbnail_src, post.node.shortcode]);
+                downloadMedia.push([post.node.thumbnail_src, post.node.shortcode, FILETYPES.IMAGE]);
             }
         }
 
         // Download the identified media
         if (!args["waitDownload"]) {
             for (const asset of downloadMedia) {
-                await download(asset[0], asset[1], downdir, logger);
+                await download(asset[0], asset[1], asset[2], downdir, logger);
             }
-            downloadMedia = new Array<[string, string]>();
+            downloadMedia = [];
         }
     }
 
     // Download remaining media
     for (const asset of downloadMedia) {
-        await download(asset[0], asset[1], downdir, logger);
+        await download(asset[0], asset[1], asset[2], downdir, logger);
     }
 
     // Replace filename
@@ -322,3 +322,8 @@ if ("setRawMode" in process.stdin) {
 buildParser(process.argv.slice(2), () => {
     process.exit(0);
 });
+
+enum FILETYPES {
+    VIDEO = "mp4",
+    IMAGE = "jpg",
+}
