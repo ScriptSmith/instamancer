@@ -86,7 +86,7 @@ export class Instagram implements AsyncIterableIterator<object> {
             });
         }
         if (options.silent === undefined) {
-            options.silent = true;
+            options.silent = false;
         }
         if (options.sleepTime === undefined) {
             options.sleepTime = 2;
