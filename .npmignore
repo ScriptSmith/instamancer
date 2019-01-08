@@ -1,4 +1,5 @@
 .idea/
+.github/
 assets/
 coverage/
 test*
@@ -6,3 +7,4 @@ test*
 ts*.json
 *.js.map
 *.log
+*.tgz
