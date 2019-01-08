@@ -151,6 +151,3 @@ const hashtag = Instamancer.hashtag("beach", options);
     }
 })();
 ```
-
-## FAQ
-[Link](FAQ.md)
