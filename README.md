@@ -135,19 +135,54 @@ Examples:
 Source code available at https://github.com/ScriptSmith/instamancer
 ```
 
-### Library
+### Module
 
-Typescript example:
+ES2018 Typescript example:
 ```typescript
 import * as Instamancer from "instamancer";
 
-const options: Instamancer.IOptions = {total: 10};
+const options: Instamancer.IOptions = {
+    total: 10
+};
 
-// Asynchronous hashtag
 const hashtag = Instamancer.hashtag("beach", options);
 (async () => {
     for await (const post of hashtag) {
         console.log(post);
     }
 })();
+```
+
+#### Generator functions
+
+```typescript
+Instamancer.hashtag(id, options);
+Instamancer.location(id, options);
+Instamancer.user(id, options);
+```
+
+#### Options
+```typescript
+const options: Instamancer.IOptions = {
+    // Total posts to download. 0 for unlimited
+    total: number,
+
+    // Run Chrome in headless mode
+    headless: boolean,
+
+    // Logging events
+    logger: winston.Logger,
+
+    // Run without output to stdout
+    silent: boolean,
+
+    // Time to sleep between interactions with the page
+    sleepTime: number,
+
+    // Enable the grafting process
+    enableGrafting: boolean,
+
+    // Extract the full amount of information from the API
+    fullAPI: boolean,
+}
 ```
