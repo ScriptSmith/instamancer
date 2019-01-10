@@ -1,1 +1,6 @@
+title: Instamancer
+logo: /assets/img/logo.png
+description: Scrape Instagram's API with Puppeteer.
+show_downloads: false
 theme: jekyll-theme-minimal
+repository: ScriptSmith/instamancer

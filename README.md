@@ -9,34 +9,19 @@
 [![License](https://img.shields.io/github/license/scriptsmith/instamancer.svg)](https://github.com/ScriptSmith/instamancer/blob/master/LICENSE)
 [![Chat](https://img.shields.io/gitter/room/instamancer/instamancer.svg)](https://gitter.im/instamancer) 
 
-###### [Install](#Install) | [Usage](#Usage) | [FAQ](FAQ.md)
-
 Scrape Instagram's API with Puppeteer.
 
-## Features
+###### [Install](#Install) | [Usage](#Usage) | [Website](https://scriptsmith.github.io/instamancer/) | [FAQ](FAQ.md)
+
+
+Instamancer is a new type of scraping tool that leverages Puppeteer's ability to intercept requests made by a webpage to an API. Read more about how instamancer works [here](https://scriptsmith.github.io/instamancer/).
+
+### Features
 - Scrape hashtags, locations and users
 - Output JSON, CSV
 - Download media
 - Batch scraping
 - Headless mode
-
-
-Traditional Instagram scrapers either use a browser to access a web-page and read the DOM, or they manually reimplement the requests that browsers make to an API endpoint. This isn't ideal because:
- 
-1. Reading the DOM ignores some information that's only stored in memory.
-2. Reimplementing requests requires the deciphering and reproduction of pagination and authentication mechanisms.
-3. Both methods don't easily tolerate changes to the front and back end.
-
-Instamancer is unique because it doesn't read the DOM or reimplement requests. Using [Puppeteer](https://github.com/GoogleChrome/puppeteer/) it interacts with Instagram.com, then intercepts and saves the responses to requests that the page's JavaScript initiates. This means that it can retrieve the full amount of information from the API while tolerating failed requests and rate limits, without having to reimplement client-side code. This makes it much better at withstanding regular changes to the interface and API.
-
-As browsers become more and more like black boxes, this new scraping method will become increasingly relevant.
-
-Instamancer also comes with some clever tricks:
-
-- Because using a browser consumes lots of memory in large scraping jobs, Instamancer employs a new scraping technique called *grafting*. It intercepts and saves the URL and headers of each request, and then after a certain number of interactions with the page it will restart the browser and navigate back to the same page. Once the page initiates the first request to the API, its URL and headers are swapped on-the-fly with the most recently saved ones. The scraping continues without incident because the response from the API is in the correct form despite being for the incorrect data.
-- Requests from pages for media and other non-API urls are intercepted and aborted to speed up scraping and conserve resources.
-- Instagram sends limited information through its feed API. To get extra information like the location, tagged users, and comments, Instamancer can open new tabs for each post that it scrapes, and then read the metadata from memory.
-
 
 ## Install
 
