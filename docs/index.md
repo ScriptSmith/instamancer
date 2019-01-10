@@ -4,7 +4,7 @@
 
 # About Instamancer
 
-Instamancer is a scraping tool used in Instagram data mining and analysis projects
+Instamancer is a scraping tool used in Instagram data mining and analysis projects.
 
 Traditional Instagram scrapers either use a browser to access a web-page and read the DOM, or they manually reimplement the requests that browsers make to an API endpoint. This isn't ideal because:
  
