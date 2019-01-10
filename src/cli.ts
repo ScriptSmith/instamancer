@@ -79,7 +79,7 @@ function buildParser(args, callback) {
                             for (const f of functions) {
                                 await f();
                             }
-                            process.exit(0);
+                            process.stdin.destroy();
                         });
             },
         )
@@ -310,6 +310,9 @@ async function spawn(args) {
 
     // Remove pause callback
     process.stdin.removeAllListeners("keypress");
+
+    // Close logger
+    logger.close();
 }
 
 // Catch key presses
@@ -320,7 +323,7 @@ if ("setRawMode" in process.stdin) {
 
 // Parse args
 buildParser(process.argv.slice(2), () => {
-    process.exit(0);
+    process.stdin.destroy();
 });
 
 enum FILETYPES {
