@@ -223,6 +223,13 @@ export class Instagram {
     }
 
     /**
+     * Force the API to stop
+     */
+    public async forceStop() {
+        await this.stop();
+    }
+
+    /**
      * Generator of posts on page
      */
     public async* generator() {

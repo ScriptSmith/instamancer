@@ -243,6 +243,7 @@ test("Failed Page visit", async () => {
         }
     } catch (e) {
         expect(e).toBeDefined();
+        await api.forceStop();
     }
 
     expect(posts.length).toBe(0);
