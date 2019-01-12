@@ -66,7 +66,7 @@ export interface IOptions {
 /**
  * Instagram API wrapper
  */
-export class Instagram implements AsyncIterableIterator<object> {
+export class Instagram {
     /**
      * Apply defaults to undefined options
      */
