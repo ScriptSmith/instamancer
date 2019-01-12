@@ -207,7 +207,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
 </thead>
 <tbody>
     <tr>
-        <td><a href="https://github.com/ScriptSmitd/instamancer">Instamancer</a></td>
+        <td><a href="https://github.com/ScriptSmith/instamancer">Instamancer</a></td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
