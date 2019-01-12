@@ -253,6 +253,75 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td><img src="https://img.shields.io/codacy/grade/9b8c7da6887c4195b9e960cb04b59a91.svg"></td>
     </tr>
     <tr>
+        <td><a href="https://github.com/rarcega/instagram-scraper">Instagram Scraper</a></td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:x:</td>
+        <td>1.8 posts/second</td>
+        <td>:x:</td>
+        <td>:x:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>Web API simulation</td>
+        <td>:x:</td>
+        <td>Python</td>
+        <td><img src="https://img.shields.io/github/license/rarcega/instagram-scraper.svg"></td>
+        <td><img src="https://img.shields.io/github/last-commit/rarcega/instagram-scraper.svg"></td>
+        <td><img src="https://img.shields.io/github/issues/rarcega/instagram-scraper.svg"></td>
+        <td><img src="https://img.shields.io/travis/rarcega/instagram-scraper.svg"></td>
+        <td>:question:</td>
+        <td>:question:</td>
+    </tr>
+    <tr>
+        <td><a href="https://github.com/instaloader/instaloader">Instaloader</a></td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:x:</td>
+        <td>:x:</td>
+        <td>0.8 posts/second</td>
+        <td>:heavy_check_mark:</td>
+        <td>:x:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>Web API simulation</td>
+        <td>:x:</td>
+        <td>Python</td>
+        <td><img src="https://img.shields.io/github/license/instaloader/instaloader.svg"></td>
+        <td><img src="https://img.shields.io/github/last-commit/instaloader/instaloader.svg"></td>
+        <td><img src="https://img.shields.io/github/issues/instaloader/instaloader.svg"></td>
+        <td><img src="https://img.shields.io/travis/instaloader/instaloader.svg"></td>
+        <td>:question:</td>
+        <td>:question:</td>
+    </tr>
+        <tr>
+            <td><a href="https://github.com/huaying/instagram-crawler">Instagram crawler</a></td>
+            <td>:heavy_check_mark:</td>
+            <td>:heavy_check_mark:</td>
+            <td>:x:</td>
+            <td>:heavy_check_mark:</td>
+            <td>2.1 posts/second</td>
+            <td>:heavy_check_mark:</td>
+            <td>:x:</td>
+            <td>:heavy_check_mark:</td>
+            <td>:heavy_check_mark:</td>
+            <td>:x:</td>
+            <td>:heavy_check_mark:</td>
+            <td>Web DOM reading</td>
+            <td>:x:</td>
+            <td>Python</td>
+            <td><img src="https://img.shields.io/github/license/huaying/instagram-crawler.svg"></td>
+            <td><img src="https://img.shields.io/github/last-commit/huaying/instagram-crawler.svg"></td>
+            <td><img src="https://img.shields.io/github/issues/huaying/instagram-crawler.svg"></td>
+            <td><img src="https://img.shields.io/travis/huaying/instagram-crawler.svg"></td>
+            <td>:question:</td>
+            <td>:question:</td>
+        </tr>
+    <tr>
         <td><a href="https://github.com/ping/instagram_private_api">Instagram Private API</a></td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
@@ -276,25 +345,25 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>:question:</td>
     </tr>
     <tr>
-        <td><a href="https://github.com/rarcega/instagram-scraper">Instagram Scraper</a></td>
+        <td><a href="https://github.com/postaddictme/instagram-php-scraper">Instagram PHP Scraper</a></td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
-        <td>:x:</td>
+        <td>:heavy_check_mark:</td>
         <td>:question:</td>
-        <td>:x:</td>
-        <td>:x:</td>
         <td>:heavy_check_mark:</td>
+        <td>:x:</td>
+        <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>Web API simulation</td>
         <td>:x:</td>
-        <td>Python</td>
-        <td><img src="https://img.shields.io/github/license/rarcega/instagram-scraper.svg"</td>
-        <td><img src="https://img.shields.io/github/last-commit/rarcega/instagram-scraper.svg"</td>
-        <td><img src="https://img.shields.io/github/issues/rarcega/instagram-scraper.svg"</td>
-        <td><img src="https://img.shields.io/travis/rarcega/instagram-scraper.svg"></td>
+        <td>PHP</td>
+        <td><img src="https://img.shields.io/github/license/postaddictme/instagram-php-scraper.svg"></td>
+        <td><img src="https://img.shields.io/github/last-commit/postaddictme/instagram-php-scraper.svg"></td>
+        <td><img src="https://img.shields.io/github/issues/postaddictme/instagram-php-scraper.svg"></td>
+        <td>:question:</td>
         <td>:question:</td>
         <td>:question:</td>
     </tr>
