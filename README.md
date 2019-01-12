@@ -12,7 +12,7 @@
 
 Scrape Instagram's API with Puppeteer.
 
-###### [Install](#Install) | [Usage](#Usage) | [Website](https://scriptsmith.github.io/instamancer/) | [FAQ](FAQ.md)
+###### [Install](#Install) | [Usage](#Usage) | [Comparison](#Comparison) | [Website](https://scriptsmith.github.io/instamancer/) | [FAQ](FAQ.md)
 
 
 Instamancer is a new type of scraping tool that leverages Puppeteer's ability to intercept requests made by a webpage to an API.
@@ -174,3 +174,121 @@ const options: Instamancer.IOptions = {
     fullAPI: boolean,
 }
 ```
+
+## Comparison
+
+A comparison of Instagram scraping tools. Please suggest more tools and criteria through a pull request.
+
+<table>
+<thead>
+    <tr>
+        <th>Tool</th>
+        <th>Hashtags</th>
+        <th>Users</th>
+        <th>Locations</th>
+        <th>Individual posts</th>
+        <th>Max speed*</th>
+        <th>Login not required</th>
+        <th>Batch mode</th>
+        <th>Command-line</th>
+        <th>Library/Module</th>
+        <th>Download media</th>
+        <th>Download metadata</th>
+        <th>Scraping method</th>
+        <th>Daily builds</th>
+        <th>Main language</th>
+        <th>Last commit ----------------------------</th>
+        <th>Build status ----------------------------</th>
+        <th>Test coverage ----------------------------</th>
+        <th>Code quality ----------------------------</th>
+    </tr>
+</thead>
+<tbody>
+    <tr>
+        <td><a href="https://gitdub.com/ScriptSmitd/instamancer">Instamancer</a></td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:x:</td>
+        <td>3.1 posts/second</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>Web API request interception</td>
+        <td>:heavy_check_mark:</td>
+        <td>Typescript</td>
+        <td><img src="https://img.shields.io/github/last-commit/scriptsmith/instamancer.svg"></td>
+        <td><img src="https://img.shields.io/travis/com/ScriptSmith/instamancer.svg"></td>
+        <td><img src="https://img.shields.io/codacy/coverage/98066a13fa444845aa3902d180581b86.svg"></td>
+        <td><img src="https://img.shields.io/codacy/grade/98066a13fa444845aa3902d180581b86.svg"></td>
+    </tr>
+    <tr>
+        <td><a href="https://github.com/althonos/InstaLooter">Instalooter</a></td>                
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>2.2 posts/second</td>
+        <td>:x:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>Web API simulation</td>
+        <td>:question:</td>
+        <td>Python</td>
+        <td><img src="https://img.shields.io/github/last-commit/althonos/instalooter.svg"></td>
+        <td><img src="https://img.shields.io/travis/althonos/InstaLooter.svg"></td>
+        <td><img src="https://img.shields.io/codecov/c/github/althonos/InstaLooter.svg"></td>
+        <td><img src="https://img.shields.io/codacy/grade/9b8c7da6887c4195b9e960cb04b59a91.svg"></td>
+    </tr>
+    <tr>
+        <td><a href="https://github.com/ping/instagram_private_api">Instagram Private API</a></td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:question:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:x:</td>
+        <td>:x:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>App and Web API simulation</td>
+        <td>:x:</td>
+        <td>Python</td>
+        <td><img src="https://img.shields.io/github/last-commit/ping/instagram_private_api.svg"></td>
+        <td><img src="https://img.shields.io/travis/ping/instagram_private_api.svg"></td>
+        <td>:question:</td>
+        <td>:question:</td>
+    </tr>
+    <tr>
+        <td><a href="https://github.com/rarcega/instagram-scraper">Instagram Scraper</a></td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:x:</td>
+        <td>:question:</td>
+        <td>:x:</td>
+        <td>:x:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>Web API simulation</td>
+        <td>:x:</td>
+        <td>Python</td>
+        <td><img src="https://img.shields.io/github/last-commit/rarcega/instagram-scraper.svg"</td>
+        <td><img src="https://img.shields.io/travis/rarcega/instagram-scraper.svg"></td>
+        <td>:question:</td>
+        <td>:question:</td>
+    </tr>
+</tbody>
+</table>
+
+\*Max speed is calculated by determining the fastest time it takes to scrape 1000 posts from a given hashtag. A question mark indicates that the test was not able to be run successfully.
