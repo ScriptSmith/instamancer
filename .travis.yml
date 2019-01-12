@@ -22,5 +22,4 @@ install:
 script:
   - tsc
   - npm test
-after_success:
   - cat ./coverage/lcov.info | codacy-coverage --language=typescript
