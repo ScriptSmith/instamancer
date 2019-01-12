@@ -157,13 +157,13 @@ const apiOptions: IOptions[] = [
 test("API options", async () => {
     const hashtagId = "vetinari";
     const total = 50;
-    const options: IOptions[] = [];
+    let options: IOptions[] = [];
 
     // No options default
     options.push({});
 
     // Add options list
-    options.concat(apiOptions.map((option) => {
+    options = options.concat(apiOptions.map((option) => {
         option.total = total;
         return option;
     }));
