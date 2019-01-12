@@ -204,7 +204,7 @@ And with `--full` mode:
 ## Media
 To download media as well as scrape metadata, include the `-d` flag. By default, Instamancer downloads the highest-quality image available for each post.
 
-By enabling full mode with `--full`, all images in albums are downlaoded too. 
+By enabling full mode with `--full`, all images in albums are downloaded too. 
 
 Videos are downloaded when the `--video` flag is used along with `--full`.
 
