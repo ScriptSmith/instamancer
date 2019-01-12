@@ -24,32 +24,40 @@ const libraryTestOptions: IOptions = {
     total: 10,
 };
 
-test("Library", async () => {
-    const testHashtag = new Instamancer.Hashtag(hashtags[0], libraryTestOptions);
-    const hashtagPosts = [];
+test("Library Classes", async () => {
     const total = 10;
+    const objects = [
+        new Instamancer.Hashtag(hashtags[0], libraryTestOptions),
+        new Instamancer.User(users[0], libraryTestOptions),
+        new Instamancer.Location(locations[0], libraryTestOptions),
+    ];
 
-    for await (const post of testHashtag.generator()) {
-        expect(post).toBeDefined();
-        hashtagPosts.push(post);
+    for (const object of objects) {
+        const posts = [];
+        for await (const post of object.generator()) {
+            expect(post).toBeDefined();
+            posts.push(post);
+        }
+        expect(posts.length).toBe(total);
     }
-    expect(hashtagPosts.length).toBe(total);
+});
 
-    const testLocation = new Instamancer.Location(locations[0], libraryTestOptions);
-    const locationPosts = [];
-    for await (const post of testLocation.generator()) {
-        expect(post).toBeDefined();
-        locationPosts.push(post);
-    }
-    expect(locationPosts.length).toBe(total);
+test("Library Functions", async () => {
+    const total = 10;
+    const generators = [
+        Instamancer.hashtag(hashtags[0], libraryTestOptions),
+        Instamancer.user(users[0], libraryTestOptions),
+        Instamancer.location(locations[0], libraryTestOptions),
+    ];
 
-    const testUser = new Instamancer.User(users[0], libraryTestOptions);
-    const userPosts = [];
-    for await (const post of testUser.generator()) {
-        expect(post).toBeDefined();
-        userPosts.push(post);
+    for (const generator of generators) {
+        const posts = [];
+        for await (const post of generator) {
+            expect(post).toBeDefined();
+            posts.push(post);
+        }
+        expect(posts.length).toBe(total);
     }
-    expect(userPosts.length).toBe(total);
 });
 
 class ApiTestConditions {
