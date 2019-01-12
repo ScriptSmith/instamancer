@@ -2,6 +2,7 @@ import * as winston from "winston";
 import * as Instamancer from ".";
 import {Hashtag, IOptions, Location, User} from "./src/api";
 
+jest.setTimeout(120 * 60 * 1000);
 /* tslint:disable:no-console */
 
 const hashtags = ["beach", "gym", "puppies", "party", "throwback"];
@@ -79,8 +80,6 @@ const endpoints: ApiTestConditions[] = [
     new ApiTestConditions(Location, locations, [smallSize, mediumSize, largeSize]),
     new ApiTestConditions(User, users, [smallSize, mediumSize]),
 ];
-
-jest.setTimeout(120 * 60 * 1000);
 
 test("Instagram API limits", async () => {
     for (const endpoint of endpoints) {

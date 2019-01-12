@@ -48,6 +48,7 @@
   },
   "jest": {
     "coverageDirectory": "./coverage/",
-    "collectCoverage": true
+    "collectCoverage": true,
+    "preset": "ts-jest"
   }
 }
