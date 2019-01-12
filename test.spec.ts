@@ -186,3 +186,64 @@ test("API options", async () => {
         }
     }
 });
+
+test("Pausing", async () => {
+    const api = new Instamancer.Hashtag(hashtags[0], libraryTestOptions);
+    const iterator = api.generator();
+
+    await iterator.next();
+    api.pause();
+
+    await new Promise((resolve) => {
+        setTimeout(resolve, 2000);
+    });
+
+    api.pause();
+
+    for await (const post of iterator) {
+        expect(post).toBeDefined();
+    }
+});
+
+test("Hibernation", async () => {
+    const options: IOptions = {
+        hibernationTime: 10,
+        total: smallSize,
+    };
+
+    const api = new Instamancer.Hashtag(hashtags[0], options);
+    const iterator = api.generator();
+
+    await iterator.next();
+    api.toggleHibernation();
+
+    for await (const post of iterator) {
+        expect(post).toBeDefined();
+    }
+});
+
+test("Sandbox", async () => {
+    process.env["NO_SANDBOX"] = "true";
+    for await (const post of Instamancer.hashtag(hashtags[0], libraryTestOptions)) {
+        expect(post).toBeDefined();
+    }
+    process.env["NO_SANDBOX"] = "";
+});
+
+test("Failed Page visit", async () => {
+    const options: IOptions = {
+        proxyURL: "127.0.0.1:9999",
+    };
+    const api = new Instamancer.Hashtag(hashtags[0], options);
+    const posts = [];
+
+    try {
+        for await (const post of api.generator()) {
+            posts.push(post);
+        }
+    } catch (e) {
+        expect(e).toBeDefined();
+    }
+
+    expect(posts.length).toBe(0);
+});

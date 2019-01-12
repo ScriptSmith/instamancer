@@ -56,11 +56,17 @@ export interface IOptions {
     // Time to sleep between interactions with the page
     sleepTime?: number;
 
+    // Time to sleep when rate-limited
+    hibernationTime?: number;
+
     // Enable the grafting process
     enableGrafting?: boolean;
 
     // Extract the full amount of information from the API
     fullAPI?: boolean;
+
+    // Use a proxy in chrome to connect to Instagram
+    proxyURL?: string;
 }
 
 /**
@@ -90,6 +96,9 @@ export class Instagram {
         }
         if (options.sleepTime === undefined) {
             options.sleepTime = 2;
+        }
+        if (options.hibernationTime === undefined) {
+            options.hibernationTime = 60 * 20;
         }
         if (options.total === undefined) {
             options.total = 0;
@@ -128,7 +137,7 @@ export class Instagram {
 
     // Hibernation due to rate limiting
     private hibernate: boolean = false;
-    private hibernationTime: number = 60 * 20; // 20 minutes
+    private readonly hibernationTime: number = 60 * 20; // 20 minutes
 
     // Instagram URLs
     private readonly catchURL: string = "https://www.instagram.com/graphql/query";
@@ -152,6 +161,10 @@ export class Instagram {
     private jumps: number = 0;
     private jumpMod: number = 100;
 
+    // Number of times to attempt to visit url initially
+    private readonly maxPageUrlAttempts = 3;
+    private pageUrlAttempts = 0;
+
     // Output
     private readonly silent: boolean = false;
     private writeLock: AwaitLock = new AwaitLock();
@@ -164,6 +177,9 @@ export class Instagram {
 
     // Logging object
     private logger: winston.Logger;
+
+    // Proxy for Instagram connection
+    private readonly proxyURL: string;
 
     /**
      * Create API wrapper instance
@@ -187,7 +203,9 @@ export class Instagram {
         this.silent = options.silent;
         this.enableGrafting = options.enableGrafting;
         this.sleepTime = options.sleepTime;
+        this.hibernationTime = options.hibernationTime;
         this.fullAPI = options.fullAPI;
+        this.proxyURL = options.proxyURL;
     }
 
     /**
@@ -195,6 +213,13 @@ export class Instagram {
      */
     public pause() {
         this.paused = !this.paused;
+    }
+
+    /**
+     * Toggle prolonged pausing
+     */
+    public toggleHibernation() {
+        this.hibernate = true;
     }
 
     /**
@@ -240,6 +265,9 @@ export class Instagram {
             args.push("--no-sandbox");
             args.push("--disable-setuid-sandbox");
         }
+        if (this.proxyURL !== undefined) {
+            args.push("--proxy-server=" + this.proxyURL);
+        }
 
         // Launch browser
         await this.progress(Progress.LAUNCHING);
@@ -256,6 +284,11 @@ export class Instagram {
         try {
             await this.page.goto(this.url);
         } catch (e) {
+            // Increment attempts
+            if (this.pageUrlAttempts++ === this.maxPageUrlAttempts && !this.started) {
+                throw new Error("Failed to visit URL");
+            }
+
             // Log error and wait
             this.logger.error(e);
             await this.progress(Progress.ABORTED);
@@ -274,10 +307,10 @@ export class Instagram {
      * Construct page and add listeners
      */
     private async start() {
-        this.started = true;
-
         // Build page and visit url
         await this.constructPage();
+
+        this.started = true;
 
         // Add event listeners for requests and responses
         await this.page.setRequestInterception(true);
