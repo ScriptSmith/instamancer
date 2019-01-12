@@ -197,7 +197,9 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <th>Scraping method</th>
         <th>Daily builds</th>
         <th>Main language</th>
+        <th>License ----------------------------</th>
         <th>Last commit ----------------------------</th>
+        <th>Issues ----------------------------</th>
         <th>Build status ----------------------------</th>
         <th>Test coverage ----------------------------</th>
         <th>Code quality ----------------------------</th>
@@ -220,7 +222,9 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>Web API request interception</td>
         <td>:heavy_check_mark:</td>
         <td>Typescript</td>
+        <td><img src="https://img.shields.io/github/license/scriptsmith/instamancer.svg"></td>
         <td><img src="https://img.shields.io/github/last-commit/scriptsmith/instamancer.svg"></td>
+        <td><img src="https://img.shields.io/github/issues/scriptsmith/instamancer.svg"></td>
         <td><img src="https://img.shields.io/travis/com/ScriptSmith/instamancer.svg"></td>
         <td><img src="https://img.shields.io/codacy/coverage/98066a13fa444845aa3902d180581b86.svg"></td>
         <td><img src="https://img.shields.io/codacy/grade/98066a13fa444845aa3902d180581b86.svg"></td>
@@ -241,7 +245,9 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>Web API simulation</td>
         <td>:question:</td>
         <td>Python</td>
+        <td><img src="https://img.shields.io/github/license/althonos/instalooter.svg"></td>
         <td><img src="https://img.shields.io/github/last-commit/althonos/instalooter.svg"></td>
+        <td><img src="https://img.shields.io/github/issues/althonos/instalooter.svg"></td>
         <td><img src="https://img.shields.io/travis/althonos/InstaLooter.svg"></td>
         <td><img src="https://img.shields.io/codecov/c/github/althonos/InstaLooter.svg"></td>
         <td><img src="https://img.shields.io/codacy/grade/9b8c7da6887c4195b9e960cb04b59a91.svg"></td>
@@ -262,7 +268,9 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>App and Web API simulation</td>
         <td>:x:</td>
         <td>Python</td>
+        <td><img src="https://img.shields.io/github/license/ping/instagram_private_api.svg"></td>
         <td><img src="https://img.shields.io/github/last-commit/ping/instagram_private_api.svg"></td>
+        <td><img src="https://img.shields.io/github/issues/ping/instagram_private_api.svg"></td>
         <td><img src="https://img.shields.io/travis/ping/instagram_private_api.svg"></td>
         <td>:question:</td>
         <td>:question:</td>
@@ -283,7 +291,9 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>Web API simulation</td>
         <td>:x:</td>
         <td>Python</td>
+        <td><img src="https://img.shields.io/github/license/rarcega/instagram-scraper.svg"</td>
         <td><img src="https://img.shields.io/github/last-commit/rarcega/instagram-scraper.svg"</td>
+        <td><img src="https://img.shields.io/github/issues/rarcega/instagram-scraper.svg"</td>
         <td><img src="https://img.shields.io/travis/rarcega/instagram-scraper.svg"></td>
         <td>:question:</td>
         <td>:question:</td>
