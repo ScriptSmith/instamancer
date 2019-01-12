@@ -207,7 +207,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
 </thead>
 <tbody>
     <tr>
-        <td><a href="https://gitdub.com/ScriptSmitd/instamancer">Instamancer</a></td>
+        <td><a href="https://github.com/ScriptSmitd/instamancer">Instamancer</a></td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
@@ -298,29 +298,29 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>:question:</td>
         <td>:question:</td>
     </tr>
-        <tr>
-            <td><a href="https://github.com/huaying/instagram-crawler">Instagram crawler</a></td>
-            <td>:heavy_check_mark:</td>
-            <td>:heavy_check_mark:</td>
-            <td>:x:</td>
-            <td>:heavy_check_mark:</td>
-            <td>2.1 posts/second</td>
-            <td>:heavy_check_mark:</td>
-            <td>:x:</td>
-            <td>:heavy_check_mark:</td>
-            <td>:heavy_check_mark:</td>
-            <td>:x:</td>
-            <td>:heavy_check_mark:</td>
-            <td>Web DOM reading</td>
-            <td>:x:</td>
-            <td>Python</td>
-            <td><img src="https://img.shields.io/github/license/huaying/instagram-crawler.svg"></td>
-            <td><img src="https://img.shields.io/github/last-commit/huaying/instagram-crawler.svg"></td>
-            <td><img src="https://img.shields.io/github/issues/huaying/instagram-crawler.svg"></td>
-            <td><img src="https://img.shields.io/travis/huaying/instagram-crawler.svg"></td>
-            <td>:question:</td>
-            <td>:question:</td>
-        </tr>
+    <tr>
+        <td><a href="https://github.com/huaying/instagram-crawler">Instagram crawler</a></td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:x:</td>
+        <td>:heavy_check_mark:</td>
+        <td>2.1 posts/second</td>
+        <td>:heavy_check_mark:</td>
+        <td>:x:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:x:</td>
+        <td>:heavy_check_mark:</td>
+        <td>Web DOM reading</td>
+        <td>:x:</td>
+        <td>Python</td>
+        <td><img src="https://img.shields.io/github/license/huaying/instagram-crawler.svg"></td>
+        <td><img src="https://img.shields.io/github/last-commit/huaying/instagram-crawler.svg"></td>
+        <td><img src="https://img.shields.io/github/issues/huaying/instagram-crawler.svg"></td>
+        <td><img src="https://img.shields.io/travis/huaying/instagram-crawler.svg"></td>
+        <td>:question:</td>
+        <td>:question:</td>
+    </tr>
     <tr>
         <td><a href="https://github.com/ping/instagram_private_api">Instagram Private API</a></td>
         <td>:heavy_check_mark:</td>
