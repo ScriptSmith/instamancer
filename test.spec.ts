@@ -151,7 +151,7 @@ const apiOptions: IOptions[] = [
     {sleepTime: 5},
     {headless: false},
     {enableGrafting: false},
-    {fullAPI: true},
+    // {fullAPI: true},
 ];
 
 test("API options", async () => {
