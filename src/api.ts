@@ -595,6 +595,7 @@ export class Instagram {
             await postPage.goto(this.postURL + post);
 
             // Load data from memory
+            /* istanbul ignore next */
             data = await postPage.evaluate(() => {
                 return JSON.stringify(window["_sharedData"].entry_data.PostPage[0].graphql);
             });
