@@ -13,8 +13,8 @@ let smallSize = 30;
 let mediumSize = 300;
 let largeSize = 3000;
 
-// Run faster unless executing daily integration build
-if (process.env.TRAVIS_EVENT_TYPE !== "cron") {
+// Run faster unless executing in CI
+if (!process.env.TRAVIS) {
     smallSize /= 10;
     mediumSize /= 10;
     largeSize /= 10;
