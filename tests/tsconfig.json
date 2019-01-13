@@ -10,8 +10,5 @@
       "esnext.asynciterable"
     ]
   },
-  "exclude": [
-    "node_modules",
-    "tests/*"
-  ]
+  "compileOnSave": false
 }

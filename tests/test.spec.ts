@@ -1,6 +1,6 @@
 import * as winston from "winston";
-import * as Instamancer from ".";
-import {Hashtag, IOptions, Location, User} from "./src/api";
+import * as Instamancer from "..";
+import {Hashtag, IOptions, Location, User} from "../src/api";
 
 jest.setTimeout(120 * 60 * 1000);
 /* tslint:disable:no-console */
@@ -9,9 +9,16 @@ const hashtags = ["beach", "gym", "puppies", "party", "throwback"];
 const locations = ["1110037669039751", "212988663", "933522", "213385402", "228001889"];
 const users = ["snoopdogg", "arianagrande", "bbc", "whitehouse", "australia"];
 
-const smallSize = 30;
-const mediumSize = 300;
-const largeSize = 3000;
+let smallSize = 30;
+let mediumSize = 300;
+let largeSize = 3000;
+
+// Run faster unless executing daily integration build
+if (process.env.TRAVIS_EVENT_TYPE !== "cron") {
+    smallSize /= 10;
+    mediumSize /= 10;
+    largeSize /= 10;
+}
 
 const libraryTestOptions: IOptions = {
     logger: winston.createLogger({
