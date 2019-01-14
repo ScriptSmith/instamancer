@@ -720,7 +720,11 @@ export class Instagram {
     }
 }
 
+/**
+ * An Instagram post API wrapper
+ */
 export class Post extends Instagram {
+    // Post ids
     private readonly ids: string[];
 
     constructor(ids: string[], options: IOptions = {}) {
@@ -728,6 +732,9 @@ export class Post extends Instagram {
         this.ids = ids;
     }
 
+    /**
+     * Get the post metadata
+     */
     protected async getNext() {
         for (const id of this.ids) {
             this.id = id;
