@@ -8,6 +8,8 @@ jest.setTimeout(120 * 60 * 1000);
 const hashtags = ["beach", "gym", "puppies", "party", "throwback"];
 const locations = ["1110037669039751", "212988663", "933522", "213385402", "228001889"];
 const users = ["snoopdogg", "arianagrande", "bbc", "whitehouse", "australia"];
+const posts = ["BsOGulcndj-", "Be3rTNplCHf", "BlBvw2_jBKp", "Bi-hISIghYe", "BfzEfy-lK1N", "Bneu_dCHVdn", "Brx-adXA9C1",
+    "BlTYHvXFrvm", "BmRZH7NFwi6", "BpiIJCUnYwy"];
 
 let smallSize = 30;
 let mediumSize = 300;
@@ -27,7 +29,7 @@ const libraryTestOptions: IOptions = {
         silent: true,
         transports: [],
     }),
-    silent: true,
+    silent: false,
     total: 10,
 };
 
@@ -37,15 +39,16 @@ test("Library Classes", async () => {
         new Instamancer.Hashtag(hashtags[0], libraryTestOptions),
         new Instamancer.User(users[0], libraryTestOptions),
         new Instamancer.Location(locations[0], libraryTestOptions),
+        new Instamancer.Post(posts, libraryTestOptions),
     ];
 
     for (const object of objects) {
-        const posts = [];
+        const scraped = [];
         for await (const post of object.generator()) {
             expect(post).toBeDefined();
-            posts.push(post);
+            scraped.push(post);
         }
-        expect(posts.length).toBe(total);
+        expect(scraped.length).toBe(total);
     }
 });
 
@@ -55,15 +58,16 @@ test("Library Functions", async () => {
         Instamancer.hashtag(hashtags[0], libraryTestOptions),
         Instamancer.user(users[0], libraryTestOptions),
         Instamancer.location(locations[0], libraryTestOptions),
+        Instamancer.post(posts, libraryTestOptions),
     ];
 
     for (const generator of generators) {
-        const posts = [];
+        const scraped = [];
         for await (const post of generator) {
             expect(post).toBeDefined();
-            posts.push(post);
+            scraped.push(post);
         }
-        expect(posts.length).toBe(total);
+        expect(scraped.length).toBe(total);
     }
 });
 
@@ -136,18 +140,18 @@ test("Instagram API limits", async () => {
                 const api = new API(id, options);
 
                 // Get posts
-                const posts = [];
+                const scraped = [];
                 const postIds = new Set();
                 for await (const post of api.generator()) {
                     postIds.add(post.node.id);
-                    posts.push(post);
+                    scraped.push(post);
                 }
 
                 // Assert sizes
-                expect(posts.length).toBe(size);
+                expect(scraped.length).toBe(size);
 
                 // Check duplicates
-                expect(posts.length).toBe(postIds.size);
+                expect(scraped.length).toBe(postIds.size);
             }
         }
     }
@@ -178,18 +182,18 @@ test("API options", async () => {
     let first = true;
     for (const option of options) {
         const tag = new Hashtag(hashtagId, option);
-        const posts = [];
+        const scraped = [];
 
         for await (const post of tag.generator()) {
             expect(post).toBeDefined();
-            posts.push(post);
+            scraped.push(post);
         }
 
         if (first) {
             first = false;
-            expect(posts.length).toBeGreaterThan(total);
+            expect(scraped.length).toBeGreaterThan(total);
         } else {
-            expect(posts.length).toBe(total);
+            expect(scraped.length).toBe(total);
         }
     }
 });
@@ -242,16 +246,16 @@ test("Failed Page visit", async () => {
         proxyURL: "127.0.0.1:9999",
     };
     const api = new Instamancer.Hashtag(hashtags[0], options);
-    const posts = [];
+    const scraped = [];
 
     try {
         for await (const post of api.generator()) {
-            posts.push(post);
+            scraped.push(post);
         }
     } catch (e) {
         expect(e).toBeDefined();
         await api.forceStop();
     }
 
-    expect(posts.length).toBe(0);
+    expect(scraped.length).toBe(0);
 });

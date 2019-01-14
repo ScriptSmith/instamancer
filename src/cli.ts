@@ -4,7 +4,7 @@ import * as fs from "fs";
 import * as readline from "readline";
 import * as winston from "winston";
 
-import {Hashtag, IOptions, Location, User} from "./api";
+import {Hashtag, IOptions, Location, Post, User} from "./api";
 import {download, toCSV, toJSON} from "./download";
 
 /**
@@ -36,6 +36,15 @@ function buildParser(args, callback) {
         .command(
             "user [id]",
             "Scrape a user",
+            {},
+            async (handleArgs) => {
+                await spawn(handleArgs);
+                callback();
+            },
+        )
+        .command(
+            "post [ids]",
+            "Scrape comma-separated posts",
             {},
             async (handleArgs) => {
                 await spawn(handleArgs);
@@ -183,18 +192,26 @@ async function spawn(args) {
     });
 
     // Check id
-    if (args["id"] === undefined) {
+    if (!(args["id"] || args["ids"])) {
         throw new Error("Id required");
     }
 
     // Pick endpoint
     let api;
+    let ids;
     if (args["_"][0] === "hashtag") {
         api = Hashtag;
+        ids = args["ids"];
     } else if (args["_"][0] === "location") {
         api = Location;
+        ids = args["ids"];
     } else if (args["_"][0] === "user") {
         api = User;
+        ids = args["ids"];
+    } else if (args["_"][0] === "post") {
+        api = Post;
+        ids = args["ids"].split(",");
+        args["id"] = ids.length === 0 ? ids[0] : "posts";
     }
 
     // Define options
@@ -210,7 +227,7 @@ async function spawn(args) {
 
     // Start API
     logger.info("Starting API at " + Date.now());
-    const obj = new api(args["id"], options);
+    const obj = new api(ids, options);
     await obj.start();
 
     // Add pause callback

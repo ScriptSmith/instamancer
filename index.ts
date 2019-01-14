@@ -1,8 +1,6 @@
-// Export
+import {Hashtag, IOptions, Location, Post, User} from "./src/api";
 
-import {Hashtag, IOptions, Location, User} from "./src/api";
-
-export {Hashtag, Location, User, IOptions} from "./src/api";
+export {Hashtag, Location, Post, User, IOptions} from "./src/api";
 
 export function hashtag(id, options: IOptions) {
     return new Hashtag(id, options).generator();
@@ -14,4 +12,8 @@ export function location(id, options: IOptions) {
 
 export function user(id, options: IOptions) {
     return new User(id, options).generator();
+}
+
+export function post(ids, options: IOptions) {
+    return new Post(ids, options).generator();
 }

@@ -106,14 +106,23 @@ export class Instagram {
         return options;
     }
 
+    // Resource identifier
+    protected id: string;
+    protected url: string;
+
+    // Iteration state
+    protected started: boolean = false;
+    protected paused: boolean = false;
+    protected finished: boolean = false;
+
+    // Instagram URLs
+    protected readonly catchURL: string = "https://www.instagram.com/graphql/query";
+    protected readonly postURL: string = "https://instagram.com/p/";
+
     // Puppeteer state
     private browser: Browser;
     private page: Page;
     private readonly headless: boolean;
-
-    // Resource identifier
-    private readonly id: string;
-    private readonly url: string;
 
     // Array of scraped posts and lock
     private postBuffer: object[] = [];
@@ -139,18 +148,9 @@ export class Instagram {
     private hibernate: boolean = false;
     private readonly hibernationTime: number = 60 * 20; // 20 minutes
 
-    // Instagram URLs
-    private readonly catchURL: string = "https://www.instagram.com/graphql/query";
-    private readonly postURL: string = "https://instagram.com/p/";
-
     // Strings denoting the access methods of API objects
     private readonly pageQuery: string;
     private readonly edgeQuery: string;
-
-    // Iteration state
-    private started: boolean = false;
-    private paused: boolean = false;
-    private finished: boolean = false;
 
     // Cache of post ids
     private postIds: PostIdSet;
@@ -260,6 +260,116 @@ export class Instagram {
         if (!this.silent) {
             process.stdout.write("\n");
         }
+    }
+
+    /**
+     * Open a post in a new page, then extract its metadata
+     */
+    protected async postPage(post) {
+        // Create page
+        const postPage = await this.browser.newPage();
+        await postPage.setRequestInterception(true);
+        postPage.on("request", async (req) => {
+            if (!req.url().includes("/p/" + post)) {
+                await req.abort();
+            } else {
+                await req.continue();
+            }
+        });
+        postPage.on("requestfailed", async () => undefined);
+
+        // Visit post and read state
+        let data;
+        try {
+            await postPage.goto(this.postURL + post);
+
+            // Load data from memory
+            /* istanbul ignore next */
+            data = await postPage.evaluate(() => {
+                return JSON.stringify(window["_sharedData"].entry_data.PostPage[0].graphql);
+            });
+            await this.addToPostBuffer(JSON.parse(data));
+
+            await postPage.close();
+        } catch (e) {
+            // Log error and wait
+            this.logger.error(e);
+            await this.progress(Progress.ABORTED);
+            await this.sleep(2);
+
+            // Close existing attempt
+            await postPage.close();
+
+            // Retry
+            await this.postPage(post);
+        }
+    }
+
+    /**
+     * Stimulate the page until responses gathered
+     */
+    protected async getNext() {
+        await this.progress(Progress.SCRAPING);
+        while (true) {
+            // Process results (if any)
+            await this.processRequests();
+            await this.processResponses();
+
+            // Finish page promises
+            await this.progress(Progress.BRANCHING);
+            await Promise.all(this.pagePromises);
+            this.pagePromises = [];
+
+            // Check if finished
+            if (this.finished) {
+                break;
+            }
+
+            // Pause if paused
+            await this.waitResume();
+
+            // Interact with page to stimulate request
+            await this.jump();
+
+            // Enable grafting if required
+            if (this.jumps % this.jumpMod === 0) {
+                await this.initiateGraft();
+            }
+
+            // Sleep
+            await this.sleep(this.sleepTime);
+
+            // Hibernate if rate-limited
+            if (this.hibernate) {
+                await this.sleep(this.hibernationTime);
+                this.hibernate = false;
+            }
+
+            // Break if posts in buffer
+            await this.postBufferLock.acquireAsync();
+            const posts = this.postBuffer.length;
+            this.postBufferLock.release();
+            if (posts > 0) {
+                break;
+            }
+        }
+    }
+
+    /**
+     * Halt execution
+     * @param time Seconds
+     */
+    protected async sleep(time) {
+        for (let i = time; i > 0; i--) {
+            this.sleepRemaining = i;
+            await this.progress(Progress.SCRAPING);
+            await new Promise(
+                (resolve) => {
+                    setTimeout(resolve, 1000);
+                });
+        }
+        this.sleepRemaining = 0;
+        await this.progress(Progress.SCRAPING);
     }
 
     /**
@@ -574,49 +684,6 @@ export class Instagram {
     }
 
     /**
-     * Open a post in a new page, then extract its metadata
-     */
-    private async postPage(post) {
-        // Create page
-        const postPage = await this.browser.newPage();
-        await postPage.setRequestInterception(true);
-        postPage.on("request", async (req) => {
-            if (!req.url().includes("/p/" + post)) {
-                await req.abort();
-            } else {
-                await req.continue();
-            }
-        });
-        postPage.on("requestfailed", async () => undefined);
-
-        // Visit post and read state
-        let data;
-        try {
-            await postPage.goto(this.postURL + post);
-
-            // Load data from memory
-            /* istanbul ignore next */
-            data = await postPage.evaluate(() => {
-                return JSON.stringify(window["_sharedData"].entry_data.PostPage[0].graphql);
-            });
-            await this.addToPostBuffer(JSON.parse(data));
-
-            await postPage.close();
-        } catch (e) {
-            // Log error and wait
-            this.logger.error(e);
-            await this.progress(Progress.ABORTED);
-            await this.sleep(2);
-
-            // Close existing attempt
-            await postPage.close();
-
-            // Retry
-            await this.postPage(post);
-        }
-    }
-
-    /**
      * Manipulate the page to stimulate a request
      */
     private async jump() {
@@ -629,23 +696,6 @@ export class Instagram {
         await this.page.mouse.move(Math.round(width * Math.random()), Math.round(height * Math.random()));
 
         ++this.jumps;
-    }
-
-    /**
-     * Halt execution
-     * @param time Seconds
-     */
-    private async sleep(time) {
-        for (let i = time; i > 0; i--) {
-            this.sleepRemaining = i;
-            await this.progress(Progress.SCRAPING);
-            await new Promise(
-                (resolve) => {
-                    setTimeout(resolve, 1000);
-                });
-        }
-        this.sleepRemaining = 0;
-        await this.progress(Progress.SCRAPING);
     }
 
     /**
@@ -668,55 +718,23 @@ export class Instagram {
         // Re-start page
         await this.start();
     }
+}
 
-    /**
-     * Stimulate the page until responses gathered
-     */
-    private async getNext() {
-        await this.progress(Progress.SCRAPING);
-        while (true) {
-            // Process results (if any)
-            await this.processRequests();
-            await this.processResponses();
+export class Post extends Instagram {
+    private readonly ids: string[];
 
-            // Finish page promises
-            await this.progress(Progress.BRANCHING);
-            await Promise.all(this.pagePromises);
-            this.pagePromises = [];
+    constructor(ids: string[], options: IOptions = {}) {
+        super("https://instagram.com/p/", ids[0], "", "", options);
+        this.ids = ids;
+    }
 
-            // Check if finished
-            if (this.finished) {
-                break;
-            }
-
-            // Pause if paused
-            await this.waitResume();
-
-            // Interact with page to stimulate request
-            await this.jump();
-
-            // Enable grafting if required
-            if (this.jumps % this.jumpMod === 0) {
-                await this.initiateGraft();
-            }
-
-            // Sleep
-            await this.sleep(this.sleepTime);
-
-            // Hibernate if rate-limited
-            if (this.hibernate) {
-                await this.sleep(this.hibernationTime);
-                this.hibernate = false;
-            }
-
-            // Break if posts in buffer
-            await this.postBufferLock.acquireAsync();
-            const posts = this.postBuffer.length;
-            this.postBufferLock.release();
-            if (posts > 0) {
-                break;
-            }
+    protected async getNext() {
+        for (const id of this.ids) {
+            this.id = id;
+            await this.postPage(id);
+            await this.sleep(1);
         }
+        this.finished = true;
     }
 }
 
@@ -724,7 +742,7 @@ export class Instagram {
  * An Instagram hashtag API wrapper
  */
 export class Hashtag extends Instagram {
-    constructor(id: string, options: object = {}) {
+    constructor(id: string, options: IOptions = {}) {
         const endpoint = "https://instagram.com/explore/tags/";
         const pageQuery = "data.hashtag.edge_hashtag_to_media.page_info";
         const edgeQuery = "data.hashtag.edge_hashtag_to_media.edges";
@@ -736,7 +754,7 @@ export class Hashtag extends Instagram {
  * An Instagram location API wrapper
  */
 export class Location extends Instagram {
-    constructor(id: string, options: object = {}) {
+    constructor(id: string, options: IOptions = {}) {
         const endpoint = "https://instagram.com/explore/locations/";
         const pageQuery = "data.location.edge_location_to_media.page_info";
         const edgeQuery = "data.location.edge_location_to_media.edges";
@@ -748,7 +766,7 @@ export class Location extends Instagram {
  * An Instagram user API wrapper
  */
 export class User extends Instagram {
-    constructor(id: string, options: object = {}) {
+    constructor(id: string, options: IOptions = {}) {
         const endpoint = "https://instagram.com/";
         const pageQuery = "data.user.edge_owner_to_timeline_media.page_info";
         const edgeQuery = "data.user.edge_owner_to_timeline_media.edges";
