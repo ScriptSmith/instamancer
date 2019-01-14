@@ -29,7 +29,7 @@ const libraryTestOptions: IOptions = {
         silent: true,
         transports: [],
     }),
-    silent: false,
+    silent: true,
     total: 10,
 };
 
