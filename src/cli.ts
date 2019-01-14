@@ -44,7 +44,7 @@ function buildParser(args, callback) {
         )
         .command(
             "post [ids]",
-            "Scrape comma-separated posts",
+            "Scrape a comma-separated list of posts",
             {},
             async (handleArgs) => {
                 await spawn(handleArgs);
@@ -136,7 +136,7 @@ function buildParser(args, callback) {
                 default: false,
                 describe: "When true, media will only download once scraping is finished",
             },
-            filename: {
+                filename: {
                 alias: ["file", "f"],
                 default: "[id]",
                 describe: "Name of the output file",
@@ -149,7 +149,7 @@ function buildParser(args, callback) {
             },
             downdir: {
                 default: "downloads/[endpoint]/[id]",
-                describe: "Directory to save thumbnails",
+                describe: "Directory to save media",
             },
             logging: {
                 default: "none",
