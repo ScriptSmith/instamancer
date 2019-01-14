@@ -212,6 +212,7 @@ async function spawn(args) {
         api = Post;
         ids = args["ids"].split(",");
         args["id"] = ids.length === 1 ? ids[0] : "posts";
+        args["full"] = true;
     }
 
     // Define options
