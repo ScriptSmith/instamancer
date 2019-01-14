@@ -77,51 +77,51 @@ npx instamancer
 ### Command Line
 ```
 $ instamancer
-Usage: instamancer <command> [options]
+Usage: cli.js <command> [options]
 
 Commands:
-  instamancer hashtag [id]       Scrape a hashtag
-  instamancer location [id]      Scrape a location
-  instamancer user [id]          Scrape a user
-  instamancer batch [batchfile]  Read newline-separated arguments from a file
+  cli.js hashtag [id]       Scrape a hashtag
+  cli.js location [id]      Scrape a location
+  cli.js user [id]          Scrape a user
+  cli.js post [ids]         Scrape comma-separated posts
+  cli.js batch [batchfile]  Read newline-separated arguments from a file
 
 Options:
-  --help                         Show help                             [boolean]
-  --version                      Show version number                   [boolean]
-  --count, -c                    Number of posts to download. 0 to download all
+  --help                  Show help                                    [boolean]
+  --version               Show version number                          [boolean]
+  --count, -c             Number of posts to download. 0 to download all
                                                                     [default: 0]
-  --visible                      Show browser on the screen     [default: false]
-  --download, -d                 Save images and videos from posts
+  --visible               Show browser on the screen            [default: false]
+  --download, -d          Save images and videos from posts
                                                       [boolean] [default: false]
-  --graft, -g                    Enable grafting       [boolean] [default: true]
-  --full                         Get the full details about posts from the API
+  --graft, -g             Enable grafting              [boolean] [default: true]
+  --full                  Get the full details about posts from the API
                                                       [boolean] [default: false]
-  --video                        Download videos. Only works in full mode
+  --video                 Download videos. Only works in full mode
                                                       [boolean] [default: false]
-  --silent                       Disable progress output
-                                                      [boolean] [default: false]
-  --waitDownload, -w             When true, media will only download once
-                                 scraping is finished [boolean] [default: false]
-  --filename, --file, -f         Name of the output file       [default: "[id]"]
-  --filetype, --type, -t         Type of output file
+  --silent                Disable progress output     [boolean] [default: false]
+  --waitDownload, -w      When true, media will only download once scraping is
+                          finished                    [boolean] [default: false]
+  --filename, --file, -f  Name of the output file              [default: "[id]"]
+  --filetype, --type, -t  Type of output file
                               [choices: "csv", "json", "both"] [default: "json"]
-  --downdir                      Directory to save thumbnails
+  --downdir               Directory to save thumbnails
                                           [default: "downloads/[endpoint]/[id]"]
-  --logging                      Level of logger
+  --logging               Level of logger
                    [choices: "error", "none", "info", "debug"] [default: "none"]
-  --logfile                      Name of the log file
-                                                    [default: "instamancer.log"]
+  --logfile               Name of the log file      [default: "instamancer.log"]
 
 Examples:
-  instamancer hashtag instagood -d          Download all the available posts,
+  cli.js hashtag instagood -d               Download all the available posts,
                                             and their thumbnails from #instagood
-  instamancer location 644269022 --count    Download 200 posts tagged as being
-  200                                       at the Arc Du Triomphe
-  instamancer user arianagrande             Download Ariana Grande's posts to a
-  --filetype=csv --logging=info --visible   CSV file with a non-headless
+  cli.js location 644269022 --count 200     Download 200 posts tagged as being
+                                            at the Arc Du Triomphe
+  cli.js user arianagrande --filetype=csv   Download Ariana Grande's posts to a
+  --logging=info --visible                  CSV file with a non-headless
                                             browser, and log all events
 
 Source code available at https://github.com/ScriptSmith/instamancer
+
 ```
 
 ### Module
@@ -148,6 +148,7 @@ const hashtag = Instamancer.hashtag("beach", options);
 Instamancer.hashtag(id, options);
 Instamancer.location(id, options);
 Instamancer.user(id, options);
+Instamancer.post(ids, options);
 ```
 
 #### Options
@@ -187,7 +188,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <th>Hashtags</th>
         <th>Users</th>
         <th>Locations</th>
-        <th>Individual posts</th>
+        <th>Posts</th>
         <th>Max speed*</th>
         <th>Login not required</th>
         <th>Batch mode</th>
@@ -212,7 +213,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
-        <td>:x:</td>
+        <td>:heavy_check_mark:</td>
         <td>3.1 posts/second</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
@@ -252,6 +253,29 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td><img src="https://img.shields.io/travis/althonos/InstaLooter.svg"></td>
         <td><img src="https://img.shields.io/codecov/c/github/althonos/InstaLooter.svg"></td>
         <td><img src="https://img.shields.io/codacy/grade/9b8c7da6887c4195b9e960cb04b59a91.svg"></td>
+    </tr>
+    <tr>
+        <td><a href="https://github.com/huaying/instagram-crawler">Instagram crawler</a></td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:x:</td>
+        <td>:heavy_check_mark:</td>
+        <td>2.1 posts/second</td>
+        <td>:heavy_check_mark:</td>
+        <td>:x:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:x:</td>
+        <td>:heavy_check_mark:</td>
+        <td>Web DOM reading</td>
+        <td>:x:</td>
+        <td>Python</td>
+        <td><img src="https://img.shields.io/github/license/huaying/instagram-crawler.svg"></td>
+        <td><img src="https://img.shields.io/github/last-commit/huaying/instagram-crawler.svg"></td>
+        <td><img src="https://img.shields.io/github/issues/huaying/instagram-crawler.svg"></td>
+        <td><img src="https://img.shields.io/travis/huaying/instagram-crawler.svg"></td>
+        <td>:question:</td>
+        <td>:question:</td>
     </tr>
     <tr>
         <td><a href="https://github.com/rarcega/instagram-scraper">Instagram Scraper</a></td>
@@ -296,29 +320,6 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td><img src="https://img.shields.io/github/last-commit/instaloader/instaloader.svg"></td>
         <td><img src="https://img.shields.io/github/issues/instaloader/instaloader.svg"></td>
         <td><img src="https://img.shields.io/travis/instaloader/instaloader.svg"></td>
-        <td>:question:</td>
-        <td>:question:</td>
-    </tr>
-    <tr>
-        <td><a href="https://github.com/huaying/instagram-crawler">Instagram crawler</a></td>
-        <td>:heavy_check_mark:</td>
-        <td>:heavy_check_mark:</td>
-        <td>:x:</td>
-        <td>:heavy_check_mark:</td>
-        <td>2.1 posts/second</td>
-        <td>:heavy_check_mark:</td>
-        <td>:x:</td>
-        <td>:heavy_check_mark:</td>
-        <td>:heavy_check_mark:</td>
-        <td>:x:</td>
-        <td>:heavy_check_mark:</td>
-        <td>Web DOM reading</td>
-        <td>:x:</td>
-        <td>Python</td>
-        <td><img src="https://img.shields.io/github/license/huaying/instagram-crawler.svg"></td>
-        <td><img src="https://img.shields.io/github/last-commit/huaying/instagram-crawler.svg"></td>
-        <td><img src="https://img.shields.io/github/issues/huaying/instagram-crawler.svg"></td>
-        <td><img src="https://img.shields.io/travis/huaying/instagram-crawler.svg"></td>
         <td>:question:</td>
         <td>:question:</td>
     </tr>
