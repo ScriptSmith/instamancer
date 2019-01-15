@@ -77,14 +77,14 @@ npx instamancer
 ### Command Line
 ```
 $ instamancer
-Usage: cli.js <command> [options]
+Usage: instamancer <command> [options]
 
 Commands:
-  cli.js hashtag [id]       Scrape a hashtag
-  cli.js location [id]      Scrape a location
-  cli.js user [id]          Scrape a user
-  cli.js post [ids]         Scrape comma-separated posts
-  cli.js batch [batchfile]  Read newline-separated arguments from a file
+  instamancer hashtag [id]       Scrape a hashtag
+  instamancer location [id]      Scrape a location
+  instamancer user [id]          Scrape a user
+  instamancer post [ids]         Scrape a comma-separated list of posts
+  instamancer batch [batchfile]  Read newline-separated arguments from a file
 
 Options:
   --help                  Show help                                    [boolean]
@@ -105,23 +105,22 @@ Options:
   --filename, --file, -f  Name of the output file              [default: "[id]"]
   --filetype, --type, -t  Type of output file
                               [choices: "csv", "json", "both"] [default: "json"]
-  --downdir               Directory to save thumbnails
+  --downdir               Directory to save media
                                           [default: "downloads/[endpoint]/[id]"]
   --logging               Level of logger
                    [choices: "error", "none", "info", "debug"] [default: "none"]
   --logfile               Name of the log file      [default: "instamancer.log"]
 
 Examples:
-  cli.js hashtag instagood -d               Download all the available posts,
+  instamancer hashtag instagood -d          Download all the available posts,
                                             and their thumbnails from #instagood
-  cli.js location 644269022 --count 200     Download 200 posts tagged as being
-                                            at the Arc Du Triomphe
-  cli.js user arianagrande --filetype=csv   Download Ariana Grande's posts to a
-  --logging=info --visible                  CSV file with a non-headless
+  instamancer location 644269022 --count    Download 200 posts tagged as being
+  200                                       at the Arc Du Triomphe
+  instamancer user arianagrande             Download Ariana Grande's posts to a
+  --filetype=csv --logging=info --visible   CSV file with a non-headless
                                             browser, and log all events
 
 Source code available at https://github.com/ScriptSmith/instamancer
-
 ```
 
 ### Module
