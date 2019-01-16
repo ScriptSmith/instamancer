@@ -23,9 +23,46 @@ Read more about how Instamancer works [here](https://scriptsmith.github.io/insta
 ### Features
 - Scrape hashtags, locations and users
 - Output JSON, CSV
-- Download media
+- Download images, albums, and videos
 - Batch scraping
-- Headless mode
+
+### Data
+Metadata that Instamancer is able to gather from posts:
+
+- Timestamps
+- Text
+- Tagged users
+- Accessibility captions
+- Like counts
+- Comment counts
+- Images
+    - Thumbnails
+    - Dimensions
+    - URLs
+- Videos
+    - URL
+    - View count
+    - Duration
+- Comments
+    - Timestamp
+    - Text
+    - Like count
+    - User
+        - Username
+        - Profile picture
+- User
+    - Username
+    - Full name
+    - Profile picture
+    - Profile privacy
+- Location
+    - Name
+    - Address
+        - Street
+        - Zip code
+        - City
+        - Region
+        - Country
 
 ## Install
 
