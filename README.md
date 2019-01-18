@@ -205,11 +205,17 @@ const options: Instamancer.IOptions = {
     // Time to sleep between interactions with the page
     sleepTime: number,
 
+    // Time to sleep when rate-limited
+    hibernationTime: number,
+
     // Enable the grafting process
     enableGrafting: boolean,
 
     // Extract the full amount of information from the API
     fullAPI: boolean,
+
+    // Use a proxy in chrome to connect to Instagram
+    proxyURL: string,
 }
 ```
 
