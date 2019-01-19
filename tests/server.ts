@@ -6,11 +6,14 @@ const app = express();
 app.get("/", (req, res) => {
     res.send(`
             <script type="text/javascript">
+                const endpoints = ["rate_limit", "invalid_json", "no_next_page", "duplicate_ids"];
                 setInterval(() => {
-                    console.log("API request");
-                    const xhttp = new XMLHttpRequest();
-                    xhttp.open("GET", "api", true);
-                    xhttp.send();
+                    for (const endpoint of endpoints) {
+                        console.log("API request to " + endpoint);
+                        const xhttp = new XMLHttpRequest();
+                        xhttp.open("GET", endpoint, true);
+                        xhttp.send();
+                    }
                 }, 2000)
             </script>
         `);
