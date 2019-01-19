@@ -201,13 +201,13 @@ async function spawn(args) {
     let ids;
     if (args["_"][0] === "hashtag") {
         api = Hashtag;
-        ids = args["ids"];
+        ids = args["id"];
     } else if (args["_"][0] === "location") {
         api = Location;
-        ids = args["ids"];
+        ids = args["id"];
     } else if (args["_"][0] === "user") {
         api = User;
-        ids = args["ids"];
+        ids = args["id"];
     } else if (args["_"][0] === "post") {
         api = Post;
         ids = args["ids"].split(",");
