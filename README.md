@@ -346,8 +346,8 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td><a href="https://github.com/instaloader/instaloader">Instaloader</a></td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
-        <td>:x:</td>
-        <td>:x:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
         <td>0.8 posts/second</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
