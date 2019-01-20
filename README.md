@@ -273,6 +273,29 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td><img src="https://img.shields.io/codacy/coverage/98066a13fa444845aa3902d180581b86.svg"></td>
         <td><img src="https://img.shields.io/codacy/grade/98066a13fa444845aa3902d180581b86.svg"></td>
     </tr>
+        <tr>
+            <td><a href="https://github.com/ScriptSmith/instaphyte">Instaphyte</a></td>
+            <td>:heavy_check_mark:</td>
+            <td>:x:</td>
+            <td>:heavy_check_mark:</td>
+            <td>:x:</td>
+            <td>19.2 posts/second</td>
+            <td>:heavy_check_mark:</td>
+            <td>:x:</td>
+            <td>:heavy_check_mark:</td>
+            <td>:heavy_check_mark:</td>
+            <td>:heavy_check_mark:</td>
+            <td>:heavy_check_mark:</td>
+            <td>Web API simulation</td>
+            <td>:heavy_check_mark:</td>
+            <td>Python</td>
+            <td><img src="https://img.shields.io/github/license/scriptsmith/instaphyte.svg"></td>
+            <td><img src="https://img.shields.io/github/last-commit/scriptsmith/instaphyte.svg"></td>
+            <td><img src="https://img.shields.io/github/issues/scriptsmith/instaphyte.svg"></td>
+            <td><img src="https://img.shields.io/travis/ScriptSmith/instaphyte.svg"></td>
+            <td>:question:</td>
+            <td>:question:</td>
+        </tr>
     <tr>
         <td><a href="https://github.com/althonos/InstaLooter">Instalooter</a></td>                
         <td>:heavy_check_mark:</td>
@@ -348,7 +371,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
-        <td>0.8 posts/second</td>
+        <td>14.7 posts/second</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
