@@ -29,40 +29,17 @@ Read more about how Instamancer works [here](https://scriptsmith.github.io/insta
 ### Data
 Metadata that Instamancer is able to gather from posts:
 
-- Timestamps
 - Text
+- Timestamps
 - Tagged users
 - Accessibility captions
 - Like counts
 - Comment counts
-- Images
-    - Thumbnails
-    - Dimensions
-    - URLs
-- Videos
-    - URL
-    - View count
-    - Duration
-- Comments
-    - Timestamp
-    - Text
-    - Like count
-    - User
-        - Username
-        - Profile picture
-- User
-    - Username
-    - Full name
-    - Profile picture
-    - Profile privacy
-- Location
-    - Name
-    - Address
-        - Street
-        - Zip code
-        - City
-        - Region
-        - Country
+- Images (Thumbnails, Dimensions, URLs)
+- Videos (URL, View count, Duration)
+- Comments (Timestamp, Text, Like count, User)
+- User (Username, Full name, Profile picture, Profile privacy)
+- Location (Name, Street, Zip code, City, Region, Country)
 
 ## Install
 
