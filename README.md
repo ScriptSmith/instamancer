@@ -210,6 +210,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <th>Posts</th>
         <th>Max speed*</th>
         <th>Login not required</th>
+        <th>Private feeds</th>
         <th>Batch mode</th>
         <th>Command-line</th>
         <th>Library/Module</th>
@@ -220,7 +221,8 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <th>Main language</th>
         <th>License ----------------------------</th>
         <th>Last commit ----------------------------</th>
-        <th>Issues ----------------------------</th>
+        <th>Open Issues ----------------------------</th>
+        <th>Closed Issues ----------------------------</th>
         <th>Build status ----------------------------</th>
         <th>Test coverage ----------------------------</th>
         <th>Code quality ----------------------------</th>
@@ -235,6 +237,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>:heavy_check_mark:</td>
         <td>3.1 posts/second</td>
         <td>:heavy_check_mark:</td>
+        <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
@@ -246,6 +249,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td><img src="https://img.shields.io/github/license/scriptsmith/instamancer.svg"></td>
         <td><img src="https://img.shields.io/github/last-commit/scriptsmith/instamancer.svg"></td>
         <td><img src="https://img.shields.io/github/issues/scriptsmith/instamancer.svg"></td>
+        <td><img src="https://img.shields.io/github/issues-closed/scriptsmith/instamancer.svg"></td>
         <td><img src="https://img.shields.io/travis/com/ScriptSmith/instamancer.svg"></td>
         <td><img src="https://img.shields.io/codacy/coverage/98066a13fa444845aa3902d180581b86.svg"></td>
         <td><img src="https://img.shields.io/codacy/grade/98066a13fa444845aa3902d180581b86.svg"></td>
@@ -259,6 +263,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>19.2 posts/second</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
+        <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
@@ -269,6 +274,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td><img src="https://img.shields.io/github/license/scriptsmith/instaphyte.svg"></td>
         <td><img src="https://img.shields.io/github/last-commit/scriptsmith/instaphyte.svg"></td>
         <td><img src="https://img.shields.io/github/issues/scriptsmith/instaphyte.svg"></td>
+        <td><img src="https://img.shields.io/github/issues-closed/scriptsmith/instaphyte.svg"></td>
         <td><img src="https://img.shields.io/travis/ScriptSmith/instaphyte.svg"></td>
         <td><img src="https://img.shields.io/codacy/coverage/a2322f650025499bb8aee2368ca43207.svg"></td>
         <td><img src="https://img.shields.io/codacy/grade/a2322f650025499bb8aee2368ca43207.svg"></td>
@@ -286,12 +292,14 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
         <td>Web API simulation</td>
         <td>:question:</td>
         <td>Python</td>
         <td><img src="https://img.shields.io/github/license/althonos/instalooter.svg"></td>
         <td><img src="https://img.shields.io/github/last-commit/althonos/instalooter.svg"></td>
         <td><img src="https://img.shields.io/github/issues/althonos/instalooter.svg"></td>
+        <td><img src="https://img.shields.io/github/issues-closed/althonos/instalooter.svg"></td>
         <td><img src="https://img.shields.io/travis/althonos/InstaLooter.svg"></td>
         <td><img src="https://img.shields.io/codecov/c/github/althonos/InstaLooter.svg"></td>
         <td><img src="https://img.shields.io/codacy/grade/9b8c7da6887c4195b9e960cb04b59a91.svg"></td>
@@ -305,6 +313,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>2.1 posts/second</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
+        <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
@@ -315,6 +324,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td><img src="https://img.shields.io/github/license/huaying/instagram-crawler.svg"></td>
         <td><img src="https://img.shields.io/github/last-commit/huaying/instagram-crawler.svg"></td>
         <td><img src="https://img.shields.io/github/issues/huaying/instagram-crawler.svg"></td>
+        <td><img src="https://img.shields.io/github/issues-closed/huaying/instagram-crawler.svg"></td>
         <td><img src="https://img.shields.io/travis/huaying/instagram-crawler.svg"></td>
         <td>:question:</td>
         <td>:question:</td>
@@ -327,6 +337,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>:x:</td>
         <td>1.8 posts/second</td>
         <td>:x:</td>
+        <td>:heavy_check_mark:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
@@ -338,6 +349,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td><img src="https://img.shields.io/github/license/rarcega/instagram-scraper.svg"></td>
         <td><img src="https://img.shields.io/github/last-commit/rarcega/instagram-scraper.svg"></td>
         <td><img src="https://img.shields.io/github/issues/rarcega/instagram-scraper.svg"></td>
+        <td><img src="https://img.shields.io/github/issues-closed/rarcega/instagram-scraper.svg"></td>
         <td><img src="https://img.shields.io/travis/rarcega/instagram-scraper.svg"></td>
         <td>:question:</td>
         <td>:question:</td>
@@ -350,6 +362,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>:heavy_check_mark:</td>
         <td>14.7 posts/second</td>
         <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
@@ -361,6 +374,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td><img src="https://img.shields.io/github/license/instaloader/instaloader.svg"></td>
         <td><img src="https://img.shields.io/github/last-commit/instaloader/instaloader.svg"></td>
         <td><img src="https://img.shields.io/github/issues/instaloader/instaloader.svg"></td>
+        <td><img src="https://img.shields.io/github/issues-closed/instaloader/instaloader.svg"></td>
         <td><img src="https://img.shields.io/travis/instaloader/instaloader.svg"></td>
         <td>:question:</td>
         <td>:question:</td>
@@ -373,6 +387,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>:heavy_check_mark:</td>
         <td>:question:</td>
         <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
         <td>:x:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
@@ -384,6 +399,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td><img src="https://img.shields.io/github/license/ping/instagram_private_api.svg"></td>
         <td><img src="https://img.shields.io/github/last-commit/ping/instagram_private_api.svg"></td>
         <td><img src="https://img.shields.io/github/issues/ping/instagram_private_api.svg"></td>
+        <td><img src="https://img.shields.io/github/issues-closed/ping/instagram_private_api.svg"></td>
         <td><img src="https://img.shields.io/travis/ping/instagram_private_api.svg"></td>
         <td>:question:</td>
         <td>:question:</td>
@@ -396,6 +412,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>:heavy_check_mark:</td>
         <td>:question:</td>
         <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
         <td>:x:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
@@ -407,6 +424,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td><img src="https://img.shields.io/github/license/postaddictme/instagram-php-scraper.svg"></td>
         <td><img src="https://img.shields.io/github/last-commit/postaddictme/instagram-php-scraper.svg"></td>
         <td><img src="https://img.shields.io/github/issues/postaddictme/instagram-php-scraper.svg"></td>
+        <td><img src="https://img.shields.io/github/issues-closed/postaddictme/instagram-php-scraper.svg"></td>
         <td>:question:</td>
         <td>:question:</td>
         <td>:question:</td>
