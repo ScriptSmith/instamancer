@@ -260,7 +260,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
-        <td>19.2 posts/second</td>
+        <td>21.8 posts/second</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
         <td>:x:</td>
@@ -278,6 +278,31 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td><img src="https://img.shields.io/travis/ScriptSmith/instaphyte.svg"></td>
         <td><img src="https://img.shields.io/codacy/coverage/a2322f650025499bb8aee2368ca43207.svg"></td>
         <td><img src="https://img.shields.io/codacy/grade/a2322f650025499bb8aee2368ca43207.svg"></td>
+    </tr>
+    <tr>
+        <td><a href="https://github.com/instaloader/instaloader">Instaloader</a></td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>14.7 posts/second</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:x:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>Web API simulation</td>
+        <td>:x:</td>
+        <td>Python</td>
+        <td><img src="https://img.shields.io/github/license/instaloader/instaloader.svg"></td>
+        <td><img src="https://img.shields.io/github/last-commit/instaloader/instaloader.svg"></td>
+        <td><img src="https://img.shields.io/github/issues/instaloader/instaloader.svg"></td>
+        <td><img src="https://img.shields.io/github/issues-closed/instaloader/instaloader.svg"></td>
+        <td><img src="https://img.shields.io/travis/instaloader/instaloader.svg"></td>
+        <td>:question:</td>
+        <td>:question:</td>
     </tr>
     <tr>
         <td><a href="https://github.com/althonos/InstaLooter">Instalooter</a></td>                
@@ -351,31 +376,6 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td><img src="https://img.shields.io/github/issues/rarcega/instagram-scraper.svg"></td>
         <td><img src="https://img.shields.io/github/issues-closed/rarcega/instagram-scraper.svg"></td>
         <td><img src="https://img.shields.io/travis/rarcega/instagram-scraper.svg"></td>
-        <td>:question:</td>
-        <td>:question:</td>
-    </tr>
-    <tr>
-        <td><a href="https://github.com/instaloader/instaloader">Instaloader</a></td>
-        <td>:heavy_check_mark:</td>
-        <td>:heavy_check_mark:</td>
-        <td>:heavy_check_mark:</td>
-        <td>:heavy_check_mark:</td>
-        <td>14.7 posts/second</td>
-        <td>:heavy_check_mark:</td>
-        <td>:heavy_check_mark:</td>
-        <td>:x:</td>
-        <td>:heavy_check_mark:</td>
-        <td>:heavy_check_mark:</td>
-        <td>:heavy_check_mark:</td>
-        <td>:heavy_check_mark:</td>
-        <td>Web API simulation</td>
-        <td>:x:</td>
-        <td>Python</td>
-        <td><img src="https://img.shields.io/github/license/instaloader/instaloader.svg"></td>
-        <td><img src="https://img.shields.io/github/last-commit/instaloader/instaloader.svg"></td>
-        <td><img src="https://img.shields.io/github/issues/instaloader/instaloader.svg"></td>
-        <td><img src="https://img.shields.io/github/issues-closed/instaloader/instaloader.svg"></td>
-        <td><img src="https://img.shields.io/travis/instaloader/instaloader.svg"></td>
         <td>:question:</td>
         <td>:question:</td>
     </tr>
