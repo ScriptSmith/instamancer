@@ -1,73 +1,10 @@
-import {Browser, Headers, launch, Page, Request, Response} from "puppeteer";
-
 import AwaitLock = require("await-lock");
 import chalk from "chalk";
 import * as _ from "lodash/object";
+import {Browser, Headers, launch, Page, Request, Response} from "puppeteer";
 import * as winston from "winston";
-
-/**
- * The states of progress that the API can be in. Used to output status.
- */
-enum Progress {
-    LAUNCHING = "Launching",
-    OPENING = "Navigating",
-    SCRAPING = "Scraping",
-    BRANCHING = "Branching",
-    GRAFTING = "Grafting",
-    CLOSING = "Closing",
-
-    PAUSED = "Paused",
-    ABORTED = "Request aborted",
-}
-
-/**
- * A set of post ids used to detect duplicates
- */
-class PostIdSet {
-    private ids: Set<string> = new Set<string>();
-
-    /**
-     * Add a post id to the set.
-     * @return true if the id was already in the set, false if not.
-     */
-    public add(id: string): boolean {
-        const contains = this.ids.has(id);
-        this.ids.add(id);
-        return contains;
-    }
-}
-
-/**
- * Optional arguments for the API
- */
-export interface IOptions {
-    // Total posts to download. 0 for unlimited
-    total?: number;
-
-    // Run Chrome in headless mode
-    headless?: boolean;
-
-    // Logging events
-    logger?: winston.Logger;
-
-    // Run without output to stdout
-    silent?: boolean;
-
-    // Time to sleep between interactions with the page
-    sleepTime?: number;
-
-    // Time to sleep when rate-limited
-    hibernationTime?: number;
-
-    // Enable the grafting process
-    enableGrafting?: boolean;
-
-    // Extract the full amount of information from the API
-    fullAPI?: boolean;
-
-    // Use a proxy in Chrome to connect to Instagram
-    proxyURL?: string;
-}
+import {IOptions} from "./api";
+import {PostIdSet} from "./postIdSet";
 
 /**
  * Instagram API wrapper
@@ -734,62 +671,16 @@ export class Instagram {
 }
 
 /**
- * An Instagram post API wrapper
+ * The states of progress that the API can be in. Used to output status.
  */
-export class Post extends Instagram {
-    // Post ids
-    private readonly ids: string[];
+enum Progress {
+    LAUNCHING = "Launching",
+    OPENING = "Navigating",
+    SCRAPING = "Scraping",
+    BRANCHING = "Branching",
+    GRAFTING = "Grafting",
+    CLOSING = "Closing",
 
-    constructor(ids: string[], options: IOptions = {}) {
-        super("https://instagram.com/p/", ids[0], "", "", options);
-        this.ids = ids;
-    }
-
-    /**
-     * Get the post metadata
-     */
-    protected async getNext() {
-        for (const id of this.ids) {
-            this.id = id;
-            await this.postPage(id, 1);
-            await this.sleep(1);
-        }
-        this.finished = true;
-    }
-}
-
-/**
- * An Instagram hashtag API wrapper
- */
-export class Hashtag extends Instagram {
-    constructor(id: string, options: IOptions = {}) {
-        const endpoint = "https://instagram.com/explore/tags/";
-        const pageQuery = "data.hashtag.edge_hashtag_to_media.page_info";
-        const edgeQuery = "data.hashtag.edge_hashtag_to_media.edges";
-        super(endpoint, id, pageQuery, edgeQuery, options);
-    }
-}
-
-/**
- * An Instagram location API wrapper
- */
-export class Location extends Instagram {
-    constructor(id: string, options: IOptions = {}) {
-        const endpoint = "https://instagram.com/explore/locations/";
-        const pageQuery = "data.location.edge_location_to_media.page_info";
-        const edgeQuery = "data.location.edge_location_to_media.edges";
-        super(endpoint, id, pageQuery, edgeQuery, options);
-    }
-}
-
-/**
- * An Instagram user API wrapper
- */
-export class User extends Instagram {
-    constructor(id: string, options: IOptions = {}) {
-        const endpoint = "https://instagram.com/";
-        const pageQuery = "data.user.edge_owner_to_timeline_media.page_info";
-        const edgeQuery = "data.user.edge_owner_to_timeline_media.edges";
-        super(endpoint, id, pageQuery, edgeQuery, options);
-    }
+    PAUSED = "Paused",
+    ABORTED = "Request aborted",
 }

@@ -4,7 +4,7 @@ import * as fs from "fs";
 import * as readline from "readline";
 import * as winston from "winston";
 
-import {Hashtag, IOptions, Location, Post, User} from "./api";
+import {Hashtag, IOptions, Location, Post, User} from "./api/api";
 import {download, toCSV, toJSON} from "./download";
 
 /**

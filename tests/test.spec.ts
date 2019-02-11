@@ -1,6 +1,7 @@
 import * as winston from "winston";
 import * as Instamancer from "..";
-import {Hashtag, Instagram, IOptions, Location, User} from "../src/api";
+import {Hashtag, IOptions, Location, User} from "../src/api/api";
+import {Instagram} from "../src/api/instagram";
 import {startServer, stopServer} from "./server";
 
 jest.setTimeout(120 * 60 * 1000);
