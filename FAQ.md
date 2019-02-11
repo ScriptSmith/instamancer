@@ -18,6 +18,8 @@ Running without the `--full` and `-d` arguments is faster. Disabling grafting wi
 
 Reducing the time between interactions with the page only seems to induce rate limiting. Additionally, scraping does not appear to be parallelisable because the pagination between requests doesn't use time codes.
 
+If you want something *really* fast, try [Instaphyte](https://github.com/ScriptSmith/instaphyte). It's as much as 7x faster.
+
 ## Can I run multiple instances at the same time rather than batch scraping?
 No. Instagram will probably rate-limit your IP address and then Instamancer will have to pause until the limit is lifted.
 
