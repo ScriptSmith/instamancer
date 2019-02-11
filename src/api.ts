@@ -65,7 +65,7 @@ export interface IOptions {
     // Extract the full amount of information from the API
     fullAPI?: boolean;
 
-    // Use a proxy in chrome to connect to Instagram
+    // Use a proxy in Chrome to connect to Instagram
     proxyURL?: string;
 }
 
