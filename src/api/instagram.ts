@@ -301,7 +301,7 @@ export class Instagram {
      * Halt execution
      * @param time Seconds
      */
-    protected async sleep(time) {
+    protected async sleep(time: number) {
         for (let i = time; i > 0; i--) {
             this.sleepRemaining = i;
             await this.progress(Progress.SCRAPING);
@@ -626,7 +626,7 @@ export class Instagram {
     /**
      * Add post to buffer
      */
-    private async addToPostBuffer(post) {
+    private async addToPostBuffer(post: object) {
         await this.postBufferLock.acquireAsync();
         this.postBuffer.push(post);
         this.postBufferLock.release();
