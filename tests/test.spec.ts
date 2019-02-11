@@ -1,6 +1,7 @@
 import * as winston from "winston";
 import * as Instamancer from "..";
-import {Hashtag, IOptions, Location, User} from "../src/api";
+import {Hashtag, Instagram, IOptions, Location, User} from "../src/api";
+import {startServer, stopServer} from "./server";
 
 jest.setTimeout(120 * 60 * 1000);
 /* tslint:disable:no-console */
@@ -258,4 +259,82 @@ test("Failed Page visit", async () => {
     }
 
     expect(scraped.length).toBe(0);
+});
+
+interface IFakePageOptions {
+    // The port the server is hosted on
+    port?: number;
+
+    // The query to get API pages
+    pageQuery?: string;
+
+    // The query to get posts
+    edgeQuery?: string;
+
+    // The page to catch api requests on
+    catchPage?: string;
+
+    // The page to visit posts
+    postPage?: string;
+
+    // Regular API options
+    options?: IOptions;
+}
+
+class FakePage extends Instagram {
+    constructor(options: IFakePageOptions = {port: 0}) {
+        const baseURL = "http://127.0.0.1:" + options.port;
+
+        const silentOptions: IOptions = {silent: true};
+        super(baseURL, "", options.pageQuery, options.edgeQuery, {...options.options, ...silentOptions});
+
+        this.catchURL = baseURL + "/" + options.catchPage;
+        this.postURL = baseURL + "/" + options.postPage;
+
+        setTimeout(async () => {
+            await this.forceStop();
+        }, 30000);
+    }
+}
+
+test("Network and API issues", async () => {
+    const port = await startServer();
+    console.log("Server: http://127.0.0.1:" + port);
+
+    async function testOptions(options: IFakePageOptions) {
+        process.stdout.write("Testing " + options.catchPage + "\n");
+
+        const api = new FakePage(options);
+        try {
+            for await (let _ of api.generator()) {
+                _ = null;
+            }
+        } catch (e) {
+            expect(e).toBeDefined();
+        }
+        await api.forceStop();
+    }
+
+    // Test rate limiting
+    await testOptions({port, catchPage: "rate_limit", options: {hibernationTime: 10}});
+
+    // Test invalid JSON response
+    await testOptions({port, catchPage: "invalid_json"});
+
+    // Test no next page in JSON response
+    await testOptions({port, catchPage: "no_next_page", pageQuery: "data"});
+
+    // Test duplicate post ids scraped
+    await testOptions({port, catchPage: "duplicate_ids", pageQuery: "data", edgeQuery: "data.edges"});
+
+    // Test invalid post id page
+    await testOptions({
+        catchPage: "invalid_id",
+        edgeQuery: "data.edges",
+        options: {fullAPI: true, total: 1},
+        pageQuery: "data",
+        port,
+    });
+
+    await stopServer();
 });

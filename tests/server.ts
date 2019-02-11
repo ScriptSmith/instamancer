@@ -5,8 +5,9 @@ const app = express();
 
 app.get("/", (req, res) => {
     res.send(`
+            <!DOCTYPE html>
             <script type="text/javascript">
-                const endpoints = ["rate_limit", "invalid_json", "no_next_page", "duplicate_ids"];
+                const endpoints = ["rate_limit", "invalid_json", "no_next_page", "duplicate_ids", "invalid_id"];
                 setInterval(() => {
                     for (const endpoint of endpoints) {
                         console.log("API request to " + endpoint);
@@ -60,8 +61,34 @@ app.get("/duplicate_ids", (req, res) => {
     }));
 });
 
-const listener = app.listen(0);
+app.get("/invalid_id", (req, res) => {
+    res.send(JSON.stringify({
+        data: {
+            edges: [
+                {
+                    node: {
+                        id: "badid",
+                    },
+                },
+            ],
+            end_cursor: "cursor",
+            has_next_page: false,
+        },
+    }));
+});
 
-export function spawnServer(): number {
+let listener;
+
+export async function startServer(): Promise<number> {
+    await new Promise((resolve) => {
+        listener = app.listen(0, resolve);
+    });
+
     return (listener.address() as AddressInfo).port;
+}
+
+export async function stopServer() {
+    await new Promise((resolve) => {
+        listener.close(resolve);
+    });
 }

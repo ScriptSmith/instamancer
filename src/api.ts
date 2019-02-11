@@ -116,8 +116,8 @@ export class Instagram {
     protected finished: boolean = false;
 
     // Instagram URLs
-    protected readonly catchURL: string = "https://www.instagram.com/graphql/query";
-    protected readonly postURL: string = "https://instagram.com/p/";
+    protected catchURL: string = "https://www.instagram.com/graphql/query";
+    protected postURL: string = "https://instagram.com/p/";
 
     // Puppeteer state
     private browser: Browser;
