@@ -121,6 +121,7 @@ export class Instagram {
 
     // Puppeteer state
     private browser: Browser;
+    private browserDisconnected: boolean = true;
     private page: Page;
     private readonly headless: boolean;
 
@@ -226,6 +227,7 @@ export class Instagram {
      * Force the API to stop
      */
     public async forceStop() {
+        this.finished = true;
         await this.stop();
     }
 
@@ -392,6 +394,8 @@ export class Instagram {
             args,
             headless: this.headless,
         });
+        this.browserDisconnected = false;
+        this.browser.on("disconnected", () => this.browserDisconnected = true);
 
         // New page
         this.page = await this.browser.newPage();
@@ -452,8 +456,12 @@ export class Instagram {
         await Promise.all(this.pagePromises);
 
         // Close page and browser
-        await this.page.close();
-        await this.browser.close();
+        if (!this.page.isClosed()) {
+            await this.page.close();
+        }
+        if (!this.browserDisconnected) {
+            await this.browser.close();
+        }
 
         // Clear request buffers
         await this.requestBufferLock.acquireAsync();
