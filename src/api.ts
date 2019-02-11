@@ -699,6 +699,7 @@ export class Instagram {
     private async jump() {
         await this.page.keyboard.press("PageUp");
         await this.page.keyboard.press("End");
+        await this.page.keyboard.press("End");
 
         // Move mouse randomly
         const width = this.page.viewport()["width"];
