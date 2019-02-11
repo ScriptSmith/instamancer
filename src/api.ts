@@ -165,6 +165,7 @@ export class Instagram {
     // Number of times to attempt to visit url initially
     private readonly maxPageUrlAttempts = 3;
     private pageUrlAttempts = 0;
+    private postPageRetries = 5;
 
     // Output
     private readonly silent: boolean = false;
