@@ -415,6 +415,7 @@ export class Instagram {
 
             // Log error and wait
             this.logger.error(e);
+            this.logger.error(this.url);
             await this.progress(Progress.ABORTED);
             await this.sleep(60);
 
