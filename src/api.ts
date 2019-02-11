@@ -267,7 +267,7 @@ export class Instagram {
     /**
      * Open a post in a new page, then extract its metadata
      */
-    protected async postPage(post) {
+    protected async postPage(post: string, retries: number) {
         // Create page
         const postPage = await this.browser.newPage();
         await postPage.setRequestInterception(true);
@@ -303,7 +303,9 @@ export class Instagram {
             await postPage.close();
 
             // Retry
-            await this.postPage(post);
+            if (retries > 0) {
+                await this.postPage(post, --retries);
+            }
         }
     }
 
@@ -661,7 +663,7 @@ export class Instagram {
                 if (this.index < this.total || this.total === 0) {
                     this.index++;
                     if (this.fullAPI) {
-                        this.pagePromises.push(this.postPage(post["node"]["shortcode"]));
+                        this.pagePromises.push(this.postPage(post["node"]["shortcode"], this.postPageRetries));
                     } else {
                         await this.addToPostBuffer(post);
                     }
@@ -746,7 +748,7 @@ export class Post extends Instagram {
     protected async getNext() {
         for (const id of this.ids) {
             this.id = id;
-            await this.postPage(id);
+            await this.postPage(id, 1);
             await this.sleep(1);
         }
         this.finished = true;
