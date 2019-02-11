@@ -163,7 +163,7 @@ const apiOptions: IOptions[] = [
     {silent: true},
     {sleepTime: 5},
     {headless: false},
-    {enableGrafting: false},
+    {enableGrafting: false, total: 500},
     {fullAPI: true},
 ];
 
@@ -177,7 +177,7 @@ test("API options", async () => {
 
     // Add options list
     options = options.concat(apiOptions.map((option) => {
-        option.total = total;
+        option.total = option.total > total ? option.total : total;
         return option;
     }));
 
