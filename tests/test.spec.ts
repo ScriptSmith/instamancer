@@ -163,7 +163,7 @@ const apiOptions: IOptions[] = [
     {silent: true},
     {sleepTime: 5},
     {headless: false},
-    {enableGrafting: false, total: 500},
+    {enableGrafting: false},
     {fullAPI: true},
 ];
 
