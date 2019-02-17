@@ -320,7 +320,7 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>Web API simulation</td>
-        <td>:question:</td>
+        <td>:x:</td>
         <td>Python</td>
         <td><img src="https://img.shields.io/github/license/althonos/instalooter.svg"></td>
         <td><img src="https://img.shields.io/github/last-commit/althonos/instalooter.svg"></td>
