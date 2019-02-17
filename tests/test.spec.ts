@@ -201,17 +201,13 @@ test("API options", async () => {
 });
 
 test("Pausing", async () => {
-    const api = new Instamancer.Hashtag(hashtags[0], libraryTestOptions);
+    const api = new Instamancer.Hashtag(hashtags[0], {total: 100});
     const iterator = api.generator();
 
-    await iterator.next();
     api.pause();
-
-    await new Promise((resolve) => {
-        setTimeout(resolve, 2000);
-    });
-
-    api.pause();
+    setTimeout(() => {
+        api.pause();
+    }, 20000);
 
     for await (const post of iterator) {
         expect(post).toBeDefined();
