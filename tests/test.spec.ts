@@ -200,6 +200,26 @@ test("API options", async () => {
     }
 });
 
+class QuickGraft extends Instamancer.Hashtag {
+    constructor(id: string, options: IOptions = {}) {
+        super(id, options);
+        this.jumpMod = 2;
+    }
+}
+
+test("No grafting", async () => {
+    const total = 100;
+    const hashtag = hashtags[0];
+    const api = new QuickGraft(hashtag, {total, enableGrafting: false});
+    const scraped = [];
+
+    for await (const post of api.generator()) {
+        scraped.push(post);
+    }
+
+    expect(scraped.length).toBe(total);
+});
+
 test("Pausing", async () => {
     const api = new Instamancer.Hashtag(hashtags[0], {total: 100});
     const iterator = api.generator();

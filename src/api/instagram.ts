@@ -56,6 +56,9 @@ export class Instagram {
     protected catchURL: string = "https://www.instagram.com/graphql/query";
     protected postURL: string = "https://instagram.com/p/";
 
+    // Number of jumps before grafting
+    protected jumpMod: number = 100;
+
     // Puppeteer state
     private browser: Browser;
     private browserDisconnected: boolean = true;
@@ -97,7 +100,6 @@ export class Instagram {
     private readonly total: number;
     private index: number = 0;
     private jumps: number = 0;
-    private jumpMod: number = 100;
 
     // Number of times to attempt to visit url initially
     private readonly maxPageUrlAttempts = 3;
