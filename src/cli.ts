@@ -5,7 +5,7 @@ import * as readline from "readline";
 import * as winston from "winston";
 
 import {Hashtag, IOptions, Location, Post, User} from "./api/api";
-import {toCSV, toJSON} from "./download";
+import {download, toCSV, toJSON} from "./download";
 import {GetPool} from "./getpool/getPool";
 
 /**
@@ -131,6 +131,17 @@ function buildParser(args, callback) {
                 default: false,
                 describe: "Disable progress output",
             },
+            sync: {
+                boolean: true,
+                default: false,
+                describe: "Synchronously download files between API requests",
+            },
+            threads: {
+                alias: "k",
+                number: true,
+                default: 4,
+                describe: "The number of parallel download threads",
+            },
             waitDownload: {
                 alias: "w",
                 boolean: true,
@@ -233,7 +244,10 @@ async function spawn(args) {
     await obj.start();
 
     // Start download pool
-    const getPool = new GetPool();
+    const getPool = new GetPool(args["threads"]);
+
+    // Pick between synchronous and parallel downloads
+    const downloadFunction = args["sync"] ? download : getPool.add.bind(getPool);
 
     // Add pause callback
     function handleKeypress(str, key) {
@@ -300,7 +314,7 @@ async function spawn(args) {
         // Download the identified media
         if (!args["waitDownload"]) {
             for (const asset of downloadMedia) {
-                await getPool.add(asset[0], asset[1], asset[2], downdir, logger);
+                await downloadFunction(asset[0], asset[1], asset[2], downdir, logger);
             }
             downloadMedia = [];
         }
@@ -308,7 +322,7 @@ async function spawn(args) {
 
     // Download remaining media
     for (const asset of downloadMedia) {
-        await getPool.add(asset[0], asset[1], asset[2], downdir, logger);
+        await downloadFunction(asset[0], asset[1], asset[2], downdir, logger);
     }
 
     // Close download pool
