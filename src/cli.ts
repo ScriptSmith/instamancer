@@ -5,7 +5,8 @@ import * as readline from "readline";
 import * as winston from "winston";
 
 import {Hashtag, IOptions, Location, Post, User} from "./api/api";
-import {download, toCSV, toJSON} from "./download";
+import {toCSV, toJSON} from "./download";
+import {GetPool} from "./getpool/getPool";
 
 /**
  * Build argument parser
@@ -136,7 +137,7 @@ function buildParser(args, callback) {
                 default: false,
                 describe: "When true, media will only download once scraping is finished",
             },
-                filename: {
+            filename: {
                 alias: ["file", "f"],
                 default: "[id]",
                 describe: "Name of the output file",
@@ -231,6 +232,9 @@ async function spawn(args) {
     const obj = new api(ids, options);
     await obj.start();
 
+    // Start download pool
+    const getPool = new GetPool();
+
     // Add pause callback
     function handleKeypress(str, key) {
         if (key.name === "space") {
@@ -296,7 +300,7 @@ async function spawn(args) {
         // Download the identified media
         if (!args["waitDownload"]) {
             for (const asset of downloadMedia) {
-                await download(asset[0], asset[1], asset[2], downdir, logger);
+                await getPool.add(asset[0], asset[1], asset[2], downdir, logger);
             }
             downloadMedia = [];
         }
@@ -304,8 +308,11 @@ async function spawn(args) {
 
     // Download remaining media
     for (const asset of downloadMedia) {
-        await download(asset[0], asset[1], asset[2], downdir, logger);
+        await getPool.add(asset[0], asset[1], asset[2], downdir, logger);
     }
+
+    // Close download pool
+    getPool.close();
 
     // Replace filename
     const filename = args["filename"].replace("[id]", args["id"]).replace("[endpoint]", args["_"]);

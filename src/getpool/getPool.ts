@@ -43,12 +43,12 @@ class GetJob {
 /**
  * A pool of jobs that only executes k jobs 'simultaneously'
  */
-class GetPool {
+export class GetPool {
     // Jobs that are currently being executed
-    private runningJobs: GetJob[];
+    private runningJobs: GetJob[] = [];
 
     // Jobs that are yet to be executed
-    private queuedJobs: GetJob[];
+    private queuedJobs: GetJob[] = [];
 
     // Maximum number of jobs to be executed simultaneously
     private readonly maxConnections: number;
@@ -62,13 +62,16 @@ class GetPool {
     // End-of-input signal triggered externally by close()
     private finished: boolean = false;
 
-    constructor(connections: number = 8) {
+    constructor(connections: number = 1) {
         this.maxConnections = connections;
-        this.loop = setInterval(this.poolLoop, 100);
+        this.loop = setInterval(() => {
+            this.poolLoop.bind(this)();
+        }, 100);
     }
 
-    public add(job: GetJob) {
-        this.queuedJobs.push(job);
+    public add(url: string, name: string, extension: string, directory: string,
+               logger: winston.Logger) {
+        this.queuedJobs.push(new GetJob(url, name, extension, directory, logger));
     }
 
     public close() {
@@ -92,10 +95,10 @@ class GetPool {
         }
 
         // Add new jobs to empty running slots
-        while (this.runningJobs.length < this.maxConnections) {
-            const promise = this.queuedJobs.shift();
-            promise.start();
-            this.runningJobs.push(promise);
+        while (this.queuedJobs.length > 0 && this.runningJobs.length < this.maxConnections) {
+            const job = this.queuedJobs.shift();
+            job.start();
+            this.runningJobs.push(job);
         }
 
         // End the interval when end-of-input signal given
