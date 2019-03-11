@@ -1,6 +1,6 @@
 {
   "name": "instamancer",
-  "version": "1.3.0",
+  "version": "1.3.0h",
   "description": "Scrape the Instagram API with Puppeteer",
   "main": "index.js",
   "bin": {
@@ -45,7 +45,7 @@
     "@types/request": "^2.48.1",
     "@types/yargs": "^12.0.9",
     "express": "^4.16.4",
-    "jest": "^24.1.0",
+    "jest": "^24.3.0",
     "ts-jest": "^23.10.5"
   },
   "jest": {
