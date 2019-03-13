@@ -201,6 +201,8 @@ const options: Instamancer.IOptions = {
 
 A comparison of Instagram scraping tools. Please suggest more tools and criteria through a pull request.
 
+To see a speed comparison, visit [this page](https://scriptsmith.github.io/instagram-speed-test)
+
 <table>
 <thead>
     <tr>
@@ -209,7 +211,6 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <th>Users</th>
         <th>Locations</th>
         <th>Posts</th>
-        <th>Max speed*</th>
         <th>Login not required</th>
         <th>Private feeds</th>
         <th>Batch mode</th>
@@ -236,7 +237,6 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
-        <td>3.1 posts/second</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
@@ -261,7 +261,6 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
-        <td>21.8 posts/second</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
         <td>:x:</td>
@@ -286,7 +285,6 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
-        <td>14.7 posts/second</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
@@ -311,7 +309,6 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
-        <td>2.2 posts/second</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
@@ -336,7 +333,6 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
-        <td>2.1 posts/second</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
         <td>:x:</td>
@@ -361,7 +357,6 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
-        <td>1.8 posts/second</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
@@ -432,5 +427,3 @@ A comparison of Instagram scraping tools. Please suggest more tools and criteria
     </tr>
 </tbody>
 </table>
-
-\*Max speed is calculated by determining the fastest time it takes to scrape 1000 posts from a given hashtag. A question mark indicates that the test was not able to be run successfully.
