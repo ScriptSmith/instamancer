@@ -221,6 +221,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <th>Scraping method</th>
         <th>Daily builds</th>
         <th>Main language</th>
+        <th>Speed ----------------------------</th>
         <th>License ----------------------------</th>
         <th>Last commit ----------------------------</th>
         <th>Open Issues ----------------------------</th>
@@ -247,6 +248,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>Web API request interception</td>
         <td>:heavy_check_mark:</td>
         <td>Typescript</td>
+        <td><a href="https://scriptsmith.github.io/instagram-speed-test"><img src="https://firebasestorage.googleapis.com/v0/b/instagram-speed-test.appspot.com/o/instamancer.svg?alt=media&token=dcc3e623-ee88-4d74-ae86-2d969a1cd8ad"></a></td>
         <td><img src="https://img.shields.io/github/license/scriptsmith/instamancer.svg"></td>
         <td><img src="https://img.shields.io/github/last-commit/scriptsmith/instamancer.svg"></td>
         <td><img src="https://img.shields.io/github/issues/scriptsmith/instamancer.svg"></td>
@@ -271,6 +273,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>Web API simulation</td>
         <td>:heavy_check_mark:</td>
         <td>Python</td>
+        <td><a href="https://scriptsmith.github.io/instagram-speed-test"><img src="https://firebasestorage.googleapis.com/v0/b/instagram-speed-test.appspot.com/o/instaphyte.svg?alt=media&token=8e16505d-1259-42a4-90bc-cf8a6d326f55"></a></td>
         <td><img src="https://img.shields.io/github/license/scriptsmith/instaphyte.svg"></td>
         <td><img src="https://img.shields.io/github/last-commit/scriptsmith/instaphyte.svg"></td>
         <td><img src="https://img.shields.io/github/issues/scriptsmith/instaphyte.svg"></td>
@@ -295,6 +298,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>Web API simulation</td>
         <td>:x:</td>
         <td>Python</td>
+        <td><a href="https://scriptsmith.github.io/instagram-speed-test"><img src="https://firebasestorage.googleapis.com/v0/b/instagram-speed-test.appspot.com/o/instaloader.svg?alt=media&token=e7b05b24-6c96-43b7-9e5e-4951f7b1d9ba"></a></td>
         <td><img src="https://img.shields.io/github/license/instaloader/instaloader.svg"></td>
         <td><img src="https://img.shields.io/github/last-commit/instaloader/instaloader.svg"></td>
         <td><img src="https://img.shields.io/github/issues/instaloader/instaloader.svg"></td>
@@ -319,6 +323,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>Web API simulation</td>
         <td>:x:</td>
         <td>Python</td>
+        <td><a href="https://scriptsmith.github.io/instagram-speed-test"><img src="https://firebasestorage.googleapis.com/v0/b/instagram-speed-test.appspot.com/o/instalooter.svg?alt=media&token=ed9564f5-6011-4090-95e7-2b80e7f6e41f"></a></td>
         <td><img src="https://img.shields.io/github/license/althonos/instalooter.svg"></td>
         <td><img src="https://img.shields.io/github/last-commit/althonos/instalooter.svg"></td>
         <td><img src="https://img.shields.io/github/issues/althonos/instalooter.svg"></td>
@@ -343,6 +348,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>Web DOM reading</td>
         <td>:x:</td>
         <td>Python</td>
+       <td>:question:</td>
         <td><img src="https://img.shields.io/github/license/huaying/instagram-crawler.svg"></td>
         <td><img src="https://img.shields.io/github/last-commit/huaying/instagram-crawler.svg"></td>
         <td><img src="https://img.shields.io/github/issues/huaying/instagram-crawler.svg"></td>
@@ -367,6 +373,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>Web API simulation</td>
         <td>:x:</td>
         <td>Python</td>
+        <td><a href="https://scriptsmith.github.io/instagram-speed-test"><img src="https://firebasestorage.googleapis.com/v0/b/instagram-speed-test.appspot.com/o/instagram-scraper.svg?alt=media&token=ecdf626f-e3fd-4959-b047-5b13f244370b"></a></td>
         <td><img src="https://img.shields.io/github/license/rarcega/instagram-scraper.svg"></td>
         <td><img src="https://img.shields.io/github/last-commit/rarcega/instagram-scraper.svg"></td>
         <td><img src="https://img.shields.io/github/issues/rarcega/instagram-scraper.svg"></td>
@@ -391,6 +398,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>App and Web API simulation</td>
         <td>:x:</td>
         <td>Python</td>
+        <td>:question:</td>
         <td><img src="https://img.shields.io/github/license/ping/instagram_private_api.svg"></td>
         <td><img src="https://img.shields.io/github/last-commit/ping/instagram_private_api.svg"></td>
         <td><img src="https://img.shields.io/github/issues/ping/instagram_private_api.svg"></td>
@@ -415,6 +423,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>Web API simulation</td>
         <td>:x:</td>
         <td>PHP</td>
+        <td>:question:</td>
         <td><img src="https://img.shields.io/github/license/postaddictme/instagram-php-scraper.svg"></td>
         <td><img src="https://img.shields.io/github/last-commit/postaddictme/instagram-php-scraper.svg"></td>
         <td><img src="https://img.shields.io/github/issues/postaddictme/instagram-php-scraper.svg"></td>
