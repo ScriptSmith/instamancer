@@ -326,7 +326,10 @@ async function spawn(args) {
     }
 
     // Close download pool
-    getPool.close();
+    await new Promise((resolve) => {
+        getPool.close(resolve);
+    });
+    await Promise.all(getPool.promises);
 
     // Replace filename
     const filename = args["filename"].replace("[id]", args["id"]).replace("[endpoint]", args["_"]);

@@ -24,14 +24,21 @@ class GetJob {
     public async start() {
         mkdirp.sync(this.directory);
         try {
-            await axios({
+            // Get data
+            const response = await axios({
                 method: "get",
                 responseType: "stream",
                 url: this.url,
-            }).then((response) => {
-                // noinspection TypeScriptValidateJSTypes
-                response.data.pipe(fs.createWriteStream(this.directory + "/" + this.name + "." + this.extension));
             });
+
+            // Write to file
+            await new Promise(async (resolve) => {
+                const stream = fs.createWriteStream(this.directory + "/" + this.name + "." + this.extension);
+                // noinspection TypeScriptValidateJSTypes
+                response.data.pipe(stream);
+                stream.on("finish", resolve);
+            });
+
         } catch (e) {
             this.logger.info(`Downloading ${this.url} failed`);
             this.logger.debug(e);
@@ -44,6 +51,10 @@ class GetJob {
  * A pool of jobs that only executes k jobs 'simultaneously'
  */
 export class GetPool {
+
+    // Job promises
+    public promises: Array<Promise<void>> = [];
+
     // Jobs that are currently being executed
     private runningJobs: GetJob[] = [];
 
@@ -62,6 +73,9 @@ export class GetPool {
     // End-of-input signal triggered externally by close()
     private finished: boolean = false;
 
+    // End-of-input resolve function
+    private resolve: () => {};
+
     constructor(connections: number = 1) {
         this.maxConnections = connections;
         this.loop = setInterval(() => {
@@ -74,8 +88,9 @@ export class GetPool {
         this.queuedJobs.push(new GetJob(url, name, extension, directory, logger));
     }
 
-    public close() {
+    public close(resolve) {
         this.finished = true;
+        this.resolve = resolve;
     }
 
     private poolLoop() {
@@ -97,13 +112,14 @@ export class GetPool {
         // Add new jobs to empty running slots
         while (this.queuedJobs.length > 0 && this.runningJobs.length < this.maxConnections) {
             const job = this.queuedJobs.shift();
-            job.start();
+            this.promises.push(job.start());
             this.runningJobs.push(job);
         }
 
         // End the interval when end-of-input signal given
         if (this.finished && this.queuedJobs.length === 0 && this.runningJobs.length === 0) {
             clearInterval(this.loop);
+            this.resolve();
         }
 
         // Release lock
