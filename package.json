@@ -31,6 +31,9 @@
     "winston": "^3.2.1",
     "yargs": "^13.2.2"
   },
+  "engines": {
+    "node": ">=10.15.0"
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:ScriptSmith/instamancer.git"
