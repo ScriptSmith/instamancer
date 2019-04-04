@@ -680,41 +680,28 @@ export class Instagram {
     /**
      * Read the posts that are pre-loaded on the page
      */
-    private async scrapeDefaultPosts(error?: boolean) {
-        try {
-            // Get shortcodes from page
-            const shortCodes = await this.page.evaluate((url) => {
-                return Array.from(document.links)
-                    .filter((link) => {
-                        return link.href.startsWith(url);
-                    })
-                    .map((link) => {
-                        const linkSplit = link.href.split("/");
-                        return linkSplit[linkSplit.length - 2];
-                    });
-            }, this.defaultPostURL);
+    private async scrapeDefaultPosts() {
+        // Get shortcodes from page
+        const shortCodes = await this.page.evaluate((url) => {
+            return Array.from(document.links)
+                .filter((link) => {
+                    return link.href.startsWith(url);
+                })
+                .map((link) => {
+                    const linkSplit = link.href.split("/");
+                    return linkSplit[linkSplit.length - 2];
+                });
+        }, this.defaultPostURL);
 
-            // Add postPage promises
-            for (const shortCode of shortCodes) {
-                if (this.index < this.total || this.total === 0) {
-                    this.index++;
-                    this.pagePromises.push(this.postPage(shortCode, this.postPageRetries));
-                } else {
-                    this.finished = true;
-                    break;
-                }
-            }
-        } catch (e) {
-            if (error) {
-                return;
+        // Add postPage promises
+        for (const shortCode of shortCodes) {
+            if (this.index < this.total || this.total === 0) {
+                this.index++;
+                this.pagePromises.push(this.postPage(shortCode, this.postPageRetries));
             } else {
-                // Log error and wait
-                this.logger.error(e);
-                await this.progress(Progress.ABORTED);
-                await this.sleep(10);
-                await this.scrapeDefaultPosts(true);
+                this.finished = true;
+                break;
             }
-
         }
     }
 }
