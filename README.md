@@ -110,11 +110,15 @@ Options:
   --download, -d          Save images and videos from posts
                                                       [boolean] [default: false]
   --graft, -g             Enable grafting              [boolean] [default: true]
-  --full                  Get the full details about posts from the API
-                                                      [boolean] [default: false]
+  --full                  Get the full list of posts and their details from the
+                          API and web page            [boolean] [default: false]
   --video                 Download videos. Only works in full mode
                                                       [boolean] [default: false]
   --silent                Disable progress output     [boolean] [default: false]
+  --sync                  Synchronously download files between API requests
+                                                      [boolean] [default: false]
+  --threads, -k           The number of parallel download threads
+                                                           [number] [default: 4]
   --waitDownload, -w      When true, media will only download once scraping is
                           finished                    [boolean] [default: false]
   --filename, --file, -f  Name of the output file              [default: "[id]"]

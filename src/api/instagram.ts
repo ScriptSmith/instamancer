@@ -55,6 +55,7 @@ export class Instagram {
     // Instagram URLs
     protected catchURL: string = "https://www.instagram.com/graphql/query";
     protected postURL: string = "https://instagram.com/p/";
+    protected defaultPostURL: string = "https://www.instagram.com/p/";
 
     // Number of jumps before grafting
     protected jumpMod: number = 100;
@@ -387,7 +388,13 @@ export class Instagram {
 
         // Log errors
         this.page.on("error", (error) => this.logger.error(error));
+
+        // Gather initial posts from web page
+        if (this.fullAPI) {
+            await this.scrapeDefaultPosts();
+        }
     }
+
 
     /**
      * Close the page and browser
@@ -669,6 +676,47 @@ export class Instagram {
 
         // Re-start page
         await this.start();
+    }
+
+    /**
+     * Read the posts that are pre-loaded on the page
+     */
+    private async scrapeDefaultPosts(error?: boolean) {
+        try {
+            // Get shortcodes from page
+            const shortCodes = await this.page.evaluate((url) => {
+                return Array.from(document.links)
+                    .filter((link) => {
+                        return link.href.startsWith(url);
+                    })
+                    .map((link) => {
+                        const linkSplit = link.href.split("/");
+                        return linkSplit[linkSplit.length - 2];
+                    });
+            }, this.defaultPostURL);
+
+            // Add postPage promises
+            for (const shortCode of shortCodes) {
+                if (this.index < this.total || this.total === 0) {
+                    this.index++;
+                    this.pagePromises.push(this.postPage(shortCode, this.postPageRetries));
+                } else {
+                    this.finished = true;
+                    break;
+                }
+            }
+        } catch (e) {
+            if (error) {
+                return;
+            } else {
+                // Log error and wait
+                this.logger.error(e);
+                await this.progress(Progress.ABORTED);
+                await this.sleep(10);
+                await this.scrapeDefaultPosts(true);
+            }
+
+        }
     }
 }
 

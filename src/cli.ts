@@ -119,7 +119,7 @@ function buildParser(args, callback) {
             full: {
                 boolean: true,
                 default: false,
-                describe: "Get the full details about posts from the API",
+                describe: "Get the full list of posts and their details from the API and web page",
             },
             video: {
                 boolean: true,
