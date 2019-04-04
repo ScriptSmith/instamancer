@@ -395,7 +395,6 @@ export class Instagram {
         }
     }
 
-
     /**
      * Close the page and browser
      */
