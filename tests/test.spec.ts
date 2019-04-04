@@ -165,6 +165,7 @@ const apiOptions: IOptions[] = [
     {headless: false},
     {enableGrafting: false},
     {fullAPI: true},
+    {fullAPI: true, total: 5},
 ];
 
 test("API options", async () => {
@@ -177,12 +178,12 @@ test("API options", async () => {
 
     // Add options list
     options = options.concat(apiOptions.map((option) => {
-        option.total = option.total > total ? option.total : total;
+        option.total = option.total < total ? option.total : total;
         return option;
     }));
 
-    let first = true;
-    for (const option of options) {
+    for (const indexOption of options.entries()) {
+        const [index, option] = indexOption;
         const tag = new Hashtag(hashtagId, option);
         const scraped = [];
 
@@ -191,9 +192,10 @@ test("API options", async () => {
             scraped.push(post);
         }
 
-        if (first) {
-            first = false;
+        if (index === 0) {
             expect(scraped.length).toBeGreaterThan(total);
+        } else if (index === options.length - 1) {
+            expect(scraped.length).toBe(5);
         } else {
             expect(scraped.length).toBe(total);
         }

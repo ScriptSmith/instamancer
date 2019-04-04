@@ -682,6 +682,7 @@ export class Instagram {
      */
     private async scrapeDefaultPosts() {
         // Get shortcodes from page
+        /* istanbul ignore next */
         const shortCodes = await this.page.evaluate((url) => {
             return Array.from(document.links)
                 .filter((link) => {
