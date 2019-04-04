@@ -685,7 +685,7 @@ export class Instagram {
         const shortCodes = await this.page.evaluate((url) => {
             return Array.from(document.links)
                 .filter((link) => {
-                    return link.href.startsWith(url);
+                    return link.href.startsWith(url) && link.href.split("/").length >= 2;
                 })
                 .map((link) => {
                     const linkSplit = link.href.split("/");
