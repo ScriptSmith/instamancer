@@ -26,6 +26,9 @@ if (!process.env.TRAVIS) {
 
 const browserPath = process.env.CHROME ? process.env.CHROME : "/usr/bin/google-chrome-stable";
 
+// Name of an account with 0 posts to test graceful exit
+const emptyAccountName = "emptyaccount";
+
 const libraryTestOptions: IOptions = {
     logger: winston.createLogger({
         format: winston.format.json(),
@@ -159,6 +162,15 @@ test("Instagram API limits", async () => {
             }
         }
     }
+});
+
+test("Empty page", async () => {
+    const user = Instamancer.user(emptyAccountName, {});
+    const userPosts = [];
+    for await (const post of user) {
+        userPosts.push(post);
+    }
+    expect(userPosts.length).toBe(0);
 });
 
 const apiOptions: IOptions[] = [

@@ -90,6 +90,9 @@ export class Instagram {
     private hibernate: boolean = false;
     private readonly hibernationTime: number = 60 * 20; // 20 minutes
 
+    // Number of jumps before exiting because lack of data
+    private failedJumps: number = 10;
+
     // Strings denoting the access methods of API objects
     private readonly pageQuery: string;
     private readonly edgeQuery: string;
@@ -279,6 +282,12 @@ export class Instagram {
 
             // Interact with page to stimulate request
             await this.jump();
+
+            // Stop if no data is being gathered
+            if (this.jumps === this.failedJumps && this.index === 0) {
+                this.finished = true;
+                break;
+            }
 
             // Enable grafting if required
             if (this.jumps % this.jumpMod === 0) {
