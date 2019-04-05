@@ -59,6 +59,13 @@ Or run without a sandbox:
 export NO_SANDBOX=true
 ```
 
+#### Without downloading chromium
+If you wish to install Instamancer without downloading chromium, enable the `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` environment variable before installation
+
+```
+export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+```
+
 ### From this repository
 Requires [TypeScript](https://github.com/Microsoft/TypeScript#installing)
 
@@ -129,6 +136,8 @@ Options:
   --logging               Level of logger
                    [choices: "error", "none", "info", "debug"] [default: "none"]
   --logfile               Name of the log file      [default: "instamancer.log"]
+  --browser               Location of the browser. Defaults to the copy
+                          downloaded at installation
 
 Examples:
   instamancer hashtag instagood -d          Download all the available posts,
@@ -174,30 +183,33 @@ Instamancer.post(ids, options);
 const options: Instamancer.IOptions = {
     // Total posts to download. 0 for unlimited
     total: number,
-
+    
     // Run Chrome in headless mode
     headless: boolean,
-
+    
     // Logging events
     logger: winston.Logger,
-
+    
     // Run without output to stdout
     silent: boolean,
-
+    
     // Time to sleep between interactions with the page
     sleepTime: number,
-
+    
     // Time to sleep when rate-limited
     hibernationTime: number,
-
+    
     // Enable the grafting process
     enableGrafting: boolean,
-
+    
     // Extract the full amount of information from the API
     fullAPI: boolean,
-
+    
     // Use a proxy in Chrome to connect to Instagram
     proxyURL: string,
+    
+    // Location of the chromium / chrome binary executable
+    executablePath: string,
 }
 ```
 

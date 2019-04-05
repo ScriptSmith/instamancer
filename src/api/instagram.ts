@@ -1,7 +1,7 @@
 import AwaitLock = require("await-lock");
 import chalk from "chalk";
 import * as _ from "lodash/object";
-import {Browser, Headers, launch, Page, Request, Response} from "puppeteer";
+import {Browser, Headers, launch, LaunchOptions, Page, Request, Response} from "puppeteer";
 import * as winston from "winston";
 import {IOptions} from "./api";
 import {PostIdSet} from "./postIdSet";
@@ -123,6 +123,9 @@ export class Instagram {
     // Proxy for Instagram connection
     private readonly proxyURL: string;
 
+    // Location of chromium / chrome binary executable
+    private readonly executablePath: string;
+
     /**
      * Create API wrapper instance
      * @param endpoint the url for the type of resource to scrape
@@ -148,6 +151,7 @@ export class Instagram {
         this.hibernationTime = options.hibernationTime;
         this.fullAPI = options.fullAPI;
         this.proxyURL = options.proxyURL;
+        this.executablePath = options.executablePath;
     }
 
     /**
@@ -331,12 +335,18 @@ export class Instagram {
             args.push("--proxy-server=" + this.proxyURL);
         }
 
-        // Launch browser
-        await this.progress(Progress.LAUNCHING);
-        this.browser = await launch({
+        // Browser launch options
+        const options: LaunchOptions = {
             args,
             headless: this.headless,
-        });
+        };
+        if (this.executablePath !== undefined) {
+            options.executablePath = this.executablePath;
+        }
+
+        // Launch browser
+        await this.progress(Progress.LAUNCHING);
+        this.browser = await launch(options);
         this.browserDisconnected = false;
         this.browser.on("disconnected", () => this.browserDisconnected = true);
 

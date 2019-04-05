@@ -172,6 +172,10 @@ function buildParser(args, callback) {
                 default: "instamancer.log",
                 describe: "Name of the log file",
             },
+            browser: {
+                default: undefined,
+                describe: "Location of the browser. Defaults to the copy downloaded at installation",
+            },
         })
         .demandCommand()
         .example("$0 hashtag instagood -d",
@@ -236,6 +240,7 @@ async function spawn(args) {
         sleepTime: 2,
         enableGrafting: args["graft"],
         fullAPI: args["full"],
+        executablePath: args["browser"],
     };
 
     // Start API

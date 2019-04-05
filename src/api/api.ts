@@ -31,6 +31,9 @@ export interface IOptions {
 
     // Use a proxy in Chrome to connect to Instagram
     proxyURL?: string;
+
+    // Location of the chromium / chrome binary executable
+    executablePath?: string;
 }
 
 /**

@@ -24,6 +24,8 @@ if (!process.env.TRAVIS) {
     largeSize /= 10;
 }
 
+const browserPath = process.env.CHROME ? process.env.CHROME : "/usr/bin/google-chrome-stable";
+
 const libraryTestOptions: IOptions = {
     logger: winston.createLogger({
         format: winston.format.json(),
@@ -164,6 +166,7 @@ const apiOptions: IOptions[] = [
     {sleepTime: 5},
     {headless: false},
     {enableGrafting: false},
+    {executablePath: browserPath},
     {fullAPI: true},
     {fullAPI: true, total: 5},
 ];
