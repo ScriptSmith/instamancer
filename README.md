@@ -124,20 +124,24 @@ Options:
   --silent                Disable progress output     [boolean] [default: false]
   --sync                  Synchronously download files between API requests
                                                       [boolean] [default: false]
-  --threads, -k           The number of parallel download threads
+  --threads, -k           The number of parallel download / upload threads
                                                            [number] [default: 4]
   --waitDownload, -w      When true, media will only download once scraping is
                           finished                    [boolean] [default: false]
   --filename, --file, -f  Name of the output file              [default: "[id]"]
   --filetype, --type, -t  Type of output file
                               [choices: "csv", "json", "both"] [default: "json"]
-  --downdir               Directory to save media
+  --downdir               Directory / Container to save media
                                           [default: "downloads/[endpoint]/[id]"]
+  --mediaPath, --mp       Store the paths of downloaded media in the
+                          '_mediaPath' key            [boolean] [default: false]
   --logging               Level of logger
                    [choices: "error", "none", "info", "debug"] [default: "none"]
   --logfile               Name of the log file      [default: "instamancer.log"]
   --browser               Location of the browser. Defaults to the copy
                           downloaded at installation
+  --swift                 Upload media to openstack's swift object storage
+                          rather than saving to disk  [boolean] [default: false]
 
 Examples:
   instamancer hashtag instagood -d          Download all the available posts,
