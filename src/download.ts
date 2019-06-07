@@ -16,14 +16,21 @@ export async function download(url: string, name: string, extension: string, dir
                                logger: winston.Logger) {
     mkdirp.sync(directory);
     try {
-        await axios({
+        // Get data
+        const response = await axios({
             method: "get",
             responseType: "stream",
             url,
-        }).then((response) => {
-            // noinspection TypeScriptValidateJSTypes
-            response.data.pipe(fs.createWriteStream(directory + "/" + name + "." + extension));
         });
+
+        // Write to file
+        await new Promise(async (resolve) => {
+            const stream = fs.createWriteStream(directory + "/" + name + "." + extension);
+            // noinspection TypeScriptValidateJSTypes
+            response.data.pipe(stream);
+            stream.on("finish", resolve);
+        });
+
     } catch (e) {
         logger.info(`Downloading ${url} failed`);
         logger.debug(e);

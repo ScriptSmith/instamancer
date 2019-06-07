@@ -4,7 +4,9 @@ import * as fs from "fs";
 import * as readline from "readline";
 import * as winston from "winston";
 
+import * as path from "path";
 import {Hashtag, IOptions, Location, Post, User} from "./api/api";
+import {getUploadFunction} from "./cloud";
 import {download, toCSV, toJSON} from "./download";
 import {GetPool} from "./getpool/getPool";
 
@@ -140,7 +142,7 @@ function buildParser(args, callback) {
                 alias: "k",
                 number: true,
                 default: 4,
-                describe: "The number of parallel download threads",
+                describe: "The number of parallel download / upload threads",
             },
             waitDownload: {
                 alias: "w",
@@ -161,7 +163,13 @@ function buildParser(args, callback) {
             },
             downdir: {
                 default: "downloads/[endpoint]/[id]",
-                describe: "Directory to save media",
+                describe: "Directory / Container to save media",
+            },
+            mediaPath: {
+                alias: "mp",
+                boolean: true,
+                default: false,
+                describe: "Store the paths of downloaded media in the '_mediaPath' key",
             },
             logging: {
                 default: "none",
@@ -175,6 +183,11 @@ function buildParser(args, callback) {
             browser: {
                 default: undefined,
                 describe: "Location of the browser. Defaults to the copy downloaded at installation",
+            },
+            swift: {
+                boolean: true,
+                default: false,
+                describe: "Upload media to openstack's swift object storage rather than saving to disk",
             },
         })
         .demandCommand()
@@ -243,16 +256,31 @@ async function spawn(args) {
         executablePath: args["browser"],
     };
 
+    // Connect to object storage
+    let downloadUpload = download;
+    if (args["swift"]) {
+        downloadUpload = getUploadFunction({
+            authUrl: process.env.OS_AUTH_URL,
+            password: process.env.OS_PASSWORD,
+            project: process.env.OS_PROJECT_ID,
+            // @ts-ignore
+            provider: "openstack",
+            region: process.env.OS_REGION_NAME,
+            userDomainName: "Default",
+            username: process.env.OS_USERNAME,
+        });
+    }
+
     // Start API
     logger.info("Starting API at " + Date.now());
     const obj = new api(ids, options);
     await obj.start();
 
     // Start download pool
-    const getPool = new GetPool(args["threads"]);
+    const getPool = new GetPool(args["threads"], downloadUpload);
 
     // Pick between synchronous and parallel downloads
-    const downloadFunction = args["sync"] ? download : getPool.add.bind(getPool);
+    const downloadFunction = args["sync"] ? downloadUpload : getPool.add.bind(getPool);
 
     // Add pause callback
     function handleKeypress(str, key) {
@@ -275,8 +303,10 @@ async function spawn(args) {
     // Download posts
     const posts = [];
     for await (const post of obj.generator()) {
-        // Save post
-        posts.push(post);
+        // Add _mediaPath key
+        if (args["mediaPath"]) {
+            post["_mediaPath"] = [];
+        }
 
         // Identify download urls
         if (args["download"] && ("node" in post || "shortcode_media" in post)) {
@@ -290,31 +320,43 @@ async function spawn(args) {
                         const shortcode = child.node.shortcode;
 
                         // Check if video
+                        let mediaUrl: string;
+                        let mediaType: FILETYPES;
                         if (child.node.is_video && args["video"]) {
-                            const videoUrl = child.node.video_url;
-                            downloadMedia.push([videoUrl, shortcode, FILETYPES.VIDEO]);
+                            mediaUrl = child.node.video_url;
+                            mediaType = FILETYPES.VIDEO;
+
                         } else {
-                            const imageUrls = child.node.display_resources;
-                            downloadMedia.push([imageUrls.pop().src, shortcode, FILETYPES.IMAGE]);
+                            mediaUrl = child.node.display_resources.pop().src;
+                            mediaType = FILETYPES.IMAGE;
                         }
+                        saveMediaMetadata(post, args, downloadMedia, downdir, mediaUrl, shortcode,
+                            mediaType);
                     }
                 } else {
                     const shortcode = post.shortcode_media.shortcode;
 
                     // Check if video
+                    let mediaUrl: string;
+                    let mediaType: FILETYPES;
                     if (post.shortcode_media.is_video && args["video"]) {
-                        const videoUrl = post.shortcode_media.video_url;
-                        downloadMedia.push([videoUrl, shortcode, FILETYPES.VIDEO]);
+                        mediaUrl = post.shortcode_media.video_url;
+                        mediaType = FILETYPES.VIDEO;
                     } else {
-                        const imageUrls = post.shortcode_media.display_resources;
-                        downloadMedia.push([imageUrls.pop().src, shortcode, FILETYPES.IMAGE]);
+                        mediaUrl = post.shortcode_media.display_resources.pop().src;
+                        mediaType = FILETYPES.IMAGE;
                     }
-
+                    saveMediaMetadata(post, args, downloadMedia, downdir, mediaUrl, shortcode,
+                        mediaType);
                 }
             } else {
-                downloadMedia.push([post.node.thumbnail_src, post.node.shortcode, FILETYPES.IMAGE]);
+                saveMediaMetadata(post, args, downloadMedia, downdir, post.node.thumbnail_src,
+                    post.node.shortcode, FILETYPES.IMAGE);
             }
         }
+
+        // Save post
+        posts.push(post);
 
         // Download the identified media
         if (!args["waitDownload"]) {
@@ -360,6 +402,16 @@ async function spawn(args) {
 
     // Close logger
     logger.close();
+}
+
+function saveMediaMetadata(post: object, args: object, downloadMedia: Array<[string, string, FILETYPES]>,
+                           downDir: string, url: string, shortcode: string, fileType: FILETYPES) {
+    if (args["mediaPath"]) {
+        let uri = path.join(downDir, shortcode + "." + fileType);
+        uri = args["swift"] ? "swift://" + uri : uri;
+        post["_mediaPath"].push(uri);
+    }
+    downloadMedia.push([url, shortcode, fileType]);
 }
 
 // Catch key presses

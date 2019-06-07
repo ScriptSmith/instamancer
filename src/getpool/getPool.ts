@@ -1,48 +1,28 @@
-import axios from "axios";
-import * as fs from "fs";
-import * as mkdirp from "mkdirp";
 import * as winston from "winston";
 
 class GetJob {
 
     public finished: boolean = false;
     private readonly url: string;
-    private logger: winston.Logger;
+    private readonly logger: winston.Logger;
     private readonly name: string;
     private readonly extension: string;
     private readonly directory: string;
+    private readonly downloadUpload: (url: string, name: string, extension: string, directory: string,
+                                      logger: winston.Logger) => Promise<void>;
 
-    constructor(url: string, name: string, extension: string, directory: string,
+    constructor(url: string, name: string, extension: string, directory: string, downloadUpload,
                 logger: winston.Logger) {
         this.url = url;
         this.name = name;
         this.extension = extension;
         this.directory = directory;
         this.logger = logger;
+        this.downloadUpload = downloadUpload;
     }
 
     public async start() {
-        mkdirp.sync(this.directory);
-        try {
-            // Get data
-            const response = await axios({
-                method: "get",
-                responseType: "stream",
-                url: this.url,
-            });
-
-            // Write to file
-            await new Promise(async (resolve) => {
-                const stream = fs.createWriteStream(this.directory + "/" + this.name + "." + this.extension);
-                // noinspection TypeScriptValidateJSTypes
-                response.data.pipe(stream);
-                stream.on("finish", resolve);
-            });
-
-        } catch (e) {
-            this.logger.info(`Downloading ${this.url} failed`);
-            this.logger.debug(e);
-        }
+        await this.downloadUpload(this.url, this.name, this.extension, this.directory, this.logger);
         this.finished = true;
     }
 }
@@ -76,16 +56,23 @@ export class GetPool {
     // End-of-input resolve function
     private resolve: () => {};
 
-    constructor(connections: number = 1) {
+    // Download / Upload function
+    private readonly downloadUpload: (url: string, name: string, extension: string, directory: string,
+                                      logger: winston.Logger) => Promise<void>;
+
+    constructor(connections: number = 1,
+                downloadUpload: (url: string, name: string, extension: string, directory: string,
+                                 logger: winston.Logger) => Promise<void>) {
+
         this.maxConnections = connections;
         this.loop = setInterval(() => {
             this.poolLoop.bind(this)();
         }, 100);
+        this.downloadUpload = downloadUpload;
     }
 
-    public add(url: string, name: string, extension: string, directory: string,
-               logger: winston.Logger) {
-        this.queuedJobs.push(new GetJob(url, name, extension, directory, logger));
+    public add(url: string, name: string, extension: string, directory: string, logger: winston.Logger) {
+        this.queuedJobs.push(new GetJob(url, name, extension, directory, this.downloadUpload, logger));
     }
 
     public close(resolve) {
