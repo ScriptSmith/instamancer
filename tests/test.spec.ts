@@ -13,9 +13,9 @@ const users = ["snoopdogg", "arianagrande", "bbc", "whitehouse", "australia"];
 const posts = ["BsOGulcndj-", "Be3rTNplCHf", "BlBvw2_jBKp", "Bi-hISIghYe", "BfzEfy-lK1N", "Bneu_dCHVdn", "Brx-adXA9C1",
     "BlTYHvXFrvm", "BmRZH7NFwi6", "BpiIJCUnYwy"];
 
-let smallSize = 30;
-let mediumSize = 300;
-let largeSize = 3000;
+let smallSize = 10;
+let mediumSize = 100;
+let largeSize = 1000;
 
 // Run faster unless executing in CI
 if (!process.env.TRAVIS) {
