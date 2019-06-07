@@ -102,9 +102,9 @@ class InstagramEndpoint {
 }
 
 const endpoints: ApiTestConditions[] = [
-    new ApiTestConditions(Hashtag, hashtags, [smallSize, mediumSize, largeSize]),
-    new ApiTestConditions(Location, locations, [smallSize, mediumSize, largeSize]),
-    new ApiTestConditions(User, users, [smallSize, mediumSize]),
+    new ApiTestConditions(Hashtag, hashtags, [largeSize, mediumSize, smallSize]),
+    new ApiTestConditions(Location, locations, [largeSize, mediumSize, smallSize]),
+    new ApiTestConditions(User, users, [mediumSize, smallSize]),
 ];
 
 test("Instagram API limits", async () => {
