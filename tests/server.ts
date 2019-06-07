@@ -1,4 +1,4 @@
-import * as express from "express";
+import express from "express";
 import {AddressInfo} from "net";
 
 const app = express();
