@@ -4,25 +4,19 @@ class GetJob {
 
     public finished: boolean = false;
     private readonly url: string;
-    private readonly logger: winston.Logger;
     private readonly name: string;
     private readonly extension: string;
-    private readonly directory: string;
-    private readonly downloadUpload: (url: string, name: string, extension: string, directory: string,
-                                      logger: winston.Logger) => Promise<void>;
+    private readonly downloadUpload: (url: string, name: string, extension: string) => Promise<void>;
 
-    constructor(url: string, name: string, extension: string, directory: string, downloadUpload,
-                logger: winston.Logger) {
+    constructor(url: string, name: string, extension: string, downloadUpload) {
         this.url = url;
         this.name = name;
         this.extension = extension;
-        this.directory = directory;
-        this.logger = logger;
         this.downloadUpload = downloadUpload;
     }
 
     public async start() {
-        await this.downloadUpload(this.url, this.name, this.extension, this.directory, this.logger);
+        await this.downloadUpload(this.url, this.name, this.extension);
         this.finished = true;
     }
 }
@@ -61,8 +55,7 @@ export class GetPool {
                                       logger: winston.Logger) => Promise<void>;
 
     constructor(connections: number = 1,
-                downloadUpload: (url: string, name: string, extension: string, directory: string,
-                                 logger: winston.Logger) => Promise<void>) {
+                downloadUpload: (url: string, name: string, extension: string) => Promise<void>) {
 
         this.maxConnections = connections;
         this.loop = setInterval(() => {
@@ -71,8 +64,8 @@ export class GetPool {
         this.downloadUpload = downloadUpload;
     }
 
-    public add(url: string, name: string, extension: string, directory: string, logger: winston.Logger) {
-        this.queuedJobs.push(new GetJob(url, name, extension, directory, this.downloadUpload, logger));
+    public add(url: string, name: string, extension: string) {
+        this.queuedJobs.push(new GetJob(url, name, extension, this.downloadUpload));
     }
 
     public close(resolve) {

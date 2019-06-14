@@ -4,17 +4,19 @@ import * as json2csv from "json2csv";
 import * as mkdirp from "mkdirp";
 import * as winston from "winston";
 
+interface IDownload {
+    directory: string;
+    logger: winston.Logger;
+}
+
 /**
  * Download file
  * @param url The URL of the file
  * @param name The name used to identify the file
  * @param extension The file extension (eg. ".jpg" or ".mp4")
- * @param directory The directory to save the file
- * @param logger Logging object
  */
-export async function download(url: string, name: string, extension: string, directory: string,
-                               logger: winston.Logger) {
-    mkdirp.sync(directory);
+export async function download(this: IDownload, url: string, name: string, extension: string) {
+    mkdirp.sync(this.directory);
     try {
         // Get data
         const response = await axios({
@@ -25,15 +27,15 @@ export async function download(url: string, name: string, extension: string, dir
 
         // Write to file
         await new Promise(async (resolve) => {
-            const stream = fs.createWriteStream(directory + "/" + name + "." + extension);
+            const stream = fs.createWriteStream(this.directory + "/" + name + "." + extension);
             // noinspection TypeScriptValidateJSTypes
             response.data.pipe(stream);
             stream.on("finish", resolve);
         });
 
     } catch (e) {
-        logger.info(`Downloading ${url} failed`);
-        logger.debug(e);
+        this.logger.info(`Downloading ${url} failed`);
+        this.logger.debug(e);
     }
 }
 

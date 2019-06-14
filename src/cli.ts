@@ -5,8 +5,9 @@ import * as readline from "readline";
 import * as winston from "winston";
 
 import * as path from "path";
+import {storage} from "pkgcloud";
 import {Hashtag, IOptions, Location, Post, User} from "./api/api";
-import {getUploadFunction} from "./cloud";
+import {upload} from "./cloud";
 import {download, toCSV, toJSON} from "./download";
 import {GetPool} from "./getpool/getPool";
 
@@ -256,10 +257,13 @@ async function spawn(args) {
         executablePath: args["browser"],
     };
 
+    // Replace downdir
+    const downdir = args["downdir"].replace("[id]", args["id"]).replace("[endpoint]", args["_"]);
+
     // Connect to object storage
-    let downloadUpload = download;
-    if (args["swift"]) {
-        downloadUpload = getUploadFunction({
+    let downloadUpload;
+    if (args["swift"]) { // Upload
+        const client = storage.createClient({
             authUrl: process.env.OS_AUTH_URL,
             password: process.env.OS_PASSWORD,
             project: process.env.OS_PROJECT_ID,
@@ -268,6 +272,17 @@ async function spawn(args) {
             region: process.env.OS_REGION_NAME,
             userDomainName: "Default",
             username: process.env.OS_USERNAME,
+        });
+
+        downloadUpload = upload.bind({
+            client,
+            directory: downdir,
+            logger,
+        });
+    } else { // Download
+        downloadUpload = download.bind({
+            directory: downdir,
+            logger,
         });
     }
 
@@ -293,9 +308,6 @@ async function spawn(args) {
     }
 
     process.stdin.on("keypress", handleKeypress);
-
-    // Replace downdir
-    const downdir = args["downdir"].replace("[id]", args["id"]).replace("[endpoint]", args["_"]);
 
     // Array of urls and filenames
     let downloadMedia: Array<[string, string, FILETYPES]> = [];
@@ -361,7 +373,7 @@ async function spawn(args) {
         // Download the identified media
         if (!args["waitDownload"]) {
             for (const asset of downloadMedia) {
-                await downloadFunction(asset[0], asset[1], asset[2], downdir, logger);
+                await downloadFunction(...asset);
             }
             downloadMedia = [];
         }
@@ -369,7 +381,7 @@ async function spawn(args) {
 
     // Download remaining media
     for (const asset of downloadMedia) {
-        await downloadFunction(asset[0], asset[1], asset[2], downdir, logger);
+        await downloadFunction(...asset);
     }
 
     // Close download pool
