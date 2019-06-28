@@ -1,5 +1,7 @@
 import * as winston from "winston";
 import {Instagram} from "./instagram";
+import {Search, ISearchResult, ISearchResultHashtag, ISearchResultUser, ISearchOptions} from "./search";
+export {Search, ISearchResult, ISearchResultHashtag, ISearchResultUser, ISearchOptions};
 
 /**
  * Optional arguments for the API

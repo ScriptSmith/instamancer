@@ -63,7 +63,7 @@ export class Instagram {
     // Puppeteer state
     private browser: Browser;
     private browserDisconnected: boolean = true;
-    private page: Page;
+    protected page: Page;
     private readonly headless: boolean;
 
     // Array of scraped posts and lock
@@ -390,7 +390,7 @@ export class Instagram {
     /**
      * Construct page and add listeners
      */
-    private async start() {
+    protected async start() {
         // Build page and visit url
         await this.constructPage();
 
@@ -417,7 +417,7 @@ export class Instagram {
     /**
      * Close the page and browser
      */
-    private async stop() {
+    protected async stop() {
         await this.progress(Progress.CLOSING);
 
         // Finish page promises
@@ -543,7 +543,7 @@ export class Instagram {
     /**
      * Process the requests in the request buffer
      */
-    private async processRequests() {
+    protected async processRequests() {
         await this.requestBufferLock.acquireAsync();
 
         for (const req of this.requestBuffer) {
@@ -578,7 +578,7 @@ export class Instagram {
     /**
      * Process the responses in the response buffer
      */
-    private async processResponses() {
+    protected async processResponses() {
         await this.responseBufferLock.acquireAsync();
 
         let disableGraft = false;
@@ -613,31 +613,7 @@ export class Instagram {
                 this.finished = true;
             }
 
-            // Get posts
-            const posts = _.get(data, this.edgeQuery, []);
-            for (const post of posts) {
-                const postId = post["node"]["id"];
-
-                // Check it hasn't already been cached
-                const contains = this.postIds.add(postId);
-                if (contains) {
-                    this.logger.info("Duplicate id found: " + postId);
-                    continue;
-                }
-
-                // Add to postBuffer
-                if (this.index < this.total || this.total === 0) {
-                    this.index++;
-                    if (this.fullAPI) {
-                        this.pagePromises.push(this.postPage(post["node"]["shortcode"], this.postPageRetries));
-                    } else {
-                        await this.addToPostBuffer(post);
-                    }
-                } else {
-                    this.finished = true;
-                    break;
-                }
-            }
+            this.processResponseData(data)
         }
 
         // Switch off grafting if enabled and responses processed
@@ -648,6 +624,34 @@ export class Instagram {
         // Clear buffer and release
         this.responseBuffer = [];
         this.responseBufferLock.release();
+    }
+
+    protected async processResponseData(data: unknown) {
+        // Get posts
+        const posts = _.get(data, this.edgeQuery, []);
+        for (const post of posts) {
+            const postId = post["node"]["id"];
+
+            // Check it hasn't already been cached
+            const contains = this.postIds.add(postId);
+            if (contains) {
+                this.logger.info("Duplicate id found: " + postId);
+                continue;
+            }
+
+            // Add to postBuffer
+            if (this.index < this.total || this.total === 0) {
+                this.index++;
+                if (this.fullAPI) {
+                    this.pagePromises.push(this.postPage(post["node"]["shortcode"], this.postPageRetries));
+                } else {
+                    await this.addToPostBuffer(post);
+                }
+            } else {
+                this.finished = true;
+                break;
+            }
+        }
     }
 
     /**
