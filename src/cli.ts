@@ -5,10 +5,11 @@ import * as readline from "readline";
 import * as winston from "winston";
 
 import * as path from "path";
-import {Hashtag, IOptions, Location, Post, User} from "./api/api";
+import {Hashtag, IOptions, Location, Post, User, Search} from "./api/api";
 import {getUploadFunction} from "./cloud";
 import {download, toCSV, toJSON} from "./download";
 import {GetPool} from "./getpool/getPool";
+import { search } from "..";
 
 /**
  * Build argument parser
@@ -51,6 +52,25 @@ function buildParser(args, callback) {
             {},
             async (handleArgs) => {
                 await spawn(handleArgs);
+                callback();
+            },
+        )
+        .command(
+            "search [query]",
+            "Perform a search of users, tags and places",
+            {},
+            async (handleArgs) => {
+                const logger = getLogger(handleArgs);
+                const options = getOptions(handleArgs, logger);
+                if (!(args["query"])) {
+                    throw new Error("query required");
+                }
+                const search = new Search(args["query"], options);
+                const result = await search.get();
+                logger.log({
+                    level: "info",
+                    message: JSON.stringify(result),
+                });
                 callback();
             },
         )
@@ -209,16 +229,7 @@ function buildParser(args, callback) {
  */
 async function spawn(args) {
     // Initiate logger
-    const logger = winston.createLogger({
-        level: args["logging"],
-        silent: args["logging"] === "none",
-        transports: [
-            new winston.transports.File({
-                filename: args["logfile"],
-                silent: args["logging"] === "none",
-            }),
-        ],
-    });
+    const logger = getLogger(args);
 
     // Check id
     if (!(args["id"] || args["ids"])) {
@@ -245,16 +256,7 @@ async function spawn(args) {
     }
 
     // Define options
-    const options: IOptions = {
-        total: args["count"],
-        headless: !args["visible"],
-        logger,
-        silent: args["silent"],
-        sleepTime: 2,
-        enableGrafting: args["graft"],
-        fullAPI: args["full"],
-        executablePath: args["browser"],
-    };
+    const options: IOptions = getOptions(args, logger);
 
     // Connect to object storage
     let downloadUpload = download;
@@ -429,3 +431,25 @@ enum FILETYPES {
     VIDEO = "mp4",
     IMAGE = "jpg",
 }
+
+const getLogger = (args) => winston.createLogger({
+    level: args["logging"],
+    silent: args["logging"] === "none",
+    transports: [
+        new winston.transports.File({
+            filename: args["logfile"],
+            silent: args["logging"] === "none",
+        }),
+    ],
+});
+
+const getOptions = (args, logger): IOptions => ({
+    total: args["count"],
+    headless: !args["visible"],
+    logger,
+    silent: args["silent"],
+    sleepTime: 2,
+    enableGrafting: args["graft"],
+    fullAPI: args["full"],
+    executablePath: args["browser"],   
+})
