@@ -32,9 +32,31 @@ export interface ISearchResultHashtag {
     };
 }
 
+export interface ISearchResultPlace {
+    position: number;
+    place: {
+        location: {
+            pk: string;
+            name: string;
+            address: string;
+            city: string;
+            short_name: string;
+            lng: number;
+            lat: number;
+            external_source: string;
+            facebook_places_id: number;
+        };
+        title: string;
+        subtitle: string;
+        media_bundles: any[];
+        header_media: object;
+        slug: string;
+    }
+}
+
 export interface ISearchResult {
     users: ISearchResultUser[];
-    places: any[]; // TODO write places spec
+    places: ISearchResultPlace[];
     hashtags: ISearchResultHashtag[];
     has_more: boolean;
     rank_token: string;
@@ -44,12 +66,22 @@ export interface ISearchResult {
 
 export type ISearchOptions = Pick<IOptions, Exclude<keyof IOptions, "total" | "fullAPI" | "hibernationTime" | "sleepTime">>
 
+const sleep = (ms: number) => new Promise((res) => {
+    setTimeout(res, ms);
+})
+
 export class Search extends Instagram {
     private searchResult: ISearchResult;
-    protected readonly catchURL = "https://www.instagram.com/web/search/topsearch/";
+    private searchQuery: string;
+    protected readonly catchURL = "https://www.instagram.com/web/";
 
     constructor(query: string, options: ISearchOptions = {}) {
-        super("https://instagram.com/explore/tags/puppies", query, "", "", options);
+        super("https://instagram.com/explore/tags/instagram", "", "", "", options);
+        this.searchQuery = query;
+    }
+
+    protected matchURL(url: string) {
+        return url.startsWith(this.catchURL);
     }
 
     public async get() {
@@ -57,8 +89,10 @@ export class Search extends Instagram {
             await this.start();
         }
         await this.page.click("input[type='text']");
-        await this.page.keyboard.type(this.id);
+        await this.page.keyboard.type(this.searchQuery);
+        await this.page.waitForRequest((req) => this.matchURL(req.url()))
         await this.processRequests();
+        await this.page.waitForResponse((res) => this.matchURL(res.url()))
         await this.processResponses();
         await this.stop();
         return this.searchResult;

@@ -348,6 +348,10 @@ export class Instagram {
         const options: LaunchOptions = {
             args,
             headless: this.headless,
+            defaultViewport: {
+                width: 1024,
+                height: 643
+            }
         };
         if (this.executablePath !== undefined) {
             options.executablePath = this.executablePath;
@@ -478,7 +482,7 @@ export class Instagram {
     /**
      * Match the url to the url used in API requests
      */
-    private matchURL(url: string) {
+    protected matchURL(url: string) {
         return url.startsWith(this.catchURL) && !url.includes("include_reel");
     }
 
@@ -546,7 +550,7 @@ export class Instagram {
     protected async processRequests() {
         await this.requestBufferLock.acquireAsync();
 
-        for (const req of this.requestBuffer) {
+        for (const req of this.requestBuffer) { 
             // Match url
             if (!this.matchURL(req.url())) {
                 continue;
@@ -612,7 +616,7 @@ export class Instagram {
                 this.logger.info("No posts remaining");
                 this.finished = true;
             }
-
+            
             this.processResponseData(data)
         }
 
