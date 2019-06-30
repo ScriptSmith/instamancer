@@ -523,11 +523,11 @@ export class Instagram {
         // Browser launch options
         const options: LaunchOptions = {
             args,
-            headless: this.headless,
             defaultViewport: {
-                width: 1024,
                 height: 643,
+                width: 1024,
             },
+            headless: this.headless,
         };
         if (this.executablePath !== undefined) {
             options.executablePath = this.executablePath;

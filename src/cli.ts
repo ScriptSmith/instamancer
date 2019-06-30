@@ -22,14 +22,14 @@ const getLogger = (args) => winston.createLogger({
 });
 
 const getOptions = (args, logger): IOptions => ({
-    total: args["count"],
+    enableGrafting: args["graft"],
+    executablePath: args["browser"],
+    fullAPI: args["full"],
     headless: !args["visible"],
     logger,
     silent: args["silent"],
     sleepTime: 2,
-    enableGrafting: args["graft"],
-    fullAPI: args["full"],
-    executablePath: args["browser"],
+    total: args["count"],
 });
 
 /**
@@ -88,8 +88,8 @@ function buildParser(args, callback) {
                 }
                 const search = new Search(handleArgs["query"], options);
                 const result = await search.get();
-                console.log("\n");
-                console.log(JSON.stringify(result, null, 2));
+                process.stdout.write("\n");
+                process.stdout.write(JSON.stringify(result, null, 2));
                 callback();
             },
         )

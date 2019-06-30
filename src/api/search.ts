@@ -64,7 +64,9 @@ export interface ISearchResult {
     status: string;
 }
 
-export type ISearchOptions = Pick<IOptions, Exclude<keyof IOptions, "total" | "fullAPI" | "hibernationTime" | "sleepTime">>;
+export type ISearchOptions = Pick<IOptions, Exclude<
+    keyof IOptions, "total" | "fullAPI" | "hibernationTime" | "sleepTime"
+>>;
 
 const sleep = (ms: number) => new Promise((res) => {
     setTimeout(res, ms);
