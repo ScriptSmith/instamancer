@@ -1,6 +1,6 @@
-import {Hashtag, IOptions, Location, Post, User} from "./src/api/api";
+import {Hashtag, IOptions, IPost, Location, Post, User} from "./src/api/api";
 
-export {Hashtag, Location, Post, User, IOptions} from "./src/api/api";
+export {Hashtag, Location, Post, User, IOptions, IPost} from "./src/api/api";
 
 export function hashtag(id, options: IOptions) {
     return new Hashtag(id, options).generator();

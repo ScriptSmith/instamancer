@@ -3,7 +3,7 @@ import chalk from "chalk";
 import * as _ from "lodash/object";
 import {Browser, Headers, launch, LaunchOptions, Page, Request, Response} from "puppeteer";
 import * as winston from "winston";
-import {IOptions} from "./api";
+import {IOptions, IPost} from "./api";
 import {PostIdSet} from "./postIdSet";
 
 /**
@@ -67,7 +67,7 @@ export class Instagram {
     private readonly headless: boolean;
 
     // Array of scraped posts and lock
-    private postBuffer: object[] = [];
+    private postBuffer: IPost[] = [];
     private postBufferLock: AwaitLock = new AwaitLock();
 
     // Request and Response buffers and locks
@@ -465,8 +465,8 @@ export class Instagram {
     /**
      * Pop a post off the postBuffer (using locks). Returns null if no posts in buffer
      */
-    private async postPop() {
-        let post = null;
+    private async postPop(): Promise<IPost> {
+        let post: IPost;
         await this.postBufferLock.acquireAsync();
         if (this.postBuffer.length > 0) {
             post = this.postBuffer.shift();
