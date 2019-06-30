@@ -9,7 +9,28 @@ import {Hashtag, IOptions, Location, Post, User, Search} from "./api/api";
 import {getUploadFunction} from "./cloud";
 import {download, toCSV, toJSON} from "./download";
 import {GetPool} from "./getpool/getPool";
-import { search } from "..";
+
+const getLogger = (args) => winston.createLogger({
+    level: args["logging"],
+    silent: args["logging"] === "none",
+    transports: [
+        new winston.transports.File({
+            filename: args["logfile"],
+            silent: args["logging"] === "none",
+        }),
+    ],
+});
+
+const getOptions = (args, logger): IOptions => ({
+    total: args["count"],
+    headless: !args["visible"],
+    logger,
+    silent: args["silent"],
+    sleepTime: 2,
+    enableGrafting: args["graft"],
+    fullAPI: args["full"],
+    executablePath: args["browser"],   
+});
 
 /**
  * Build argument parser
@@ -62,15 +83,13 @@ function buildParser(args, callback) {
             async (handleArgs) => {
                 const logger = getLogger(handleArgs);
                 const options = getOptions(handleArgs, logger);
-                if (!(args["query"])) {
+                if (!(handleArgs["query"])) {
                     throw new Error("query required");
                 }
-                const search = new Search(args["query"], options);
+                const search = new Search(handleArgs["query"], options);
                 const result = await search.get();
-                logger.log({
-                    level: "info",
-                    message: JSON.stringify(result),
-                });
+                console.log("\n");
+                console.log(JSON.stringify(result, null, 2))
                 callback();
             },
         )
@@ -431,25 +450,3 @@ enum FILETYPES {
     VIDEO = "mp4",
     IMAGE = "jpg",
 }
-
-const getLogger = (args) => winston.createLogger({
-    level: args["logging"],
-    silent: args["logging"] === "none",
-    transports: [
-        new winston.transports.File({
-            filename: args["logfile"],
-            silent: args["logging"] === "none",
-        }),
-    ],
-});
-
-const getOptions = (args, logger): IOptions => ({
-    total: args["count"],
-    headless: !args["visible"],
-    logger,
-    silent: args["silent"],
-    sleepTime: 2,
-    enableGrafting: args["graft"],
-    fullAPI: args["full"],
-    executablePath: args["browser"],   
-})
