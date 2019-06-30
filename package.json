@@ -3,12 +3,19 @@
   "version": "1.4.2",
   "description": "Scrape the Instagram API with Puppeteer",
   "main": "index.js",
+  "types": "index.d.ts",
   "bin": {
     "instamancer": "src/cli.js"
   },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "src/**/*.js",
+    "src/**/*.d.ts"
+  ],
   "scripts": {
     "build": "tsc",
-    "prepare": "tsc",
+    "prepublishOnly": "npm run build",
     "test": "jest"
   },
   "author": "ScriptSmith",
@@ -29,7 +36,6 @@
     "mkdirp": "^0.5.1",
     "pkgcloud": "^2.0.0",
     "puppeteer": "^1.17.0",
-    "typescript": "^3.5.1",
     "winston": "^3.2.1",
     "yargs": "^13.2.4"
   },
@@ -53,7 +59,8 @@
     "@types/yargs": "^12.0.12",
     "express": "^4.17.1",
     "jest": "^24.8.0",
-    "ts-jest": "^23.10.5"
+    "ts-jest": "^23.10.5",
+    "typescript": "^3.5.2"
   },
   "jest": {
     "coverageDirectory": "./coverage/",

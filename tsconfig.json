@@ -9,6 +9,7 @@
       "es2018",
       "esnext.asynciterable"
     ],
+    "declaration": true,
     "esModuleInterop": true
   },
   "exclude": [
