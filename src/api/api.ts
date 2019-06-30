@@ -1,6 +1,6 @@
 import * as winston from "winston";
 import {Instagram} from "./instagram";
-import {Search, ISearchResult, ISearchResultHashtag, ISearchResultUser, ISearchOptions} from "./search";
+import {ISearchOptions, ISearchResult, ISearchResultHashtag, ISearchResultUser, Search} from "./search";
 export {Search, ISearchResult, ISearchResultHashtag, ISearchResultUser, ISearchOptions};
 
 /**

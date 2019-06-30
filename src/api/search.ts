@@ -1,5 +1,5 @@
-import {Instagram} from "./instagram";
 import {IOptions} from "./api";
+import {Instagram} from "./instagram";
 
 export interface ISearchResultUser {
     position: number;
@@ -51,7 +51,7 @@ export interface ISearchResultPlace {
         media_bundles: any[];
         header_media: object;
         slug: string;
-    }
+    };
 }
 
 export interface ISearchResult {
@@ -64,24 +64,20 @@ export interface ISearchResult {
     status: string;
 }
 
-export type ISearchOptions = Pick<IOptions, Exclude<keyof IOptions, "total" | "fullAPI" | "hibernationTime" | "sleepTime">>
+export type ISearchOptions = Pick<IOptions, Exclude<keyof IOptions, "total" | "fullAPI" | "hibernationTime" | "sleepTime">>;
 
 const sleep = (ms: number) => new Promise((res) => {
     setTimeout(res, ms);
-})
+});
 
 export class Search extends Instagram {
+    protected readonly catchURL = "https://www.instagram.com/web/";
     private searchResult: ISearchResult;
     private searchQuery: string;
-    protected readonly catchURL = "https://www.instagram.com/web/";
 
     constructor(query: string, options: ISearchOptions = {}) {
         super("https://instagram.com/explore/tags/instagram", "", "", "", options);
         this.searchQuery = query;
-    }
-
-    protected matchURL(url: string) {
-        return url.startsWith(this.catchURL);
     }
 
     public async get() {
@@ -90,15 +86,19 @@ export class Search extends Instagram {
         }
         await this.page.click("input[type='text']");
         await this.page.keyboard.type(this.searchQuery);
-        await this.page.waitForRequest((req) => this.matchURL(req.url()))
+        await this.page.waitForRequest((req) => this.matchURL(req.url()));
         await this.processRequests();
-        await this.page.waitForResponse((res) => this.matchURL(res.url()))
+        await this.page.waitForResponse((res) => this.matchURL(res.url()));
         await this.processResponses();
         await this.stop();
         return this.searchResult;
     }
 
-    protected async processResponseData (data: ISearchResult) {
+    protected matchURL(url: string) {
+        return url.startsWith(this.catchURL);
+    }
+
+    protected async processResponseData(data: ISearchResult) {
         this.searchResult = data;
     }
 }

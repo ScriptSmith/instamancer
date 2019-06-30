@@ -1,4 +1,4 @@
-import {Hashtag, IOptions, Location, Post, User, Search, ISearchResult, ISearchResultHashtag, ISearchResultUser, ISearchOptions} from "./src/api/api";
+import {Hashtag, IOptions, ISearchOptions, ISearchResult, ISearchResultHashtag, ISearchResultUser, Location, Post, Search, User} from "./src/api/api";
 
 export {Hashtag, Location, Post, User, IOptions, Search, ISearchResult, ISearchResultHashtag, ISearchResultUser, ISearchOptions} from "./src/api/api";
 

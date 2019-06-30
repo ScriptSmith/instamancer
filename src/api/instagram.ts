@@ -59,11 +59,11 @@ export class Instagram {
 
     // Number of jumps before grafting
     protected jumpMod: number = 100;
+    protected page: Page;
 
     // Puppeteer state
     private browser: Browser;
     private browserDisconnected: boolean = true;
-    protected page: Page;
     private readonly headless: boolean;
 
     // Array of scraped posts and lock
@@ -331,67 +331,6 @@ export class Instagram {
     }
 
     /**
-     * Create the browser and page, then visit the url
-     */
-    private async constructPage() {
-        // Browser args
-        const args = [];
-        if (process.env.NO_SANDBOX) {
-            args.push("--no-sandbox");
-            args.push("--disable-setuid-sandbox");
-        }
-        if (this.proxyURL !== undefined) {
-            args.push("--proxy-server=" + this.proxyURL);
-        }
-
-        // Browser launch options
-        const options: LaunchOptions = {
-            args,
-            headless: this.headless,
-            defaultViewport: {
-                width: 1024,
-                height: 643
-            }
-        };
-        if (this.executablePath !== undefined) {
-            options.executablePath = this.executablePath;
-        }
-
-        // Launch browser
-        await this.progress(Progress.LAUNCHING);
-        this.browser = await launch(options);
-        this.browserDisconnected = false;
-        this.browser.on("disconnected", () => this.browserDisconnected = true);
-
-        // New page
-        this.page = await this.browser.newPage();
-        await this.progress(Progress.OPENING);
-
-        // Attempt to visit URL
-        try {
-            await this.page.goto(this.url);
-        } catch (e) {
-            // Increment attempts
-            if (this.pageUrlAttempts++ === this.maxPageUrlAttempts && !this.started) {
-                throw new Error("Failed to visit URL");
-            }
-
-            // Log error and wait
-            this.logger.error(e);
-            this.logger.error(this.url);
-            await this.progress(Progress.ABORTED);
-            await this.sleep(60);
-
-            // Close existing attempt
-            await this.page.close();
-            await this.browser.close();
-
-            // Retry
-            await this.constructPage();
-        }
-    }
-
-    /**
      * Construct page and add listeners
      */
     protected async start() {
@@ -447,101 +386,10 @@ export class Instagram {
     }
 
     /**
-     * Pause and wait until resumed
-     */
-    private async waitResume() {
-        // Pause for 200 milliseconds
-        function f() {
-            return new Promise(
-                (resolve) => {
-                    setTimeout(resolve, 200);
-                },
-            );
-        }
-
-        // Pause until pause toggled
-        while (this.paused === true) {
-            await this.progress(Progress.PAUSED);
-            await f();
-        }
-    }
-
-    /**
-     * Pop a post off the postBuffer (using locks). Returns null if no posts in buffer
-     */
-    private async postPop() {
-        let post = null;
-        await this.postBufferLock.acquireAsync();
-        if (this.postBuffer.length > 0) {
-            post = this.postBuffer.shift();
-        }
-        this.postBufferLock.release();
-        return post;
-    }
-
-    /**
      * Match the url to the url used in API requests
      */
     protected matchURL(url: string) {
         return url.startsWith(this.catchURL) && !url.includes("include_reel");
-    }
-
-    /**
-     * Print progress to stdout
-     */
-    private async progress(state: Progress) {
-        // End if silent
-        if (this.silent) {
-            return;
-        }
-
-        // Lock
-        await this.writeLock.acquireAsync();
-
-        // Calculate total
-        const total = this.total === 0 ? "Unlimited" : this.total;
-
-        // Generate output string
-        const idStr = chalk.bgYellow.black(` ${this.id} `);
-        const totalStr = chalk.bgBlack(` Total: ${total} `);
-        const stateStr = chalk.bgWhite.black(` State: ${state} `);
-        const sleepStr = chalk.bgWhite.black(` Sleeping: ${this.sleepRemaining} `);
-        const indexStr = chalk.bgWhite.black(` Scraped: ${this.index} `);
-
-        const out = `${idStr}${totalStr}${stateStr}${sleepStr}${indexStr}`;
-        this.logger.debug(out);
-
-        // Print output
-        process.stdout.write("\r" + out + "\u001B[K");
-
-        // Release
-        this.writeLock.release();
-    }
-
-    /**
-     * Add request to the request buffer
-     */
-    private async interceptRequest(req: Request) {
-        await this.requestBufferLock.acquireAsync();
-        this.requestBuffer.push(req);
-        await this.requestBufferLock.release();
-    }
-
-    /**
-     * Add the response to the response buffer
-     */
-    private async interceptResponse(res: Response) {
-        await this.responseBufferLock.acquireAsync();
-        this.responseBuffer.push(res);
-        await this.responseBufferLock.release();
-    }
-
-    /**
-     * Log failed requests
-     */
-    private async interceptFailure(req: Request) {
-        this.logger.info("Failed: " + req.url());
-        await this.progress(Progress.ABORTED);
     }
 
     /**
@@ -550,7 +398,7 @@ export class Instagram {
     protected async processRequests() {
         await this.requestBufferLock.acquireAsync();
 
-        for (const req of this.requestBuffer) { 
+        for (const req of this.requestBuffer) {
             // Match url
             if (!this.matchURL(req.url())) {
                 continue;
@@ -616,8 +464,8 @@ export class Instagram {
                 this.logger.info("No posts remaining");
                 this.finished = true;
             }
-            
-            this.processResponseData(data)
+
+            this.processResponseData(data);
         }
 
         // Switch off grafting if enabled and responses processed
@@ -656,6 +504,158 @@ export class Instagram {
                 break;
             }
         }
+    }
+
+    /**
+     * Create the browser and page, then visit the url
+     */
+    private async constructPage() {
+        // Browser args
+        const args = [];
+        if (process.env.NO_SANDBOX) {
+            args.push("--no-sandbox");
+            args.push("--disable-setuid-sandbox");
+        }
+        if (this.proxyURL !== undefined) {
+            args.push("--proxy-server=" + this.proxyURL);
+        }
+
+        // Browser launch options
+        const options: LaunchOptions = {
+            args,
+            headless: this.headless,
+            defaultViewport: {
+                width: 1024,
+                height: 643,
+            },
+        };
+        if (this.executablePath !== undefined) {
+            options.executablePath = this.executablePath;
+        }
+
+        // Launch browser
+        await this.progress(Progress.LAUNCHING);
+        this.browser = await launch(options);
+        this.browserDisconnected = false;
+        this.browser.on("disconnected", () => this.browserDisconnected = true);
+
+        // New page
+        this.page = await this.browser.newPage();
+        await this.progress(Progress.OPENING);
+
+        // Attempt to visit URL
+        try {
+            await this.page.goto(this.url);
+        } catch (e) {
+            // Increment attempts
+            if (this.pageUrlAttempts++ === this.maxPageUrlAttempts && !this.started) {
+                throw new Error("Failed to visit URL");
+            }
+
+            // Log error and wait
+            this.logger.error(e);
+            this.logger.error(this.url);
+            await this.progress(Progress.ABORTED);
+            await this.sleep(60);
+
+            // Close existing attempt
+            await this.page.close();
+            await this.browser.close();
+
+            // Retry
+            await this.constructPage();
+        }
+    }
+
+    /**
+     * Pause and wait until resumed
+     */
+    private async waitResume() {
+        // Pause for 200 milliseconds
+        function f() {
+            return new Promise(
+                (resolve) => {
+                    setTimeout(resolve, 200);
+                },
+            );
+        }
+
+        // Pause until pause toggled
+        while (this.paused === true) {
+            await this.progress(Progress.PAUSED);
+            await f();
+        }
+    }
+
+    /**
+     * Pop a post off the postBuffer (using locks). Returns null if no posts in buffer
+     */
+    private async postPop() {
+        let post = null;
+        await this.postBufferLock.acquireAsync();
+        if (this.postBuffer.length > 0) {
+            post = this.postBuffer.shift();
+        }
+        this.postBufferLock.release();
+        return post;
+    }
+
+    /**
+     * Print progress to stdout
+     */
+    private async progress(state: Progress) {
+        // End if silent
+        if (this.silent) {
+            return;
+        }
+
+        // Lock
+        await this.writeLock.acquireAsync();
+
+        // Calculate total
+        const total = this.total === 0 ? "Unlimited" : this.total;
+
+        // Generate output string
+        const idStr = chalk.bgYellow.black(` ${this.id} `);
+        const totalStr = chalk.bgBlack(` Total: ${total} `);
+        const stateStr = chalk.bgWhite.black(` State: ${state} `);
+        const sleepStr = chalk.bgWhite.black(` Sleeping: ${this.sleepRemaining} `);
+        const indexStr = chalk.bgWhite.black(` Scraped: ${this.index} `);
+
+        const out = `${idStr}${totalStr}${stateStr}${sleepStr}${indexStr}`;
+        this.logger.debug(out);
+
+        // Print output
+        process.stdout.write("\r" + out + "\u001B[K");
+
+        // Release
+        this.writeLock.release();
+    }
+
+    /**
+     * Add request to the request buffer
+     */
+    private async interceptRequest(req: Request) {
+        await this.requestBufferLock.acquireAsync();
+        this.requestBuffer.push(req);
+        await this.requestBufferLock.release();
+    }
+
+    /**
+     * Add the response to the response buffer
+     */
+    private async interceptResponse(res: Response) {
+        await this.responseBufferLock.acquireAsync();
+        this.responseBuffer.push(res);
+        await this.responseBufferLock.release();
+    }
+
+    /**
+     * Log failed requests
+     */
+    private async interceptFailure(req: Request) {
+        this.logger.info("Failed: " + req.url());
+        await this.progress(Progress.ABORTED);
     }
 
     /**

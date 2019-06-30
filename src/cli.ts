@@ -5,7 +5,7 @@ import * as readline from "readline";
 import * as winston from "winston";
 
 import * as path from "path";
-import {Hashtag, IOptions, Location, Post, User, Search} from "./api/api";
+import {Hashtag, IOptions, Location, Post, Search, User} from "./api/api";
 import {getUploadFunction} from "./cloud";
 import {download, toCSV, toJSON} from "./download";
 import {GetPool} from "./getpool/getPool";
@@ -29,7 +29,7 @@ const getOptions = (args, logger): IOptions => ({
     sleepTime: 2,
     enableGrafting: args["graft"],
     fullAPI: args["full"],
-    executablePath: args["browser"],   
+    executablePath: args["browser"],
 });
 
 /**
@@ -89,7 +89,7 @@ function buildParser(args, callback) {
                 const search = new Search(handleArgs["query"], options);
                 const result = await search.get();
                 console.log("\n");
-                console.log(JSON.stringify(result, null, 2))
+                console.log(JSON.stringify(result, null, 2));
                 callback();
             },
         )
