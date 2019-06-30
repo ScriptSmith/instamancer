@@ -26,6 +26,7 @@ Read more about how Instamancer works [here](https://scriptsmith.github.io/insta
 - Output JSON, CSV
 - Download images, albums, and videos
 - Batch scraping
+- Search hashtags/users/locations
 
 ### Data
 Metadata that Instamancer is able to gather from posts:
@@ -106,6 +107,7 @@ Commands:
   instamancer location [id]      Scrape a location
   instamancer user [id]          Scrape a user
   instamancer post [ids]         Scrape a comma-separated list of posts
+  instamancer search [query]     Perform a search of users, tags and places
   instamancer batch [batchfile]  Read newline-separated arguments from a file
 
 Options:
@@ -180,6 +182,7 @@ Instamancer.hashtag(id, options);
 Instamancer.location(id, options);
 Instamancer.user(id, options);
 Instamancer.post(ids, options);
+Instamancer.search(query, options);
 ```
 
 #### Options
