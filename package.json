@@ -18,7 +18,8 @@
     "prepublishOnly": "npm run build",
     "test": "jest",
     "lint": "tslint -p tsconfig.json -p tests/tsconfig.json",
-    "lint:fix": "npm run lint -- --fix"
+    "lint:fix": "npm run lint -- --fix",
+    "clean": "rimraf src/**/*{.js,.d.ts} src/*{.js,.d.ts} index{.js,.d.ts}"
   },
   "author": "ScriptSmith",
   "license": "MIT",
