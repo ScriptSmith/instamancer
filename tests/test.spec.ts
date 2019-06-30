@@ -375,9 +375,9 @@ test("Network and API issues", async () => {
 
 describe("Search", () => {
     const instamancerOptions = {
+        headless: true,
         silent: true,
-        headless: true
-    }
+    };
 
     test("Search Result Users", async () => {
         const result = await Instamancer.search("instagram", instamancerOptions);
@@ -387,8 +387,7 @@ describe("Search", () => {
         expect(user.byline).toBeTruthy();
         expect(user.profile_pic_url).toBeTruthy();
     });
-    
-    
+
     test("Search Result Hashtags", async () => {
         const result = await Instamancer.search("nofilter", instamancerOptions);
         expect(result.hashtags.length).toBeGreaterThan(0);
@@ -396,7 +395,7 @@ describe("Search", () => {
         expect(hashtag.media_count).not.toBeUndefined();
         expect(hashtag.name).toBeTruthy();
     });
-    
+
     test("Search Result Places", async () => {
         const result = await Instamancer.search("New york", {
             silent: true,
@@ -406,4 +405,3 @@ describe("Search", () => {
         expect(place.title).toBeTruthy();
     });
 });
-  
