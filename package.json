@@ -64,6 +64,7 @@
     "express": "^4.17.1",
     "husky": "^3.0.0",
     "jest": "^24.8.0",
+    "lint-staged": "^9.0.2",
     "prettier": "^1.18.2",
     "ts-jest": "^24.0.2",
     "tslint": "^5.18.0",
@@ -79,12 +80,23 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint:fix"
+      "pre-commit": "lint-staged && npm run lint"
     }
   },
   "prettier": {
     "trailingComma": "all",
     "arrowParens": "always",
     "bracketSpacing": false
+  },
+  "lint-staged": {
+    "*.json": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.ts": [
+      "prettier --write",
+      "tslint --fix",
+      "git add"
+    ]
   }
 }
