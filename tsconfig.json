@@ -9,7 +9,8 @@
       "es2018",
       "esnext.asynciterable"
     ],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "resolveJsonModule": true
   },
   "exclude": [
     "node_modules",
