@@ -1,156 +1,115 @@
 import * as winston from "winston";
 
 class GetJob {
-  public finished: boolean = false;
-  private readonly url: string;
-  private readonly logger: winston.Logger;
-  private readonly name: string;
-  private readonly extension: string;
-  private readonly directory: string;
-  private readonly downloadUpload: (
-    url: string,
-    name: string,
-    extension: string,
-    directory: string,
-    logger: winston.Logger,
-  ) => Promise<void>;
 
-  constructor(
-    url: string,
-    name: string,
-    extension: string,
-    directory: string,
-    downloadUpload,
-    logger: winston.Logger,
-  ) {
-    this.url = url;
-    this.name = name;
-    this.extension = extension;
-    this.directory = directory;
-    this.logger = logger;
-    this.downloadUpload = downloadUpload;
-  }
+    public finished: boolean = false;
+    private readonly url: string;
+    private readonly logger: winston.Logger;
+    private readonly name: string;
+    private readonly extension: string;
+    private readonly directory: string;
+    private readonly downloadUpload: (url: string, name: string, extension: string, directory: string,
+                                      logger: winston.Logger) => Promise<void>;
 
-  public async start() {
-    await this.downloadUpload(
-      this.url,
-      this.name,
-      this.extension,
-      this.directory,
-      this.logger,
-    );
-    this.finished = true;
-  }
+    constructor(url: string, name: string, extension: string, directory: string, downloadUpload,
+                logger: winston.Logger) {
+        this.url = url;
+        this.name = name;
+        this.extension = extension;
+        this.directory = directory;
+        this.logger = logger;
+        this.downloadUpload = downloadUpload;
+    }
+
+    public async start() {
+        await this.downloadUpload(this.url, this.name, this.extension, this.directory, this.logger);
+        this.finished = true;
+    }
 }
 
 /**
  * A pool of jobs that only executes k jobs 'simultaneously'
  */
 export class GetPool {
-  // Job promises
-  public promises: Array<Promise<void>> = [];
 
-  // Jobs that are currently being executed
-  private runningJobs: GetJob[] = [];
+    // Job promises
+    public promises: Array<Promise<void>> = [];
 
-  // Jobs that are yet to be executed
-  private queuedJobs: GetJob[] = [];
+    // Jobs that are currently being executed
+    private runningJobs: GetJob[] = [];
 
-  // Maximum number of jobs to be executed simultaneously
-  private readonly maxConnections: number;
+    // Jobs that are yet to be executed
+    private queuedJobs: GetJob[] = [];
 
-  // Looping interval executing promises
-  private readonly loop;
+    // Maximum number of jobs to be executed simultaneously
+    private readonly maxConnections: number;
 
-  // Lock loop function execution
-  private lock: boolean = false;
+    // Looping interval executing promises
+    private readonly loop;
 
-  // End-of-input signal triggered externally by close()
-  private finished: boolean = false;
+    // Lock loop function execution
+    private lock: boolean = false;
 
-  // End-of-input resolve function
-  private resolve: () => {};
+    // End-of-input signal triggered externally by close()
+    private finished: boolean = false;
 
-  // Download / Upload function
-  private readonly downloadUpload: (
-    url: string,
-    name: string,
-    extension: string,
-    directory: string,
-    logger: winston.Logger,
-  ) => Promise<void>;
+    // End-of-input resolve function
+    private resolve: () => {};
 
-  constructor(
-    connections: number = 1,
-    downloadUpload: (
-      url: string,
-      name: string,
-      extension: string,
-      directory: string,
-      logger: winston.Logger,
-    ) => Promise<void>,
-  ) {
-    this.maxConnections = connections;
-    this.loop = setInterval(() => {
-      this.poolLoop.bind(this)();
-    }, 100);
-    this.downloadUpload = downloadUpload;
-  }
+    // Download / Upload function
+    private readonly downloadUpload: (url: string, name: string, extension: string, directory: string,
+                                      logger: winston.Logger) => Promise<void>;
 
-  public add(
-    url: string,
-    name: string,
-    extension: string,
-    directory: string,
-    logger: winston.Logger,
-  ) {
-    this.queuedJobs.push(
-      new GetJob(url, name, extension, directory, this.downloadUpload, logger),
-    );
-  }
+    constructor(connections: number = 1,
+                downloadUpload: (url: string, name: string, extension: string, directory: string,
+                                 logger: winston.Logger) => Promise<void>) {
 
-  public close(resolve) {
-    this.finished = true;
-    this.resolve = resolve;
-  }
-
-  private poolLoop() {
-    // Obtain lock or cancel
-    if (this.lock) {
-      return;
-    } else {
-      this.lock = true;
+        this.maxConnections = connections;
+        this.loop = setInterval(() => {
+            this.poolLoop.bind(this)();
+        }, 100);
+        this.downloadUpload = downloadUpload;
     }
 
-    // Remove finished jobs
-    for (let i = 0; i < this.runningJobs.length; i++) {
-      if (this.runningJobs[i].finished) {
-        this.runningJobs.splice(i);
-        i = 0;
-      }
+    public add(url: string, name: string, extension: string, directory: string, logger: winston.Logger) {
+        this.queuedJobs.push(new GetJob(url, name, extension, directory, this.downloadUpload, logger));
     }
 
-    // Add new jobs to empty running slots
-    while (
-      this.queuedJobs.length > 0 &&
-      this.runningJobs.length < this.maxConnections
-    ) {
-      const job = this.queuedJobs.shift();
-      this.promises.push(job.start());
-      this.runningJobs.push(job);
+    public close(resolve) {
+        this.finished = true;
+        this.resolve = resolve;
     }
 
-    // End the interval when end-of-input signal given
-    if (
-      this.finished &&
-      this.queuedJobs.length === 0 &&
-      this.runningJobs.length === 0
-    ) {
-      clearInterval(this.loop);
-      this.resolve();
-    }
+    private poolLoop() {
+        // Obtain lock or cancel
+        if (this.lock) {
+            return;
+        } else {
+            this.lock = true;
+        }
 
-    // Release lock
-    this.lock = false;
-  }
+        // Remove finished jobs
+        for (let i = 0; i < this.runningJobs.length; i++) {
+            if (this.runningJobs[i].finished) {
+                this.runningJobs.splice(i);
+                i = 0;
+            }
+        }
+
+        // Add new jobs to empty running slots
+        while (this.queuedJobs.length > 0 && this.runningJobs.length < this.maxConnections) {
+            const job = this.queuedJobs.shift();
+            this.promises.push(job.start());
+            this.runningJobs.push(job);
+        }
+
+        // End the interval when end-of-input signal given
+        if (this.finished && this.queuedJobs.length === 0 && this.runningJobs.length === 0) {
+            clearInterval(this.loop);
+            this.resolve();
+        }
+
+        // Release lock
+        this.lock = false;
+    }
 }
