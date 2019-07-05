@@ -19,6 +19,7 @@
     "test": "jest",
     "lint": "tslint -p tsconfig.json -p tests/tsconfig.json",
     "lint:fix": "npm run lint -- --fix",
+    "prettier": "prettier --write \"{src,tests}/**/*.ts\"",
     "clean": "rimraf src/**/*{.js,.d.ts} src/*{.js,.d.ts} index{.js,.d.ts}"
   },
   "author": "ScriptSmith",
@@ -63,6 +64,7 @@
     "express": "^4.17.1",
     "husky": "^3.0.0",
     "jest": "^24.8.0",
+    "prettier": "^1.18.2",
     "ts-jest": "^24.0.2",
     "tslint": "^5.18.0",
     "typescript": "^3.5.2"
@@ -79,5 +81,10 @@
     "hooks": {
       "pre-commit": "npm run lint:fix"
     }
+  },
+  "prettier": {
+    "trailingComma": "all",
+    "arrowParens": "always",
+    "bracketSpacing": false
   }
 }
