@@ -23,4 +23,4 @@ install:
 script:
   - tsc
   - npm test
-  - cat ./coverage/lcov.info | codacy-coverage --language=typescript
+  - if [[ $TRAVIS_PULL_REQUEST = "false" ]] ; then cat ./coverage/lcov.info | codacy-coverage --language=typescript; fi
