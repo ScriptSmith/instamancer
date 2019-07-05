@@ -12,53 +12,59 @@ import * as winston from "winston";
  * @param directory The directory to save the file
  * @param logger Logging object
  */
-export async function download(url: string, name: string, extension: string, directory: string,
-                               logger: winston.Logger) {
-    mkdirp.sync(directory);
-    try {
-        // Get data
-        const response = await axios({
-            method: "get",
-            responseType: "stream",
-            url,
-        });
+export async function download(
+  url: string,
+  name: string,
+  extension: string,
+  directory: string,
+  logger: winston.Logger,
+) {
+  mkdirp.sync(directory);
+  try {
+    // Get data
+    const response = await axios({
+      method: "get",
+      responseType: "stream",
+      url,
+    });
 
-        // Write to file
-        await new Promise(async (resolve) => {
-            const stream = fs.createWriteStream(directory + "/" + name + "." + extension);
-            // noinspection TypeScriptValidateJSTypes
-            response.data.pipe(stream);
-            stream.on("finish", resolve);
-        });
-
-    } catch (e) {
-        logger.info(`Downloading ${url} failed`);
-        logger.debug(e);
-    }
+    // Write to file
+    await new Promise(async (resolve) => {
+      const stream = fs.createWriteStream(
+        directory + "/" + name + "." + extension,
+      );
+      // noinspection TypeScriptValidateJSTypes
+      response.data.pipe(stream);
+      stream.on("finish", resolve);
+    });
+  } catch (e) {
+    logger.info(`Downloading ${url} failed`);
+    logger.debug(e);
+  }
 }
 
 /**
  * Save list of posts to a CSV file
  */
 export function toCSV(posts: object[], filePath: string) {
-    const parser = new json2csv.Parser({flatten: true});
-    const csv = parser.parse(posts);
-    fs.writeFileSync(filePath, csv);
+  const parser = new json2csv.Parser({flatten: true});
+  const csv = parser.parse(posts);
+  fs.writeFileSync(filePath, csv);
 }
 
 /**
  * Save list of posts to a JSON file
  */
 export function toJSON(posts: object[], filePath: string) {
-    let first = true;
-    fs.writeFileSync(filePath, "[");
-    for (const post of posts) {
-        if (first) {
-            first = false;
-        } else {
-            fs.appendFileSync(filePath, ", ");
-        }
-        fs.appendFileSync(filePath, JSON.stringify(post));
+  let first = true;
+  fs.writeFileSync(filePath, "[");
+  for (const post of posts) {
+    if (first) {
+      first = false;
+    } else {
+      fs.appendFileSync(filePath, ", ");
     }
-    fs.appendFileSync(filePath, "]");
+    fs.appendFileSync(filePath, JSON.stringify(post));
+  }
+  fs.appendFileSync(filePath, "]");
 }
