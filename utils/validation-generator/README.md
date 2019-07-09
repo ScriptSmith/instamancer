@@ -19,3 +19,5 @@ The script will save an actual API response for different endpoints in `input.js
 - `ts-node utils/validation-generator/generate.ts`
 
 The script will save typing to `output.ts` file (gitignored).
+
+After the generation is completed need to move all primitive types (which does not use other types, like `ThumbnailResources`, `Owner` and others) to the top of the file, final types (like `Post`) to the bottom of the file and fix all the block-scoped variables order errors manually.
