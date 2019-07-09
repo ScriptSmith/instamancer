@@ -10,6 +10,10 @@ const removeVarFromCode = (code: string, varName: string): string => {
   return code.replace(regexp, "");
 };
 
+const addTypeToCode = (code: string, typeName: string): string => {
+  return `${code}\nexport type T${typeName} = t.TypeOf<typeof ${typeName}>;\n`;
+};
+
 let output = transform(json, {
   lang: "io-ts",
 });
@@ -25,6 +29,8 @@ output = output.replace(/\ string/gm, " t.string");
 output = output.replace(/t\.Integer/gm, "t.number"); // Integer does not have ts type
 output = removeVarFromCode(output, "RootInterface");
 output = removeVarFromCode(output, "Default");
+output = output.replace(/Posts/gm, "Post");
+output = addTypeToCode(output, "Post");
 
 writeFileSync(getPath(), output, {
   encoding: "utf-8",
