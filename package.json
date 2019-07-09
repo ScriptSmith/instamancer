@@ -3,13 +3,24 @@
   "version": "1.4.2",
   "description": "Scrape the Instagram API with Puppeteer",
   "main": "index.js",
+  "types": "index.d.ts",
   "bin": {
     "instamancer": "src/cli.js"
   },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "src/**/*.js",
+    "src/**/*.d.ts"
+  ],
   "scripts": {
     "build": "tsc",
-    "prepare": "tsc",
-    "test": "jest"
+    "prepublishOnly": "npm run build",
+    "test": "jest",
+    "lint": "tslint -p tsconfig.json -p tests/tsconfig.json",
+    "lint:fix": "npm run lint -- --fix",
+    "prettier": "prettier --write \"{src,tests}/**/*.ts\"",
+    "clean": "rimraf src/**/*{.js,.d.ts} src/*{.js,.d.ts} index{.js,.d.ts}"
   },
   "author": "ScriptSmith",
   "license": "MIT",
@@ -30,7 +41,6 @@
     "mkdirp": "^0.5.1",
     "pkgcloud": "^2.0.0",
     "puppeteer": "^1.17.0",
-    "typescript": "^3.5.1",
     "winston": "^3.2.1",
     "yargs": "^13.2.4"
   },
@@ -53,9 +63,14 @@
     "@types/request": "^2.48.1",
     "@types/yargs": "^12.0.12",
     "express": "^4.17.1",
+    "husky": "^3.0.0",
     "jest": "^24.8.0",
     "transform-json-types": "^0.7.0",
-    "ts-jest": "^23.10.5"
+    "lint-staged": "^9.0.2",
+    "prettier": "^1.18.2",
+    "ts-jest": "^24.0.2",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.2"
   },
   "jest": {
     "coverageDirectory": "./coverage/",
@@ -64,5 +79,26 @@
     "transform": {
       "^.+\\.(ts|tsx)$": "ts-jest"
     }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged && npm run lint"
+    }
+  },
+  "prettier": {
+    "trailingComma": "all",
+    "arrowParens": "always",
+    "bracketSpacing": false
+  },
+  "lint-staged": {
+    "*.json": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.ts": [
+      "prettier --write",
+      "tslint --fix",
+      "git add"
+    ]
   }
 }
