@@ -75,7 +75,7 @@ export class Instagram {
   private readonly headless: boolean;
 
   // Array of scraped posts and lock
-  private postBuffer: object[] = [];
+  private postBuffer: unknown[] = [];
   private postBufferLock: AwaitLock = new AwaitLock();
 
   // Request and Response buffers and locks
@@ -672,7 +672,7 @@ export class Instagram {
   /**
    * Add post to buffer
    */
-  private async addToPostBuffer(post: object) {
+  private async addToPostBuffer(post) {
     await this.postBufferLock.acquireAsync();
     this.postBuffer.push(post);
     this.postBufferLock.release();
