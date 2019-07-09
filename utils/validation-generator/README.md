@@ -19,5 +19,3 @@ The script will save an actual API response for different endpoints in `input.js
 - `ts-node utils/validation-generator/generate.ts`
 
 The script will save typing to `output.ts` file (gitignored).
-
-`RootInterface` and `Default` types can be removed. Other types should be rearenged to match declaration order.
