@@ -1,5 +1,6 @@
 import * as winston from "winston";
 import {Instagram} from "./instagram";
+import {TPost, TSinglePost} from "./types";
 
 /**
  * Optional arguments for the API
@@ -39,7 +40,7 @@ export interface IOptions {
 /**
  * An Instagram post API wrapper
  */
-export class Post extends Instagram {
+export class Post extends Instagram<TSinglePost> {
   // Post ids
   private readonly ids: string[];
 
@@ -64,7 +65,7 @@ export class Post extends Instagram {
 /**
  * An Instagram hashtag API wrapper
  */
-export class Hashtag extends Instagram {
+export class Hashtag extends Instagram<TPost> {
   constructor(id: string, options: IOptions = {}) {
     const endpoint = "https://instagram.com/explore/tags/";
     const pageQuery = "data.hashtag.edge_hashtag_to_media.page_info";
@@ -76,7 +77,7 @@ export class Hashtag extends Instagram {
 /**
  * An Instagram location API wrapper
  */
-export class Location extends Instagram {
+export class Location extends Instagram<TPost> {
   constructor(id: string, options: IOptions = {}) {
     const endpoint = "https://instagram.com/explore/locations/";
     const pageQuery = "data.location.edge_location_to_media.page_info";
@@ -88,7 +89,7 @@ export class Location extends Instagram {
 /**
  * An Instagram user API wrapper
  */
-export class User extends Instagram {
+export class User extends Instagram<TPost> {
   constructor(id: string, options: IOptions = {}) {
     const endpoint = "https://instagram.com/";
     const pageQuery = "data.user.edge_owner_to_timeline_media.page_info";

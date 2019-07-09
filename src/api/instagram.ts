@@ -17,7 +17,7 @@ import {PostIdSet} from "./postIdSet";
 /**
  * Instagram API wrapper
  */
-export class Instagram {
+export class Instagram<PostType> {
   /**
    * Apply defaults to undefined options
    */
@@ -75,7 +75,7 @@ export class Instagram {
   private readonly headless: boolean;
 
   // Array of scraped posts and lock
-  private postBuffer: unknown[] = [];
+  private postBuffer: PostType[] = [];
   private postBufferLock: AwaitLock = new AwaitLock();
 
   // Request and Response buffers and locks
@@ -196,7 +196,7 @@ export class Instagram {
   /**
    * Generator of posts on page
    */
-  public async *generator() {
+  public async *generator(): AsyncIterableIterator<PostType> {
     // Start if haven't done so already
     if (!this.started) {
       await this.start();
@@ -672,7 +672,7 @@ export class Instagram {
   /**
    * Add post to buffer
    */
-  private async addToPostBuffer(post) {
+  private async addToPostBuffer(post: PostType) {
     await this.postBufferLock.acquireAsync();
     this.postBuffer.push(post);
     this.postBufferLock.release();

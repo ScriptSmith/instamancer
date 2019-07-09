@@ -86,14 +86,14 @@ export const Node3 = t.type({
   edge_liked_by: EdgeMediaToComment,
 });
 
-export const Edges = t.type({
+export const Post = t.type({
   node: Node3,
 });
 
 export const EdgeMediaToParentComment = t.type({
   count: t.number,
   page_info: PageInfo,
-  edges: t.array(Edges),
+  edges: t.array(Post),
 });
 
 export const ShortcodeMedia = t.type({
@@ -130,11 +130,12 @@ export const ShortcodeMedia = t.type({
   edge_web_media_to_related_media: EdgeMediaToCaption,
 });
 
-export const Post = t.type({
-  node: Node,
+export const SinglePost = t.type({
   shortcode_media: ShortcodeMedia,
 });
 
 // tslint:enable: object-literal-sort-keys
 
 export type TPost = t.TypeOf<typeof Post>;
+
+export type TSinglePost = t.TypeOf<typeof SinglePost>;
