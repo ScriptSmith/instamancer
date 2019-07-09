@@ -36,6 +36,7 @@ output = output.replace(/\ string/gm, " t.string"); // Really weird
 output = output.replace(/t\.Integer/gm, "t.number"); // Integer does not have ts type
 output = singularizeVarNameInCode(output, "Post");
 output = addTypeToCode(output, "Post");
+output = addTypeToCode(output, "SinglePost");
 
 writeFileSync(getPath(), output, {
   encoding: "utf-8",

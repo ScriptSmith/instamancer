@@ -8,6 +8,10 @@ const getResult = async () => {
   const posts = await getPosts({
     hashtagId: "beach",
     locationId: "1110037669039751",
+    userId: "snoopdogg",
+  });
+
+  const singlePosts = await getSinglePosts({
     postsIds: [
       "BsOGulcndj-",
       "Be3rTNplCHf",
@@ -20,11 +24,11 @@ const getResult = async () => {
       "BmRZH7NFwi6",
       "BpiIJCUnYwy",
     ],
-    userId: "snoopdogg",
   });
 
   return {
     posts,
+    singlePosts,
   };
 };
 
@@ -32,12 +36,10 @@ const getPosts = async ({
   hashtagId,
   userId,
   locationId,
-  postsIds,
 }: {
   hashtagId: string;
   userId: string;
   locationId: string;
-  postsIds: string[];
 }) => {
   const result = [];
 
@@ -48,13 +50,21 @@ const getPosts = async ({
     new Instamancer.Hashtag(hashtagId, options),
     new Instamancer.User(userId, options),
     new Instamancer.Location(locationId, options),
-    new Instamancer.Post(postsIds, options),
   ];
 
   for (const object of objects) {
     for await (const post of object.generator()) {
       result.push(post);
     }
+  }
+  return result;
+};
+
+const getSinglePosts = async ({postsIds}: {postsIds: string[]}) => {
+  const result = [];
+  const post = new Instamancer.Post(postsIds, {});
+  for await (const singlePost of post.generator()) {
+    result.push(singlePost);
   }
   return result;
 };
