@@ -20,4 +20,4 @@ The script will save an actual API response for different endpoints in `input.js
 
 The script will save typing to `output.ts` file (gitignored).
 
-`var` keywords are used instead of `const` not to think about declaration order.
+`RootInterface` and `Default` types can be removed. Other types should be rearenged to match declaration order.
