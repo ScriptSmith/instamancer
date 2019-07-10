@@ -1,6 +1,9 @@
 import AwaitLock = require("await-lock");
 import chalk from "chalk";
+import {Type} from "io-ts";
+import {PathReporter} from "io-ts/lib/PathReporter";
 import * as _ from "lodash/object";
+
 import {
   Browser,
   Headers,
@@ -67,6 +70,10 @@ export class Instagram<PostType> {
 
   // Number of jumps before grafting
   protected jumpMod: number = 100;
+
+  // Validations
+  private readonly strict: boolean = false;
+  private readonly validator: Type<unknown>;
 
   // Puppeteer state
   private browser: Browser;
@@ -151,6 +158,7 @@ export class Instagram<PostType> {
     pageQuery: string,
     edgeQuery: string,
     options: IOptions = {},
+    validator: Type<unknown>,
   ) {
     this.id = id;
     this.postIds = new PostIdSet();
@@ -163,12 +171,14 @@ export class Instagram<PostType> {
     this.headless = options.headless;
     this.logger = options.logger;
     this.silent = options.silent;
+    this.strict = options.strict;
     this.enableGrafting = options.enableGrafting;
     this.sleepTime = options.sleepTime;
     this.hibernationTime = options.hibernationTime;
     this.fullAPI = options.fullAPI;
     this.proxyURL = options.proxyURL;
     this.executablePath = options.executablePath;
+    this.validator = validator;
   }
 
   /**
@@ -254,7 +264,7 @@ export class Instagram<PostType> {
           window["_sharedData"].entry_data.PostPage[0].graphql,
         );
       });
-      await this.addToPostBuffer(JSON.parse(data));
+      await this.addToPostBuffer(JSON.parse(data) as PostType);
 
       await postPage.close();
     } catch (e) {
@@ -631,7 +641,7 @@ export class Instagram<PostType> {
       }
 
       // Get posts
-      const posts = _.get(data, this.edgeQuery, []);
+      const posts: PostType[] = _.get(data, this.edgeQuery, []);
       for (const post of posts) {
         const postId = post["node"]["id"];
 
@@ -674,6 +684,17 @@ export class Instagram<PostType> {
    */
   private async addToPostBuffer(post: PostType) {
     await this.postBufferLock.acquireAsync();
+    const validationResult = this.validator.decode(post);
+    const validationReporter = PathReporter.report(validationResult);
+    if (validationReporter.length > 0) {
+      this.logger.warn(
+        `
+      Warning! Instagram API has been changed since this package version has been released.
+      Please, update the package or open an issue, if it is not yet updated.
+      `,
+        validationReporter,
+      );
+    }
     this.postBuffer.push(post);
     this.postBufferLock.release();
   }

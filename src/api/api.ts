@@ -1,6 +1,6 @@
 import * as winston from "winston";
 import {Instagram} from "./instagram";
-import {TPost, TSinglePost} from "./types";
+import {Post as PostValidator, SinglePost, TPost, TSinglePost} from "./types";
 
 /**
  * Optional arguments for the API
@@ -35,6 +35,9 @@ export interface IOptions {
 
   // Location of the chromium / chrome binary executable
   executablePath?: string;
+
+  // Throw an error if type validation has been failed
+  strict?: boolean;
 }
 
 /**
@@ -45,7 +48,7 @@ export class Post extends Instagram<TSinglePost> {
   private readonly ids: string[];
 
   constructor(ids: string[], options: IOptions = {}) {
-    super("https://instagram.com/p/", ids[0], "", "", options);
+    super("https://instagram.com/p/", ids[0], "", "", options, SinglePost);
     this.ids = ids;
   }
 
@@ -70,7 +73,7 @@ export class Hashtag extends Instagram<TPost> {
     const endpoint = "https://instagram.com/explore/tags/";
     const pageQuery = "data.hashtag.edge_hashtag_to_media.page_info";
     const edgeQuery = "data.hashtag.edge_hashtag_to_media.edges";
-    super(endpoint, id, pageQuery, edgeQuery, options);
+    super(endpoint, id, pageQuery, edgeQuery, options, PostValidator);
   }
 }
 
@@ -82,7 +85,7 @@ export class Location extends Instagram<TPost> {
     const endpoint = "https://instagram.com/explore/locations/";
     const pageQuery = "data.location.edge_location_to_media.page_info";
     const edgeQuery = "data.location.edge_location_to_media.edges";
-    super(endpoint, id, pageQuery, edgeQuery, options);
+    super(endpoint, id, pageQuery, edgeQuery, options, PostValidator);
   }
 }
 
@@ -94,6 +97,6 @@ export class User extends Instagram<TPost> {
     const endpoint = "https://instagram.com/";
     const pageQuery = "data.user.edge_owner_to_timeline_media.page_info";
     const edgeQuery = "data.user.edge_owner_to_timeline_media.edges";
-    super(endpoint, id, pageQuery, edgeQuery, options);
+    super(endpoint, id, pageQuery, edgeQuery, options, PostValidator);
   }
 }

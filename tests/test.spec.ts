@@ -1,7 +1,8 @@
 import * as winston from "winston";
 import * as Instamancer from "..";
 import {Hashtag, IOptions, Location, User} from "../src/api/api";
-import {Instagram} from "../src/api/instagram";
+import {FakePage, IFakePageOptions} from "./__fixtures__/FakePage";
+import {ValidationsFailingInstagram} from "./__fixtures__/ValidationsFailing";
 import {startServer, stopServer} from "./server";
 
 jest.setTimeout(120 * 60 * 1000);
@@ -47,19 +48,23 @@ const browserPath = process.env.CHROME
 // Name of an account with 0 posts to test graceful exit
 const emptyAccountName = "emptyaccount";
 
-const libraryTestOptions: IOptions = {
-  logger: winston.createLogger({
+const createLogger = () =>
+  winston.createLogger({
     format: winston.format.json(),
     level: "error",
     silent: true,
     transports: [],
-  }),
+  });
+
+const libraryTestOptions: IOptions = {
+  logger: createLogger(),
   silent: true,
-  total: 10,
+  strict: true,
+  total: 1,
 };
 
 test("Library Classes", async () => {
-  const total = 10;
+  const total = 1;
   const objects = [
     new Instamancer.Hashtag(hashtags[0], libraryTestOptions),
     new Instamancer.User(users[0], libraryTestOptions),
@@ -322,45 +327,6 @@ test("Failed Page visit", async () => {
   expect(scraped.length).toBe(0);
 });
 
-interface IFakePageOptions {
-  // The port the server is hosted on
-  port?: number;
-
-  // The query to get API pages
-  pageQuery?: string;
-
-  // The query to get posts
-  edgeQuery?: string;
-
-  // The page to catch api requests on
-  catchPage?: string;
-
-  // The page to visit posts
-  postPage?: string;
-
-  // Regular API options
-  options?: IOptions;
-}
-
-class FakePage extends Instagram {
-  constructor(options: IFakePageOptions = {port: 0}) {
-    const baseURL = "http://127.0.0.1:" + options.port;
-
-    const silentOptions: IOptions = {silent: true};
-    super(baseURL, "", options.pageQuery, options.edgeQuery, {
-      ...options.options,
-      ...silentOptions,
-    });
-
-    this.catchURL = baseURL + "/" + options.catchPage;
-    this.postURL = baseURL + "/" + options.postPage;
-
-    setTimeout(async () => {
-      await this.forceStop();
-    }, 30000);
-  }
-}
-
 test("Network and API issues", async () => {
   const port = await startServer();
   console.log("Server: http://127.0.0.1:" + port);
@@ -410,4 +376,36 @@ test("Network and API issues", async () => {
   });
 
   await stopServer();
+});
+
+test("Should fire warning if strict is false and validations are different", async () => {
+  const logger = createLogger();
+  logger.warn = jest.fn();
+  const iterator = new ValidationsFailingInstagram(hashtags[0], {
+    logger,
+    strict: false,
+    total: 1,
+  }).generator();
+
+  let i = 0;
+  for await (const post of iterator) {
+    i++;
+    expect(logger.warn).toBeCalledTimes(i);
+  }
+});
+
+test("Should not fire warning if strict is false and validations are ok", async () => {
+  const logger = createLogger();
+  logger.warn = jest.fn();
+  const iterator = new Hashtag(hashtags[0], {
+    logger,
+    strict: false,
+    total: 1,
+  }).generator();
+
+  for await (const post of iterator) {
+    // @ts-ignore
+    console.warn(logger.warn.mock.calls[0]);
+    expect(logger.warn).toBeCalledTimes(0);
+  }
 });

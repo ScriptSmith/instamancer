@@ -122,6 +122,12 @@ function buildParser(args, callback) {
         default: false,
         describe: "Disable progress output",
       },
+      strict: {
+        boolean: true,
+        default: false,
+        describe:
+          "Throw an error if types from Instagram API have been changed",
+      },
       sync: {
         boolean: true,
         default: false,
@@ -249,6 +255,7 @@ async function spawn(args) {
     headless: !args["visible"],
     logger,
     silent: args["silent"],
+    strict: args["strict"],
     sleepTime: 2,
     enableGrafting: args["graft"],
     fullAPI: args["full"],
