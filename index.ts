@@ -1,19 +1,19 @@
-import {Hashtag, IOptions, IPost, Location, Post, User} from "./src/api/api";
+import {Hashtag, IOptions, Location, Post, User} from "./src/api/api";
 
-export {Hashtag, Location, Post, User, IOptions, IPost} from "./src/api/api";
+export {Hashtag, Location, Post, User, IOptions} from "./src/api/api";
 
 export function hashtag(id, options: IOptions) {
-    return new Hashtag(id, options).generator();
+  return new Hashtag(id, options).generator();
 }
 
 export function location(id, options: IOptions) {
-    return new Location(id, options).generator();
+  return new Location(id, options).generator();
 }
 
 export function user(id, options: IOptions) {
-    return new User(id, options).generator();
+  return new User(id, options).generator();
 }
 
 export function post(ids, options: IOptions) {
-    return new Post(ids, options).generator();
+  return new Post(ids, options).generator();
 }
