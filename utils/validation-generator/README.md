@@ -6,8 +6,8 @@ This util is used to automatically generate [io-ts](https://github.com/gcanti/io
 
 To generate these validations two steps are required:
 
-*  Get an actual Instagram API response and save as json
-*  Get `io-ts` typings from it
+*   Get an actual Instagram API response and save as json
+*   Get `io-ts` typings from it
 
 ## Actual API response
 
