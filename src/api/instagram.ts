@@ -1,5 +1,6 @@
 import AwaitLock = require("await-lock");
 import chalk from "chalk";
+import {isLeft} from "fp-ts/lib/Either";
 import {Type} from "io-ts";
 import {PathReporter} from "io-ts/lib/PathReporter";
 import {ThrowReporter} from "io-ts/lib/ThrowReporter";
@@ -689,8 +690,8 @@ export class Instagram<PostType> {
     if (this.strict) {
       ThrowReporter.report(validationResult);
     }
-    const validationReporter = PathReporter.report(validationResult);
-    if (validationReporter.length > 0) {
+    if (isLeft(validationResult)) {
+      const validationReporter = PathReporter.report(validationResult);
       this.logger.warn(
         `
       Warning! Instagram API has been changed since this package version has been released.

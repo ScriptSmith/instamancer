@@ -167,6 +167,7 @@ test("Instagram API limits", async () => {
           }),
           silent: false,
           sleepTime: 2,
+          strict: true,
           total: size,
         };
 
@@ -378,48 +379,50 @@ test("Network and API issues", async () => {
   await stopServer();
 });
 
-test("Should fire warning if strict is false and validations are different", async () => {
-  const logger = createLogger();
-  logger.warn = jest.fn();
-  const iterator = new ValidationsFailingInstagram(hashtags[0], {
-    logger,
-    strict: false,
-    total: 1,
-  }).generator();
+describe("Strict mode", () => {
+  test("Should fire warning if strict is false and validations are different", async () => {
+    const logger = createLogger();
+    logger.warn = jest.fn();
+    const iterator = new ValidationsFailingInstagram(hashtags[0], {
+      logger,
+      strict: false,
+      total: 1,
+    }).generator();
 
-  let i = 0;
-  for await (const post of iterator) {
-    i++;
-    expect(logger.warn).toBeCalledTimes(i);
-  }
-});
+    let i = 0;
+    for await (const post of iterator) {
+      i++;
+      expect(logger.warn).toBeCalledTimes(i);
+    }
+  });
 
-test("Should not fire warning if strict is false and validations are ok", async () => {
-  const logger = createLogger();
-  logger.warn = jest.fn();
-  const iterator = new Hashtag(hashtags[0], {
-    logger,
-    strict: false,
-    total: 1,
-  }).generator();
+  test("Should not fire warning if strict is false and validations are ok", async () => {
+    const logger = createLogger();
+    logger.warn = jest.fn();
+    const iterator = new Hashtag(hashtags[0], {
+      logger,
+      strict: false,
+      total: 1,
+    }).generator();
 
-  for await (const post of iterator) {
-    // @ts-ignore
-    console.warn(logger.warn.mock.calls[0]);
-    expect(logger.warn).toBeCalledTimes(0);
-  }
-});
+    for await (const post of iterator) {
+      // @ts-ignore
+      console.warn(logger.warn.mock.calls[0]);
+      expect(logger.warn).toBeCalledTimes(0);
+    }
+  });
 
-test("Should throw error if strict is true and validations are different", async () => {
-  expect.hasAssertions();
-  const iterator = new ValidationsFailingInstagram(hashtags[0], {
-    strict: true,
-    total: 1,
-  }).generator();
+  test("Should throw error if strict is true and validations are different", async () => {
+    expect.hasAssertions();
+    const iterator = new ValidationsFailingInstagram(hashtags[0], {
+      strict: true,
+      total: 1,
+    }).generator();
 
-  try {
-    await iterator.next();
-  } catch (e) {
-    expect(e).toBeInstanceOf(Error);
-  }
+    try {
+      await iterator.next();
+    } catch (e) {
+      expect(e).toBeInstanceOf(Error);
+    }
+  });
 });

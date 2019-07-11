@@ -87,7 +87,7 @@ export const Node3 = t.type({
 });
 
 export const Post = t.type({
-  node: Node3,
+  node: Node,
 });
 
 export const EdgeMediaToParentComment = t.type({
