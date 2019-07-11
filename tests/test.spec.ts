@@ -60,11 +60,11 @@ const libraryTestOptions: IOptions = {
   logger: createLogger(),
   silent: true,
   strict: true,
-  total: 1,
+  total: 10,
 };
 
 test("Library Classes", async () => {
-  const total = 1;
+  const total = 10;
   const objects = [
     new Instamancer.Hashtag(hashtags[0], libraryTestOptions),
     new Instamancer.User(users[0], libraryTestOptions),
