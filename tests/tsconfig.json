@@ -4,12 +4,9 @@
     "target": "es2018",
     "noImplicitAny": false,
     "inlineSourceMap": true,
-    "lib": [
-      "dom",
-      "es2018",
-      "esnext.asynciterable"
-    ],
-    "esModuleInterop": true
+    "lib": ["dom", "es2018", "esnext.asynciterable"],
+    "esModuleInterop": true,
+    "resolveJsonModule": true
   },
   "compileOnSave": false
 }
