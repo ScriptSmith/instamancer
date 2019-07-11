@@ -2,6 +2,7 @@ import AwaitLock = require("await-lock");
 import chalk from "chalk";
 import {Type} from "io-ts";
 import {PathReporter} from "io-ts/lib/PathReporter";
+import {ThrowReporter} from "io-ts/lib/ThrowReporter";
 import * as _ from "lodash/object";
 
 import {
@@ -685,6 +686,9 @@ export class Instagram<PostType> {
   private async addToPostBuffer(post: PostType) {
     await this.postBufferLock.acquireAsync();
     const validationResult = this.validator.decode(post);
+    if (this.strict) {
+      ThrowReporter.report(validationResult);
+    }
     const validationReporter = PathReporter.report(validationResult);
     if (validationReporter.length > 0) {
       this.logger.warn(

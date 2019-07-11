@@ -409,3 +409,17 @@ test("Should not fire warning if strict is false and validations are ok", async 
     expect(logger.warn).toBeCalledTimes(0);
   }
 });
+
+test("Should throw error if strict is true and validations are different", async () => {
+  expect.hasAssertions();
+  const iterator = new ValidationsFailingInstagram(hashtags[0], {
+    strict: true,
+    total: 1,
+  }).generator();
+
+  try {
+    await iterator.next();
+  } catch (e) {
+    expect(e).toBeInstanceOf(Error);
+  }
+});
