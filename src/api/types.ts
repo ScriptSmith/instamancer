@@ -64,7 +64,7 @@ export const Node = t.type({
   taken_at_timestamp: t.number,
   dimensions: Dimensions,
   display_url: t.string,
-  edge_liked_by: EdgeMediaToComment,
+  edge_liked_by: t.union([EdgeMediaToComment, t.undefined]),
   edge_media_preview_like: EdgeMediaToComment,
   owner: Owner,
   thumbnail_src: t.string,
