@@ -119,7 +119,7 @@ export const ShortcodeMedia = t.type({
   taken_at_timestamp: t.number,
   edge_media_preview_like: EdgeMediaPreviewComment,
   edge_media_to_sponsor_user: EdgeMediaToCaption,
-  location: t.string,
+  location: t.union([t.string, t.null]),
   viewer_has_liked: t.boolean,
   viewer_has_saved: t.boolean,
   viewer_has_saved_to_collection: t.boolean,
