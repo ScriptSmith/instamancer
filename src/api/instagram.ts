@@ -691,6 +691,8 @@ export class Instagram<PostType> {
       try {
         ThrowReporter.report(validationResult);
       } catch (e) {
+        this.postBufferLock.release();
+        this.responseBufferLock.release();
         await this.stop();
         throw e;
       }
