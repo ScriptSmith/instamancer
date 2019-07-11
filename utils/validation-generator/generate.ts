@@ -1,6 +1,7 @@
 import {writeFileSync} from "fs";
 import {dirname, join} from "path";
 import transform from "transform-json-types";
+// @ts-ignore
 import * as json from "./input.json";
 
 const getPath = () => join(dirname(__filename), "./output.ts");

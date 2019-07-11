@@ -688,7 +688,12 @@ export class Instagram<PostType> {
     await this.postBufferLock.acquireAsync();
     const validationResult = this.validator.decode(post);
     if (this.strict) {
-      ThrowReporter.report(validationResult);
+      try {
+        ThrowReporter.report(validationResult);
+      } catch (e) {
+        await this.stop();
+        throw e;
+      }
     }
     if (isLeft(validationResult)) {
       const validationReporter = PathReporter.report(validationResult);

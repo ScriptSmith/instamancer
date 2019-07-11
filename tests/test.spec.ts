@@ -406,8 +406,6 @@ describe("Strict mode", () => {
     }).generator();
 
     for await (const post of iterator) {
-      // @ts-ignore
-      console.warn(logger.warn.mock.calls[0]);
       expect(logger.warn).toBeCalledTimes(0);
     }
   });
