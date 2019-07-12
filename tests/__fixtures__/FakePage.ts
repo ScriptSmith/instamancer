@@ -23,8 +23,9 @@ export interface IFakePageOptions {
 }
 
 const FakeValidator = t.type({
-  bar: t.number,
-  foo: t.string,
+  node: t.type({
+    id: t.string,
+  }),
 });
 
 export class FakePage extends Instagram<t.TypeOf<typeof FakeValidator>> {

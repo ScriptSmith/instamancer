@@ -263,6 +263,7 @@ export class Instagram<PostType> {
 
     // Visit post and read state
     let data;
+    let parsed;
     try {
       await postPage.goto(this.postURL + post);
 
@@ -273,6 +274,7 @@ export class Instagram<PostType> {
           window["_sharedData"].entry_data.PostPage[0].graphql,
         );
       });
+      parsed = JSON.parse(data) as PostType;
     } catch (e) {
       // Log error and wait
       this.logger.error(e);
@@ -287,7 +289,10 @@ export class Instagram<PostType> {
         await this.postPage(post, --retries);
       }
     }
-    await this.addToPostBuffer(JSON.parse(data) as PostType);
+    if (!parsed) {
+      return;
+    }
+    await this.addToPostBuffer(parsed);
     await postPage.close();
   }
 
