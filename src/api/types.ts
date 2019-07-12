@@ -91,6 +91,21 @@ export const Node3 = t.type({
   edge_liked_by: EdgeMediaToComment,
 });
 
+const EdgeMediaToParentCommentNode = t.intersection([
+  Node3,
+  t.type({
+    edge_threaded_comments: t.type({
+      count: t.number,
+      page_info: PageInfo,
+      edges: t.array(
+        t.type({
+          node: Node3,
+        }),
+      ),
+    }),
+  }),
+]);
+
 export const Post = t.type({
   node: Node,
 });
@@ -98,7 +113,11 @@ export const Post = t.type({
 export const EdgeMediaToParentComment = t.type({
   count: t.number,
   page_info: PageInfo,
-  edges: t.UnknownArray, // TODO
+  edges: t.array(
+    t.type({
+      node: EdgeMediaToParentCommentNode,
+    }),
+  ),
 });
 
 export const ShortcodeMedia = t.type({
