@@ -34,7 +34,7 @@ export const Owner2 = t.type({
 
 export const PageInfo = t.type({
   has_next_page: t.boolean,
-  end_cursor: t.string,
+  end_cursor: t.union([t.string, t.null]),
 });
 
 export const Dimensions = t.type({
@@ -44,11 +44,19 @@ export const Dimensions = t.type({
 
 export const EdgeMediaPreviewComment = t.type({
   count: t.number,
-  edges: t.Array,
+  edges: t.UnknownArray,
+});
+
+export const Node1 = t.type({
+  text: t.union([t.string, t.undefined]),
 });
 
 export const EdgeMediaToCaption = t.type({
-  edges: t.Array,
+  edges: t.array(
+    t.type({
+      node: Node1,
+    }),
+  ),
 });
 
 export const EdgeMediaToComment = t.type({
@@ -64,16 +72,13 @@ export const Node = t.type({
   taken_at_timestamp: t.number,
   dimensions: Dimensions,
   display_url: t.string,
-  edge_liked_by: t.union([EdgeMediaToComment, t.undefined]),
+  edge_liked_by: EdgeMediaToComment,
   edge_media_preview_like: EdgeMediaToComment,
   owner: Owner,
   thumbnail_src: t.string,
   thumbnail_resources: t.array(ThumbnailResources),
   is_video: t.boolean,
-});
-
-export const Node1 = t.type({
-  text: t.string,
+  accessibility_caption: t.union([t.string, t.undefined]),
 });
 
 export const Node3 = t.type({
@@ -93,7 +98,7 @@ export const Post = t.type({
 export const EdgeMediaToParentComment = t.type({
   count: t.number,
   page_info: PageInfo,
-  edges: t.array(Post),
+  edges: t.UnknownArray, // TODO
 });
 
 export const ShortcodeMedia = t.type({
@@ -101,11 +106,11 @@ export const ShortcodeMedia = t.type({
   id: t.string,
   shortcode: t.string,
   dimensions: Dimensions,
-  gating_info: t.string,
-  media_preview: t.string,
+  gating_info: t.union([t.string, t.null]),
+  media_preview: t.union([t.string, t.null]),
   display_url: t.string,
   display_resources: t.array(ThumbnailResources),
-  accessibility_caption: t.string,
+  accessibility_caption: t.union([t.string, t.undefined]),
   is_video: t.boolean,
   should_log_client_event: t.boolean,
   tracking_token: t.string,
