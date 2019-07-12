@@ -266,9 +266,6 @@ export class Instagram<PostType> {
           window["_sharedData"].entry_data.PostPage[0].graphql,
         );
       });
-      await this.addToPostBuffer(JSON.parse(data) as PostType);
-
-      await postPage.close();
     } catch (e) {
       // Log error and wait
       this.logger.error(e);
@@ -283,6 +280,13 @@ export class Instagram<PostType> {
         await this.postPage(post, --retries);
       }
     }
+    try {
+      await this.addToPostBuffer(JSON.parse(data) as PostType);
+    } catch (e) {
+      await this.stop();
+      throw e;
+    }
+    await postPage.close();
   }
 
   /**
@@ -662,7 +666,13 @@ export class Instagram<PostType> {
               this.postPage(post["node"]["shortcode"], this.postPageRetries),
             );
           } else {
-            await this.addToPostBuffer(post);
+            try {
+              await this.addToPostBuffer(post);
+            } catch (e) {
+              this.responseBufferLock.release();
+              await this.stop();
+              throw e;
+            }
           }
         } else {
           this.finished = true;
@@ -692,8 +702,6 @@ export class Instagram<PostType> {
         ThrowReporter.report(validationResult);
       } catch (e) {
         this.postBufferLock.release();
-        this.responseBufferLock.release();
-        await this.stop();
         throw e;
       }
     }
