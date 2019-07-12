@@ -33,6 +33,7 @@ output = `${output}// tslint:enable: object-literal-sort-keys\n`;
 output = removeVarFromCode(output, "RootInterface");
 output = removeVarFromCode(output, "Default");
 output = output.replace(/^const/gm, "export const");
+output = output.replace(/t\.Array/gm, "t.UnknownArray");
 output = output.replace(/\ string/gm, " t.string"); // Really weird
 output = output.replace(/t\.Integer/gm, "t.number"); // Integer does not have ts type
 output = singularizeVarNameInCode(output, "Post");
