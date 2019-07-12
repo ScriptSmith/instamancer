@@ -141,8 +141,11 @@ export const ShortcodeMedia = t.type({
   edge_media_to_caption: EdgeMediaToCaption,
   caption_is_edited: t.boolean,
   has_ranked_comments: t.boolean,
-  edge_media_to_parent_comment: EdgeMediaToParentComment,
-  edge_media_preview_comment: EdgeMediaPreviewComment,
+  edge_media_to_parent_comment: t.union([
+    EdgeMediaToParentComment,
+    t.undefined,
+  ]),
+  edge_media_preview_comment: t.union([EdgeMediaPreviewComment, t.undefined]),
   comments_disabled: t.boolean,
   taken_at_timestamp: t.number,
   edge_media_preview_like: EdgeMediaPreviewComment,
