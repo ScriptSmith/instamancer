@@ -74,14 +74,9 @@ test("Library Classes", async () => {
 
   for (const object of objects) {
     const scraped = [];
-    try {
-      for await (const post of object.generator()) {
-        expect(post).toBeDefined();
-        scraped.push(post);
-      }
-    } catch (e) {
-      console.error(e);
-      throw e;
+    for await (const post of object.generator()) {
+      expect(post).toBeDefined();
+      scraped.push(post);
     }
 
     expect(scraped.length).toBe(total);
