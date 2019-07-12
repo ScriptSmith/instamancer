@@ -202,6 +202,14 @@ export class Instagram<PostType> {
    */
   public async forceStop() {
     this.finished = true;
+    try {
+      this.requestBufferLock.release();
+      // tslint:disable-next-line: no-empty
+    } catch (e) {}
+    try {
+      this.responseBufferLock.release();
+      // tslint:disable-next-line: no-empty
+    } catch (e) {}
     await this.stop();
   }
 
@@ -280,12 +288,7 @@ export class Instagram<PostType> {
         await this.postPage(post, --retries);
       }
     }
-    try {
-      await this.addToPostBuffer(JSON.parse(data) as PostType);
-    } catch (e) {
-      await this.stop();
-      throw e;
-    }
+    await this.addToPostBuffer(JSON.parse(data) as PostType);
     await postPage.close();
   }
 
@@ -666,13 +669,7 @@ export class Instagram<PostType> {
               this.postPage(post["node"]["shortcode"], this.postPageRetries),
             );
           } else {
-            try {
-              await this.addToPostBuffer(post);
-            } catch (e) {
-              this.responseBufferLock.release();
-              await this.stop();
-              throw e;
-            }
+            await this.addToPostBuffer(post);
           }
         } else {
           this.finished = true;
@@ -696,14 +693,21 @@ export class Instagram<PostType> {
    */
   private async addToPostBuffer(post: PostType) {
     await this.postBufferLock.acquireAsync();
+    this.validatePost(post);
+    this.postBuffer.push(post);
+    this.postBufferLock.release();
+  }
+
+  private validatePost(post: PostType) {
     const validationResult = this.validator.decode(post);
     if (this.strict) {
       try {
         ThrowReporter.report(validationResult);
       } catch (e) {
-        this.postBufferLock.release();
+        this.forceStop();
         throw e;
       }
+      return;
     }
     if (isLeft(validationResult)) {
       const validationReporter = PathReporter.report(validationResult);
@@ -715,8 +719,6 @@ export class Instagram<PostType> {
         validationReporter,
       );
     }
-    this.postBuffer.push(post);
-    this.postBufferLock.release();
   }
 
   /**
