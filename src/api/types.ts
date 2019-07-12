@@ -67,13 +67,13 @@ export const Node = t.type({
   taken_at_timestamp: t.number,
   dimensions: Dimensions,
   display_url: t.string,
-  edge_liked_by: EdgeMediaToComment,
+  edge_liked_by: t.union([EdgeMediaToComment, t.undefined]),
   edge_media_preview_like: EdgeMediaToComment,
   owner: Owner,
   thumbnail_src: t.string,
   thumbnail_resources: t.array(ThumbnailResources),
   is_video: t.boolean,
-  accessibility_caption: t.union([t.string, t.undefined]),
+  accessibility_caption: t.union([t.string, t.undefined, t.null]),
 });
 
 export const Node3 = t.type({
