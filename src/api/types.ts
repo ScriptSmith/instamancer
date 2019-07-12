@@ -42,11 +42,6 @@ export const Dimensions = t.type({
   width: t.number,
 });
 
-export const EdgeMediaPreviewComment = t.type({
-  count: t.number,
-  edges: t.UnknownArray,
-});
-
 export const Node1 = t.type({
   text: t.union([t.string, t.undefined]),
 });
@@ -89,6 +84,15 @@ export const Node3 = t.type({
   owner: Owner1,
   viewer_has_liked: t.boolean,
   edge_liked_by: EdgeMediaToComment,
+});
+
+export const EdgeMediaPreviewComment = t.type({
+  count: t.number,
+  edges: t.array(
+    t.type({
+      node: Node3,
+    }),
+  ),
 });
 
 const EdgeMediaToParentCommentNode = t.intersection([
