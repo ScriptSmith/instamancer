@@ -78,7 +78,6 @@ test("Library Classes", async () => {
       expect(post).toBeDefined();
       scraped.push(post);
     }
-
     expect(scraped.length).toBe(total);
   }
 });

@@ -5,7 +5,6 @@ import {Type} from "io-ts";
 import {PathReporter} from "io-ts/lib/PathReporter";
 import {ThrowReporter} from "io-ts/lib/ThrowReporter";
 import * as _ from "lodash/object";
-
 import {
   Browser,
   Headers,
