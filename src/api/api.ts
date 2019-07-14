@@ -28,6 +28,9 @@ export interface IOptions {
   // Time to sleep between interactions with the page
   sleepTime?: number;
 
+  // Throw an error if type validation has been failed
+  strict?: boolean;
+
   // Time to sleep when rate-limited
   hibernationTime?: number;
 
@@ -42,9 +45,6 @@ export interface IOptions {
 
   // Location of the chromium / chrome binary executable
   executablePath?: string;
-
-  // Throw an error if type validation has been failed
-  strict?: boolean;
 }
 
 /**

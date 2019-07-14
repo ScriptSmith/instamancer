@@ -26,6 +26,7 @@ Read more about how Instamancer works [here](https://scriptsmith.github.io/insta
 - Output JSON, CSV
 - Download images, albums, and videos
 - Batch scraping
+- API response validation
 
 ### Data
 Metadata that Instamancer is able to gather from posts:
@@ -122,6 +123,8 @@ Options:
   --video                 Download videos. Only works in full mode
                                                       [boolean] [default: false]
   --silent                Disable progress output     [boolean] [default: false]
+  --strict                Throw an error if types from Instagram API have been
+                          changed                     [boolean] [default: false]  
   --sync                  Synchronously download files between API requests
                                                       [boolean] [default: false]
   --threads, -k           The number of parallel download / upload threads
@@ -199,6 +202,9 @@ const options: Instamancer.IOptions = {
     
     // Time to sleep between interactions with the page
     sleepTime: number,
+
+    // Throw an error if type validation has been failed
+    strict?: boolean,
     
     // Time to sleep when rate-limited
     hibernationTime: number,
