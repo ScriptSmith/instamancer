@@ -30,7 +30,7 @@ To quickly find all the typing errors in the project, you can run `npm test -- -
 
 You can get a lot of really verbose errors, like:
 
-```
+``` typescript
     Invalid value 
     {"id":"219469050","has_public_page":true,"name":"Costa Nova, Aveiro, Portugal","slug":"costa-nova-aveiro-portugal","address_json":"{\"street_address\": \"\", \"zip_code\": \"\", \"city_name\": \"Costa Nova, Aveiro, Portugal\", \"region_name\": \"\", \"country_code\": \"PT\", \"exact_city_match\": true, \"exact_region_match\": false, \"exact_country_match\": false}"}
     supplied to : 
