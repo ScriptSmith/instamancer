@@ -165,8 +165,25 @@ export const SinglePost = t.type({
   shortcode_media: ShortcodeMedia,
 });
 
+export const Location = t.type({
+  id: t.string,
+  has_public_page: t.boolean,
+  name: t.string,
+  slug: t.string,
+  address_json: t.string,
+});
+
+export const FullApiPost = t.type({
+  shortcode_media: t.type({
+    ...ShortcodeMedia.props,
+    location: t.union([Location, t.null]),
+  }),
+});
+
 // tslint:enable: object-literal-sort-keys
 
 export type TPost = t.TypeOf<typeof Post>;
 
 export type TSinglePost = t.TypeOf<typeof SinglePost>;
+
+export type TFullApiPost = t.TypeOf<typeof FullApiPost>;

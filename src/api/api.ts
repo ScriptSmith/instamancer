@@ -1,6 +1,13 @@
 import * as winston from "winston";
 import {Instagram} from "./instagram";
-import {Post as PostValidator, SinglePost, TPost, TSinglePost} from "./types";
+import {
+  FullApiPost,
+  Post as PostValidator,
+  SinglePost,
+  TFullApiPost,
+  TPost,
+  TSinglePost,
+} from "./types";
 
 /**
  * Optional arguments for the API
@@ -65,38 +72,62 @@ export class Post extends Instagram<TSinglePost> {
   }
 }
 
+const getPageValidator = (options: IOptions) =>
+  options.fullAPI ? FullApiPost : PostValidator;
+
 /**
  * An Instagram hashtag API wrapper
  */
-export class Hashtag extends Instagram<TPost> {
+export class Hashtag extends Instagram<TPost | TFullApiPost> {
   constructor(id: string, options: IOptions = {}) {
     const endpoint = "https://instagram.com/explore/tags/";
     const pageQuery = "data.hashtag.edge_hashtag_to_media.page_info";
     const edgeQuery = "data.hashtag.edge_hashtag_to_media.edges";
-    super(endpoint, id, pageQuery, edgeQuery, options, PostValidator);
+    super(
+      endpoint,
+      id,
+      pageQuery,
+      edgeQuery,
+      options,
+      getPageValidator(options),
+    );
   }
 }
 
 /**
  * An Instagram location API wrapper
  */
-export class Location extends Instagram<TPost> {
+export class Location extends Instagram<TPost | TFullApiPost> {
   constructor(id: string, options: IOptions = {}) {
     const endpoint = "https://instagram.com/explore/locations/";
     const pageQuery = "data.location.edge_location_to_media.page_info";
     const edgeQuery = "data.location.edge_location_to_media.edges";
-    super(endpoint, id, pageQuery, edgeQuery, options, PostValidator);
+    super(
+      endpoint,
+      id,
+      pageQuery,
+      edgeQuery,
+      options,
+      getPageValidator(options),
+    );
   }
 }
 
 /**
  * An Instagram user API wrapper
  */
-export class User extends Instagram<TPost> {
+export class User extends Instagram<TPost | TFullApiPost> {
   constructor(id: string, options: IOptions = {}) {
     const endpoint = "https://instagram.com/";
     const pageQuery = "data.user.edge_owner_to_timeline_media.page_info";
     const edgeQuery = "data.user.edge_owner_to_timeline_media.edges";
-    super(endpoint, id, pageQuery, edgeQuery, options, PostValidator);
+    super(
+      endpoint,
+      id,
+      pageQuery,
+      edgeQuery,
+      options,
+      getPageValidator(options),
+    );
   }
 }

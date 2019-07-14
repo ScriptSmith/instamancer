@@ -101,6 +101,28 @@ test("Library Functions", async () => {
   }
 });
 
+test("Full API", async () => {
+  const total = 10;
+  const fullApiOption = {
+    ...libraryTestOptions,
+    fullAPI: true,
+  };
+  const generators = [
+    Instamancer.hashtag(hashtags[0], fullApiOption),
+    Instamancer.user(users[0], fullApiOption),
+    Instamancer.location(locations[0], fullApiOption),
+  ];
+
+  for (const generator of generators) {
+    const scraped = [];
+    for await (const post of generator) {
+      expect(post).toBeDefined();
+      scraped.push(post);
+    }
+    expect(scraped.length).toBe(total);
+  }
+});
+
 class ApiTestConditions {
   public api: typeof InstagramEndpoint;
   public ids: string[];
