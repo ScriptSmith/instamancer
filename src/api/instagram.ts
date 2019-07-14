@@ -458,9 +458,6 @@ export class Instagram<PostType> {
   private async stop() {
     await this.progress(Progress.CLOSING);
 
-    // Finish page promises
-    await Promise.all(this.pagePromises);
-
     // Close page and browser
     if (!this.page.isClosed()) {
       await this.page.close();
