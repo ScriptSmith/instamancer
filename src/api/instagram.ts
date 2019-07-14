@@ -714,8 +714,8 @@ export class Instagram<PostType> {
       const validationReporter = PathReporter.report(validationResult);
       this.logger.warn(
         `
-      Warning! Instagram API has been changed since this package version has been released.
-      Please, update the package or open an issue, if it is not yet updated.
+      Warning! The Instagram API has been changed since this version of instamancer was released.
+      More info: https://github.com/ScriptSmith/instamancer/blob/master/FAQ.md#instagram-api-has-been-changed
       `,
         validationReporter,
       );
