@@ -19,10 +19,10 @@ The script will save an actual API response for different endpoints in `input.js
 
 > Warning! By some weird reasons these typings are a little bit screwed. Need to replace Node3 with Node inside Post type to make them ok.
 
-1. `ts-node utils/validation-generator/generate.ts` (The script will save typing to `output.ts` file.)
-1. Move all primitive types (which does not use other types, like `ThumbnailResources`, `Owner` and others) to the top of the file, final types (like `Post`) to the bottom of the file and fix all the block-scoped variables order errors manually.
-1. Write typing for FullApiPost (generally it is a SinglePost, but with location as an object)
-1. Fix the rest of the typings
+1.  `ts-node utils/validation-generator/generate.ts` (The script will save typing to `output.ts` file.)
+2.  Move all primitive types (which does not use other types, like `ThumbnailResources`, `Owner` and others) to the top of the file, final types (like `Post`) to the bottom of the file and fix all the block-scoped variables order errors manually.
+3.  Write typing for FullApiPost (generally it is a SinglePost, but with location as an object)
+4.  Fix the rest of the typings
 
 ## Fix typings
 
@@ -49,7 +49,7 @@ In our case validator expected `string` or `null`, but an object has been reciev
 
 So we can fix the typing in the following way:
 
-```
+``` typescript
 export const Location = t.type({
   id: t.string,
   has_public_page: t.boolean,
