@@ -7,18 +7,18 @@ export const ThumbnailResources = t.type({
   config_height: t.number,
 });
 
-export const Owner = t.type({
+export const PostNodeOwner = t.type({
   id: t.string,
 });
 
-export const Owner1 = t.type({
+export const CommentNodeOwner = t.type({
   id: t.string,
   is_verified: t.boolean,
   profile_pic_url: t.string,
   username: t.string,
 });
 
-export const Owner2 = t.type({
+export const ShortcodeMediaOwner = t.type({
   id: t.string,
   is_verified: t.boolean,
   profile_pic_url: t.string,
@@ -42,14 +42,14 @@ export const Dimensions = t.type({
   width: t.number,
 });
 
-export const Node1 = t.type({
+export const EdgeMediaToCaptionNode = t.type({
   text: t.union([t.string, t.undefined]),
 });
 
 export const EdgeMediaToCaption = t.type({
   edges: t.array(
     t.type({
-      node: Node1,
+      node: EdgeMediaToCaptionNode,
     }),
   ),
 });
@@ -58,7 +58,7 @@ export const EdgeMediaToComment = t.type({
   count: t.number,
 });
 
-export const Node = t.type({
+export const PostNode = t.type({
   comments_disabled: t.boolean,
   id: t.string,
   edge_media_to_caption: EdgeMediaToCaption,
@@ -69,19 +69,19 @@ export const Node = t.type({
   display_url: t.string,
   edge_liked_by: t.union([EdgeMediaToComment, t.undefined]),
   edge_media_preview_like: EdgeMediaToComment,
-  owner: Owner,
+  owner: PostNodeOwner,
   thumbnail_src: t.string,
   thumbnail_resources: t.array(ThumbnailResources),
   is_video: t.boolean,
   accessibility_caption: t.union([t.string, t.undefined, t.null]),
 });
 
-export const Node3 = t.type({
+export const CommentNode = t.type({
   id: t.string,
   text: t.string,
   created_at: t.number,
   did_report_as_spam: t.boolean,
-  owner: Owner1,
+  owner: CommentNodeOwner,
   viewer_has_liked: t.boolean,
   edge_liked_by: EdgeMediaToComment,
 });
@@ -90,20 +90,20 @@ export const EdgeMediaPreviewComment = t.type({
   count: t.number,
   edges: t.array(
     t.type({
-      node: Node3,
+      node: CommentNode,
     }),
   ),
 });
 
 const EdgeMediaToParentCommentNode = t.intersection([
-  Node3,
+  CommentNode,
   t.type({
     edge_threaded_comments: t.type({
       count: t.number,
       page_info: PageInfo,
       edges: t.array(
         t.type({
-          node: Node3,
+          node: CommentNode,
         }),
       ),
     }),
@@ -111,7 +111,7 @@ const EdgeMediaToParentCommentNode = t.intersection([
 ]);
 
 export const Post = t.type({
-  node: Node,
+  node: PostNode,
 });
 
 export const EdgeMediaToParentComment = t.type({
@@ -156,7 +156,7 @@ export const ShortcodeMedia = t.type({
   viewer_has_saved_to_collection: t.boolean,
   viewer_in_photo_of_you: t.boolean,
   viewer_can_reshare: t.boolean,
-  owner: Owner2,
+  owner: ShortcodeMediaOwner,
   is_ad: t.boolean,
   edge_web_media_to_related_media: EdgeMediaToCaption,
 });
