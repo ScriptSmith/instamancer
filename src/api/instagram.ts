@@ -275,6 +275,7 @@ export class Instagram<PostType> {
         );
       });
       parsed = JSON.parse(data) as PostType;
+      await postPage.close();
     } catch (e) {
       // Log error and wait
       this.logger.error(e);
@@ -293,7 +294,6 @@ export class Instagram<PostType> {
       return;
     }
     await this.addToPostBuffer(parsed);
-    await postPage.close();
   }
 
   /**
