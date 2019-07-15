@@ -293,7 +293,12 @@ export class Instagram<PostType> {
     if (!parsed) {
       return;
     }
-    await this.addToPostBuffer(parsed);
+    try {
+      await this.addToPostBuffer(parsed);
+    } catch (e) {
+      await postPage.close();
+      throw e;
+    }
   }
 
   /**
