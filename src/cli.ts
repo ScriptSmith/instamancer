@@ -6,7 +6,7 @@ import * as winston from "winston";
 
 import * as path from "path";
 import {storage} from "pkgcloud";
-import {Hashtag, IOptions, Location, Post, User} from "./api/api";
+import {createApi, IOptions} from "./api/api";
 import {upload} from "./cloud";
 import {download, toCSV, toJSON} from "./download";
 import {GetPool} from "./getpool/getPool";
@@ -231,22 +231,13 @@ async function spawn(args) {
   }
 
   // Pick endpoint
-  let api;
   let ids;
-  if (args["_"][0] === "hashtag") {
-    api = Hashtag;
-    ids = args["id"];
-  } else if (args["_"][0] === "location") {
-    api = Location;
-    ids = args["id"];
-  } else if (args["_"][0] === "user") {
-    api = User;
-    ids = args["id"];
-  } else if (args["_"][0] === "post") {
-    api = Post;
+  if (args["_"][0] === "post") {
     ids = args["ids"].split(",");
     args["id"] = ids.length === 1 ? ids[0] : "posts";
     args["full"] = true;
+  } else {
+    ids = args["id"];
   }
 
   // Define options
@@ -297,7 +288,7 @@ async function spawn(args) {
 
   // Start API
   logger.info("Starting API at " + Date.now());
-  const obj = new api(ids, options);
+  const obj = createApi(args["_"][0], ids, options);
   await obj.start();
 
   // Start download pool
