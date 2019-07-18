@@ -2,6 +2,7 @@ import * as winston from "winston";
 import * as Instamancer from "..";
 import {Hashtag, IOptions, Location, User} from "../src/api/api";
 import {FakePage, IFakePageOptions} from "./__fixtures__/FakePage";
+import {QuickGraft} from "./__fixtures__/QuickGraft";
 import {ValidationsFailingInstagram} from "./__fixtures__/ValidationsFailing";
 import {startServer, stopServer} from "./server";
 
@@ -18,14 +19,14 @@ const locations = [
 ];
 const users = ["snoopdogg", "arianagrande", "bbc", "whitehouse", "australia"];
 const posts = [
-  "BsOGulcndj-",
+  "By54GDoHGzK",
   "Be3rTNplCHf",
   "BlBvw2_jBKp",
-  "Bi-hISIghYe",
+  "Bzi33wDnxOz",
   "BfzEfy-lK1N",
   "Bneu_dCHVdn",
   "Brx-adXA9C1",
-  "BlTYHvXFrvm",
+  "Bz5flRagYQt",
   "BmRZH7NFwi6",
   "BpiIJCUnYwy",
 ];
@@ -111,6 +112,7 @@ test("Full API", async () => {
     Instamancer.hashtag(hashtags[0], fullApiOption),
     Instamancer.user(users[0], fullApiOption),
     Instamancer.location(locations[0], fullApiOption),
+    Instamancer.post(posts, fullApiOption),
   ];
 
   for (const generator of generators) {
@@ -268,13 +270,6 @@ test("API options", async () => {
     }
   }
 });
-
-class QuickGraft extends Instamancer.Hashtag {
-  constructor(id: string, options: IOptions = {}) {
-    super(id, options);
-    this.jumpMod = 2;
-  }
-}
 
 test("No grafting", async () => {
   const total = 100;
