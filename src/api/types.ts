@@ -85,7 +85,6 @@ export const PostNode = t.type({
   thumbnail_resources: t.array(ThumbnailResources),
   is_video: t.boolean,
   accessibility_caption: t.union([t.string, t.undefined, t.null]),
-  video_view_count: t.union([t.undefined, t.number]),
   display_resources: t.union([
     t.array(
       t.type({
@@ -109,13 +108,15 @@ export const PostNode = t.type({
     }),
   ]),
   video_url: t.union([t.undefined, t.string]),
+  video_view_count: t.union([t.undefined, t.number]),
   gating_info: t.union([t.null, t.undefined]),
-  media_preview: t.union([t.undefined, t.string]),
+  media_preview: t.union([t.undefined, t.string, t.null]),
   viewer_has_liked: t.union([t.undefined, t.boolean]),
   viewer_has_saved: t.union([t.boolean, t.undefined]),
   viewer_has_saved_to_collection: t.union([t.boolean, t.undefined]),
   viewer_in_photo_of_you: t.union([t.boolean, t.undefined]),
   viewer_can_reshare: t.union([t.boolean, t.undefined]),
+  edge_sidecar_to_children: t.union([EdgeMediaToCaption, t.undefined]),
 });
 
 export const CommentNode = t.type({
@@ -170,6 +171,8 @@ export const ShortcodeMedia = t.type({
   __typename: t.string,
   id: t.string,
   shortcode: t.string,
+  edge_media_to_comment: t.union([EdgeMediaToComment, t.undefined]),
+  thumbnail_src: t.union([t.undefined, t.string]),
   dimensions: Dimensions,
   gating_info: t.union([t.string, t.null]),
   media_preview: t.union([t.string, t.null]),
@@ -201,10 +204,26 @@ export const ShortcodeMedia = t.type({
   owner: ShortcodeMediaOwner,
   is_ad: t.boolean,
   edge_web_media_to_related_media: EdgeMediaToCaption,
+  edge_sidecar_to_children: t.union([EdgeMediaToCaption, t.undefined]),
+  dash_info: t.union([
+    t.undefined,
+    t.type({
+      is_dash_eligible: t.boolean,
+      video_dash_manifest: t.null,
+      number_of_qualities: t.number,
+    }),
+  ]),
+  video_url: t.union([t.undefined, t.string]),
+  video_view_count: t.union([t.undefined, t.number]),
+  encoding_status: t.union([t.undefined, t.string, t.null]),
+  is_published: t.union([t.undefined, t.boolean]),
+  product_type: t.union([t.undefined, t.string]),
+  title: t.union([t.undefined, t.string, t.null]),
+  video_duration: t.union([t.undefined, t.number]),
 });
 
 export const SinglePost = t.type({
-  shortcode_media: ShortcodeMedia,
+  shortcode_media: excess(ShortcodeMedia),
 });
 
 export const FullApiPost = t.type({
