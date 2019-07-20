@@ -179,7 +179,7 @@ export class Instagram<PostType> {
     this.fullAPI = options.fullAPI;
     this.proxyURL = options.proxyURL;
     this.executablePath = options.executablePath;
-    this.validator = validator;
+    this.validator = options.validator || validator;
   }
 
   /**

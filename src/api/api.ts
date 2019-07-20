@@ -1,3 +1,4 @@
+import {Type} from "io-ts";
 import * as winston from "winston";
 import {Instagram} from "./instagram";
 import {
@@ -45,6 +46,9 @@ export interface IOptionsCommon {
 
   // Location of the chromium / chrome binary executable
   executablePath?: string;
+
+  // Custom io-ts validator
+  validator?: Type<unknown>;
 }
 
 export interface IOptionsFullApi extends IOptionsCommon {

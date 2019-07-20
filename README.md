@@ -220,6 +220,9 @@ const options: Instamancer.IOptions = {
     
     // Location of the chromium / chrome binary executable
     executablePath: string,
+
+    // Custom io-ts validator
+    validator?: Type<unknown>;
 }
 ```
 
