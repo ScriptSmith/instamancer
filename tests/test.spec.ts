@@ -463,4 +463,21 @@ describe("Strict mode", () => {
       expect(e.message).toMatch(/^Invalid value/);
     }
   });
+
+  test("Should throw validation error if strict is true and types are incorrect (Full Mode)", async () => {
+    expect.hasAssertions();
+    const iterator = new Hashtag(hashtags[0], {
+      fullAPI: true,
+      strict: true,
+      total: 1,
+      validator: failingValidator,
+    }).generator();
+
+    try {
+      await iterator.next();
+    } catch (e) {
+      expect(e).toBeInstanceOf(Error);
+      expect(e.message).toMatch(/^Invalid value/);
+    }
+  });
 });
