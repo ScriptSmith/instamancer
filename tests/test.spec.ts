@@ -1,9 +1,9 @@
+import * as t from "io-ts";
 import * as winston from "winston";
 import * as Instamancer from "..";
-import {Hashtag, IOptions, Location, User} from "../src/api/api";
+import {Hashtag, IOptions, Location, Post, User} from "../src/api/api";
 import {FakePage, IFakePageOptions} from "./__fixtures__/FakePage";
 import {QuickGraft} from "./__fixtures__/QuickGraft";
-import {ValidationsFailingInstagram} from "./__fixtures__/ValidationsFailing";
 import {startServer, stopServer} from "./server";
 
 jest.setTimeout(120 * 60 * 1000);
@@ -397,13 +397,18 @@ test("Network and API issues", async () => {
 });
 
 describe("Strict mode", () => {
+  const failingValidator = t.type({
+    foo: t.string,
+  });
+
   test("Should fire warning if strict is false and validations are different", async () => {
     const logger = createLogger();
     logger.warn = jest.fn();
-    const iterator = new ValidationsFailingInstagram(hashtags[0], {
+    const iterator = new Hashtag(hashtags[0], {
       logger,
       strict: false,
       total: 1,
+      validator: failingValidator,
     }).generator();
 
     let i = 0;
@@ -427,17 +432,35 @@ describe("Strict mode", () => {
     }
   });
 
-  test("Should throw error if strict is true and validations are different", async () => {
+  test("Should throw validation error if strict is true and types are incorrect", async () => {
     expect.hasAssertions();
-    const iterator = new ValidationsFailingInstagram(hashtags[0], {
+    const iterator = new Hashtag(hashtags[0], {
       strict: true,
       total: 1,
+      validator: failingValidator,
     }).generator();
 
     try {
       await iterator.next();
     } catch (e) {
       expect(e).toBeInstanceOf(Error);
+      expect(e.message).toMatch(/^Invalid value/);
+    }
+  });
+
+  test("Should throw validation error if strict is true and types are incorrect (Post)", async () => {
+    expect.hasAssertions();
+    const iterator = new Post(posts, {
+      strict: true,
+      total: 1,
+      validator: failingValidator,
+    }).generator();
+
+    try {
+      await iterator.next();
+    } catch (e) {
+      expect(e).toBeInstanceOf(Error);
+      expect(e.message).toMatch(/^Invalid value/);
     }
   });
 });
