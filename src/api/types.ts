@@ -227,10 +227,12 @@ export const SinglePost = t.type({
 });
 
 export const FullApiPost = t.type({
-  shortcode_media: t.type({
-    ...ShortcodeMedia.props,
-    location: t.union([Location, t.null]),
-  }),
+  shortcode_media: excess(
+    t.type({
+      ...ShortcodeMedia.props,
+      location: t.union([Location, t.null]),
+    }),
+  ),
 });
 
 // tslint:enable: object-literal-sort-keys
