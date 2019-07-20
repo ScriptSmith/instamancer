@@ -1,10 +1,19 @@
 // tslint:disable: object-literal-sort-keys
 import * as t from "io-ts";
+import {excess} from "io-ts-excess";
 
 export const ThumbnailResources = t.type({
   src: t.string,
   config_width: t.number,
   config_height: t.number,
+});
+
+export const Location = t.type({
+  id: t.string,
+  has_public_page: t.boolean,
+  name: t.string,
+  slug: t.string,
+  address_json: t.union([t.string, t.undefined]),
 });
 
 export const PostNodeOwner = t.type({
@@ -59,7 +68,9 @@ export const EdgeMediaToComment = t.type({
 });
 
 export const PostNode = t.type({
+  __typename: t.union([t.string, t.undefined]),
   comments_disabled: t.boolean,
+  location: t.union([t.null, t.undefined, Location]),
   id: t.string,
   edge_media_to_caption: EdgeMediaToCaption,
   shortcode: t.string,
@@ -74,6 +85,37 @@ export const PostNode = t.type({
   thumbnail_resources: t.array(ThumbnailResources),
   is_video: t.boolean,
   accessibility_caption: t.union([t.string, t.undefined, t.null]),
+  video_view_count: t.union([t.undefined, t.number]),
+  display_resources: t.union([
+    t.array(
+      t.type({
+        src: t.string,
+        config_width: t.number,
+        config_height: t.number,
+      }),
+    ),
+    t.undefined,
+  ]),
+  should_log_client_event: t.union([t.undefined, t.boolean]),
+  tracking_token: t.union([t.undefined, t.string]),
+  edge_media_to_tagged_user: t.union([t.undefined, EdgeMediaToCaption]),
+  edge_media_to_sponsor_user: t.union([t.undefined, EdgeMediaToCaption]),
+  dash_info: t.union([
+    t.undefined,
+    t.type({
+      is_dash_eligible: t.boolean,
+      video_dash_manifest: t.null,
+      number_of_qualities: t.number,
+    }),
+  ]),
+  video_url: t.union([t.undefined, t.string]),
+  gating_info: t.union([t.null, t.undefined]),
+  media_preview: t.union([t.undefined, t.string]),
+  viewer_has_liked: t.union([t.undefined, t.boolean]),
+  viewer_has_saved: t.union([t.boolean, t.undefined]),
+  viewer_has_saved_to_collection: t.union([t.boolean, t.undefined]),
+  viewer_in_photo_of_you: t.union([t.boolean, t.undefined]),
+  viewer_can_reshare: t.union([t.boolean, t.undefined]),
 });
 
 export const CommentNode = t.type({
@@ -111,7 +153,7 @@ const EdgeMediaToParentCommentNode = t.intersection([
 ]);
 
 export const Post = t.type({
-  node: PostNode,
+  node: excess(PostNode),
 });
 
 export const EdgeMediaToParentComment = t.type({
@@ -163,14 +205,6 @@ export const ShortcodeMedia = t.type({
 
 export const SinglePost = t.type({
   shortcode_media: ShortcodeMedia,
-});
-
-export const Location = t.type({
-  id: t.string,
-  has_public_page: t.boolean,
-  name: t.string,
-  slug: t.string,
-  address_json: t.string,
 });
 
 export const FullApiPost = t.type({
