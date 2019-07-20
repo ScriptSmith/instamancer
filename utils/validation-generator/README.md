@@ -22,7 +22,14 @@ The script will save an actual API response for different endpoints in `input.js
 1.  `ts-node utils/validation-generator/generate.ts` (The script will save typing to `output.ts` file.)
 2.  Move all primitive types (which does not use other types, like `ThumbnailResources`, `Owner` and others) to the top of the file, final types (like `Post`) to the bottom of the file and fix all the block-scoped variables order errors manually.
 3.  Write typing for FullApiPost (generally it is a SinglePost, but with location as an object)
-4.  Fix the rest of the typings
+4.  It is better to make the main type excessive by using [io-ts-excess](https://github.com/goooseman/io-ts-excess). Here's an example:
+```typescript
+export const SinglePost = t.type({
+  shortcode_media: excess(ShortcodeMedia),
+});
+```
+By make this type excessive, you will get validation error, if some new properties appeared in the API.
+5.  Fix the rest of the typings
 
 ## Fix typings
 
