@@ -246,6 +246,28 @@ export class Instagram<PostType> {
   }
 
   /**
+   * Construct page and add listeners
+   */
+  public async start() {
+    // Build page and visit url
+    await this.constructPage();
+
+    this.started = true;
+
+    // Add event listeners for requests and responses
+    await this.page.setRequestInterception(true);
+    this.page.on("request", (req) => this.interceptRequest(req));
+    this.page.on("response", (res) => this.interceptResponse(res));
+    this.page.on("requestfailed", (res) => this.interceptFailure(res));
+
+    // Ignore dialog boxes
+    this.page.on("dialog", (dialog) => dialog.dismiss());
+
+    // Log errors
+    this.page.on("error", (error) => this.logger.error(error));
+  }
+
+  /**
    * Open a post in a new page, then extract its metadata
    */
   protected async postPage(post: string, retries: number) {
@@ -423,28 +445,6 @@ export class Instagram<PostType> {
       // Retry
       await this.constructPage();
     }
-  }
-
-  /**
-   * Construct page and add listeners
-   */
-  private async start() {
-    // Build page and visit url
-    await this.constructPage();
-
-    this.started = true;
-
-    // Add event listeners for requests and responses
-    await this.page.setRequestInterception(true);
-    this.page.on("request", (req) => this.interceptRequest(req));
-    this.page.on("response", (res) => this.interceptResponse(res));
-    this.page.on("requestfailed", (res) => this.interceptFailure(res));
-
-    // Ignore dialog boxes
-    this.page.on("dialog", (dialog) => dialog.dismiss());
-
-    // Log errors
-    this.page.on("error", (error) => this.logger.error(error));
   }
 
   /**

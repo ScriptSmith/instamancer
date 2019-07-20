@@ -51,8 +51,20 @@ export const Dimensions = t.type({
   width: t.number,
 });
 
+export const DisplayResources = t.array(
+  t.type({
+    src: t.string,
+    config_width: t.number,
+    config_height: t.number,
+  }),
+);
+
 export const EdgeMediaToCaptionNode = t.type({
   text: t.union([t.string, t.undefined]),
+  shortcode: t.union([t.string, t.undefined]),
+  is_video: t.union([t.boolean, t.string]),
+  video_url: t.union([t.string, t.undefined]),
+  display_resources: DisplayResources,
 });
 
 export const EdgeMediaToCaption = t.type({
@@ -85,16 +97,7 @@ export const PostNode = t.type({
   thumbnail_resources: t.array(ThumbnailResources),
   is_video: t.boolean,
   accessibility_caption: t.union([t.string, t.undefined, t.null]),
-  display_resources: t.union([
-    t.array(
-      t.type({
-        src: t.string,
-        config_width: t.number,
-        config_height: t.number,
-      }),
-    ),
-    t.undefined,
-  ]),
+  display_resources: t.union([DisplayResources, t.undefined]),
   should_log_client_event: t.union([t.undefined, t.boolean]),
   tracking_token: t.union([t.undefined, t.string]),
   edge_media_to_tagged_user: t.union([t.undefined, EdgeMediaToCaption]),
