@@ -7,6 +7,8 @@ import * as winston from "winston";
 import * as path from "path";
 import {storage} from "pkgcloud";
 import {createApi, IOptions} from "./api/api";
+import {Instagram} from "./api/instagram";
+import {TFullApiPost, TPost, TSinglePost} from "./api/types";
 import {upload} from "./cloud";
 import {download, toCSV, toJSON} from "./download";
 import {GetPool} from "./getpool/getPool";
@@ -288,7 +290,11 @@ async function spawn(args) {
 
   // Start API
   logger.info("Starting API at " + Date.now());
-  const obj = createApi(args["_"][0], ids, options);
+  const obj: Instagram<TPost | TFullApiPost | TSinglePost> = createApi(
+    args["_"][0],
+    ids,
+    options,
+  );
   await obj.start();
 
   // Start download pool
@@ -327,7 +333,8 @@ async function spawn(args) {
       // Check the scraping level
       if (args["full"]) {
         // Check if album
-        const children = post.shortcode_media.edge_sidecar_to_children;
+        const postObject = post as TFullApiPost;
+        const children = postObject.shortcode_media.edge_sidecar_to_children;
         if (children !== undefined) {
           for (const child of children.edges) {
             const shortcode = child.node.shortcode;
@@ -353,16 +360,16 @@ async function spawn(args) {
             );
           }
         } else {
-          const shortcode = post.shortcode_media.shortcode;
+          const shortcode = postObject.shortcode_media.shortcode;
 
           // Check if video
           let mediaUrl: string;
           let mediaType: FILETYPES;
-          if (post.shortcode_media.is_video && args["video"]) {
-            mediaUrl = post.shortcode_media.video_url;
+          if (postObject.shortcode_media.is_video && args["video"]) {
+            mediaUrl = postObject.shortcode_media.video_url;
             mediaType = FILETYPES.VIDEO;
           } else {
-            mediaUrl = post.shortcode_media.display_resources.pop().src;
+            mediaUrl = postObject.shortcode_media.display_resources.pop().src;
             mediaType = FILETYPES.IMAGE;
           }
           saveMediaMetadata(
@@ -376,13 +383,14 @@ async function spawn(args) {
           );
         }
       } else {
+        const postObject = post as TPost;
         saveMediaMetadata(
           post,
           args,
           downloadMedia,
           downdir,
-          post.node.thumbnail_src,
-          post.node.shortcode,
+          postObject.node.thumbnail_src,
+          postObject.node.shortcode,
           FILETYPES.IMAGE,
         );
       }
