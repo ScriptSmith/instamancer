@@ -2,12 +2,6 @@
 import * as t from "io-ts";
 import {excess} from "io-ts-excess";
 
-export const ThumbnailResources = t.type({
-  src: t.string,
-  config_width: t.number,
-  config_height: t.number,
-});
-
 export const Location = t.type({
   id: t.string,
   has_public_page: t.boolean,
@@ -62,9 +56,9 @@ export const DisplayResources = t.array(
 export const EdgeMediaToCaptionNode = t.type({
   text: t.union([t.string, t.undefined]),
   shortcode: t.union([t.string, t.undefined]),
-  is_video: t.union([t.boolean, t.string]),
+  is_video: t.union([t.boolean, t.undefined]),
   video_url: t.union([t.string, t.undefined]),
-  display_resources: DisplayResources,
+  display_resources: t.union([DisplayResources, t.undefined]),
 });
 
 export const EdgeMediaToCaption = t.type({
@@ -94,7 +88,7 @@ export const PostNode = t.type({
   edge_media_preview_like: EdgeMediaToComment,
   owner: PostNodeOwner,
   thumbnail_src: t.string,
-  thumbnail_resources: t.array(ThumbnailResources),
+  thumbnail_resources: DisplayResources,
   is_video: t.boolean,
   accessibility_caption: t.union([t.string, t.undefined, t.null]),
   display_resources: t.union([DisplayResources, t.undefined]),
@@ -180,7 +174,7 @@ export const ShortcodeMedia = t.type({
   gating_info: t.union([t.string, t.null]),
   media_preview: t.union([t.string, t.null]),
   display_url: t.string,
-  display_resources: t.array(ThumbnailResources),
+  display_resources: DisplayResources,
   accessibility_caption: t.union([t.string, t.undefined]),
   is_video: t.boolean,
   should_log_client_event: t.boolean,
