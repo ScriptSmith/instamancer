@@ -29,19 +29,3 @@ export function user(id, options) {
 export function post(ids, options) {
   return createApi("post", ids, options).generator();
 }
-
-createApi("hashtag", "2", {
-  fullAPI: true,
-}).generator();
-
-createApi("hashtag", "2", {
-  fullAPI: false,
-}).generator();
-
-hashtag("2", {
-  fullAPI: false,
-});
-
-hashtag("3", {
-  fullAPI: true,
-});
