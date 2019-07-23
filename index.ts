@@ -12,7 +12,7 @@ export {
   IOptionsRegular,
 } from "./src/api/api";
 
-export {TPost, TSinglePost} from "./src/api/types";
+export {TPost, TSinglePost, TFullApiPost} from "./src/api/types";
 
 export function hashtag(id, options) {
   return createApi("hashtag", id, options).generator();
