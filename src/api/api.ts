@@ -89,29 +89,28 @@ export class Post extends Instagram<TSinglePost> {
 const getPageValidator = (options: IOptions) =>
   options.fullAPI ? FullApiPost : PostValidator;
 
+export type InstagramPostClass = Hashtag<TPost> | User<TPost> | Location<TPost>;
+export type InstagramFullPostClass =
+  | Hashtag<TFullApiPost>
+  | User<TFullApiPost>
+  | Location<TFullApiPost>;
+
 export function createApi(type: "post", id: string[], options: IOptions): Post;
 export function createApi(
   type: "hashtag" | "user" | "location",
   id: string,
   options: IOptionsRegular,
-): Hashtag<TPost> | User<TPost> | Location<TPost>;
+): InstagramPostClass;
 export function createApi(
   type: "hashtag" | "user" | "location",
   id: string,
   options: IOptionsFullApi,
-): Hashtag<TFullApiPost> | User<TFullApiPost> | Location<TFullApiPost>;
+): InstagramFullPostClass;
 export function createApi(
   type: "hashtag" | "user" | "location" | "post",
   id: string | string[],
   options: IOptions,
-):
-  | Post
-  | Hashtag<TPost>
-  | User<TPost>
-  | Location<TPost>
-  | Hashtag<TFullApiPost>
-  | User<TFullApiPost>
-  | Location<TFullApiPost> {
+): Post | InstagramPostClass | InstagramFullPostClass {
   let ClassConstructor: typeof Hashtag | typeof User | typeof Location;
   switch (type) {
     case "post":
