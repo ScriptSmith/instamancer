@@ -500,7 +500,7 @@ describe("Search", () => {
     const result = await new Search("instagram", instamancerOptions).get();
     expect(result.users.length).toBeGreaterThan(0);
     const user = result.users[0].user;
-    expect(user.username).toBeTruthy();
+    expect(user.username).toBe("instagram");
     expect(user.byline).toBeTruthy();
     expect(user.profile_pic_url).toBeTruthy();
   });
@@ -510,7 +510,7 @@ describe("Search", () => {
     expect(result.hashtags.length).toBeGreaterThan(0);
     const hashtag = result.hashtags[0].hashtag;
     expect(hashtag.media_count).not.toBeUndefined();
-    expect(hashtag.name).toBeTruthy();
+    expect(hashtag.name).toBe("nofilter");
   });
 
   test("Search Result Places", async () => {
@@ -519,6 +519,6 @@ describe("Search", () => {
     }).get();
     expect(result.places.length).toBeGreaterThan(0);
     const place = result.places[0].place;
-    expect(place.title).toBeTruthy();
+    expect(place.title).toMatch(/New York/);
   });
 });
