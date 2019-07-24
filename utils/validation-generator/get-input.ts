@@ -1,6 +1,6 @@
 import {writeFileSync} from "fs";
 import {dirname, join} from "path";
-import * as Instamancer from "../../";
+import {createApi} from "../../";
 
 const getPath = () => join(dirname(__filename), "./input.json");
 
@@ -47,9 +47,9 @@ const getPosts = async ({
     total: 10,
   };
   const objects = [
-    new Instamancer.Hashtag(hashtagId, options),
-    new Instamancer.User(userId, options),
-    new Instamancer.Location(locationId, options),
+    createApi("hashtag", hashtagId, options),
+    createApi("user", userId, options),
+    createApi("location", locationId, options),
   ];
 
   for (const object of objects) {
@@ -62,7 +62,7 @@ const getPosts = async ({
 
 const getSinglePosts = async ({postsIds}: {postsIds: string[]}) => {
   const result = [];
-  const post = new Instamancer.Post(postsIds, {});
+  const post = createApi("post", postsIds, {});
   for await (const singlePost of post.generator()) {
     result.push(singlePost);
   }
