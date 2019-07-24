@@ -26,7 +26,7 @@ Read more about how Instamancer works [here](https://scriptsmith.github.io/insta
 - Output JSON, CSV
 - Download images, albums, and videos
 - Batch scraping
-- API response validation
+- Search hashtags/users/locations
 
 ### Data
 Metadata that Instamancer is able to gather from posts:
@@ -107,6 +107,7 @@ Commands:
   instamancer location [id]      Scrape a location
   instamancer user [id]          Scrape a user
   instamancer post [ids]         Scrape a comma-separated list of posts
+  instamancer search [query]     Perform a search of users, tags and places
   instamancer batch [batchfile]  Read newline-separated arguments from a file
 
 Options:
@@ -123,8 +124,6 @@ Options:
   --video                 Download videos. Only works in full mode
                                                       [boolean] [default: false]
   --silent                Disable progress output     [boolean] [default: false]
-  --strict                Throw an error if types from Instagram API have been
-                          changed                     [boolean] [default: false]  
   --sync                  Synchronously download files between API requests
                                                       [boolean] [default: false]
   --threads, -k           The number of parallel download / upload threads
@@ -183,6 +182,7 @@ Instamancer.hashtag(id, options);
 Instamancer.location(id, options);
 Instamancer.user(id, options);
 Instamancer.post(ids, options);
+Instamancer.search(query, options);
 ```
 
 #### Options
@@ -202,9 +202,6 @@ const options: Instamancer.IOptions = {
     
     // Time to sleep between interactions with the page
     sleepTime: number,
-
-    // Throw an error if type validation has been failed
-    strict?: boolean,
     
     // Time to sleep when rate-limited
     hibernationTime: number,
@@ -220,9 +217,6 @@ const options: Instamancer.IOptions = {
     
     // Location of the chromium / chrome binary executable
     executablePath: string,
-
-    // Custom io-ts validator
-    validator?: Type<unknown>;
 }
 ```
 
