@@ -92,7 +92,9 @@ export class Search extends Instagram<ISearchResult> {
       await this.start();
     }
     await this.page.click("input[type='text']");
-    await this.page.keyboard.type(this.searchQuery);
+    await this.page.keyboard.type(this.searchQuery, {
+      delay: 0,
+    });
     await this.page.waitForRequest((req) => this.matchURL(req.url()));
     await this.processRequests();
     await this.page.waitForResponse((res) => this.matchURL(res.url()));
