@@ -1,7 +1,14 @@
 import * as t from "io-ts";
 import * as winston from "winston";
-import * as Instamancer from "..";
-import {Hashtag, IOptions, Location, Post, User} from "../src/api/api";
+import {createApi} from "..";
+import {
+  Hashtag,
+  IOptions,
+  IOptionsFullApi,
+  Location,
+  Post,
+  User,
+} from "../src/api/api";
 import {FakePage, IFakePageOptions} from "./__fixtures__/FakePage";
 import {QuickGraft} from "./__fixtures__/QuickGraft";
 import {startServer, stopServer} from "./server";
@@ -67,10 +74,10 @@ const libraryTestOptions: IOptions = {
 test("Library Classes", async () => {
   const total = 10;
   const objects = [
-    new Instamancer.Hashtag(hashtags[0], libraryTestOptions),
-    new Instamancer.User(users[0], libraryTestOptions),
-    new Instamancer.Location(locations[0], libraryTestOptions),
-    new Instamancer.Post(posts, libraryTestOptions),
+    createApi("hashtag", hashtags[0], libraryTestOptions),
+    createApi("user", users[0], libraryTestOptions),
+    createApi("location", locations[0], libraryTestOptions),
+    createApi("post", posts, libraryTestOptions),
   ];
 
   for (const object of objects) {
@@ -86,10 +93,10 @@ test("Library Classes", async () => {
 test("Library Functions", async () => {
   const total = 10;
   const generators = [
-    Instamancer.hashtag(hashtags[0], libraryTestOptions),
-    Instamancer.user(users[0], libraryTestOptions),
-    Instamancer.location(locations[0], libraryTestOptions),
-    Instamancer.post(posts, libraryTestOptions),
+    createApi("hashtag", hashtags[0], libraryTestOptions).generator(),
+    createApi("user", users[0], libraryTestOptions).generator(),
+    createApi("location", locations[0], libraryTestOptions).generator(),
+    createApi("post", posts, libraryTestOptions).generator(),
   ];
 
   for (const generator of generators) {
@@ -104,15 +111,15 @@ test("Library Functions", async () => {
 
 test("Full API", async () => {
   const total = 10;
-  const fullApiOption = {
+  const fullApiOption: IOptionsFullApi = {
     ...libraryTestOptions,
     fullAPI: true,
   };
   const generators = [
-    Instamancer.hashtag(hashtags[0], fullApiOption),
-    Instamancer.user(users[0], fullApiOption),
-    Instamancer.location(locations[0], fullApiOption),
-    Instamancer.post(posts, fullApiOption),
+    createApi("hashtag", hashtags[0], fullApiOption).generator(),
+    createApi("user", users[0], fullApiOption).generator(),
+    createApi("location", locations[0], fullApiOption).generator(),
+    createApi("post", posts, fullApiOption).generator(),
   ];
 
   for (const generator of generators) {
@@ -217,7 +224,7 @@ test("Instagram API limits", async () => {
 });
 
 test("Empty page", async () => {
-  const user = Instamancer.user(emptyAccountName, {});
+  const user = createApi("user", emptyAccountName, {}).generator();
   const userPosts = [];
   for await (const post of user) {
     userPosts.push(post);
@@ -285,7 +292,7 @@ test("No grafting", async () => {
 });
 
 test("Pausing", async () => {
-  const api = new Instamancer.Hashtag(hashtags[0], {total: 100});
+  const api = createApi("hashtag", hashtags[0], {total: 100});
   const iterator = api.generator();
 
   api.pause();
@@ -304,7 +311,7 @@ test("Hibernation", async () => {
     total: smallSize,
   };
 
-  const api = new Instamancer.Hashtag(hashtags[0], options);
+  const api = createApi("hashtag", hashtags[0], options);
   const iterator = api.generator();
 
   await iterator.next();
@@ -317,10 +324,11 @@ test("Hibernation", async () => {
 
 test("Sandbox", async () => {
   process.env["NO_SANDBOX"] = "true";
-  for await (const post of Instamancer.hashtag(
+  for await (const post of createApi(
+    "hashtag",
     hashtags[0],
     libraryTestOptions,
-  )) {
+  ).generator()) {
     expect(post).toBeDefined();
   }
   process.env["NO_SANDBOX"] = "";
@@ -330,7 +338,7 @@ test("Failed Page visit", async () => {
   const options: IOptions = {
     proxyURL: "127.0.0.1:9999",
   };
-  const api = new Instamancer.Hashtag(hashtags[0], options);
+  const api = createApi("hashtag", hashtags[0], options);
   const scraped = [];
 
   try {
