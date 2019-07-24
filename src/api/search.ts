@@ -68,10 +68,6 @@ export type ISearchOptions = Pick<IOptions, Exclude<
     keyof IOptions, "total" | "fullAPI" | "hibernationTime" | "sleepTime"
 >>;
 
-const sleep = (ms: number) => new Promise((res) => {
-    setTimeout(res, ms);
-});
-
 export class Search extends Instagram {
     protected readonly catchURL = "https://www.instagram.com/web/";
     private searchResult: ISearchResult;
