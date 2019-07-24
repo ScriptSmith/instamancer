@@ -6,7 +6,6 @@ import {
   IOptions,
   IOptionsFullApi,
   Location,
-  Post,
   User,
 } from "../src/api/api";
 import {FakePage, IFakePageOptions} from "./__fixtures__/FakePage";
@@ -260,7 +259,8 @@ test("API options", async () => {
 
   for (const indexOption of options.entries()) {
     const [index, option] = indexOption;
-    const tag = new Hashtag(hashtagId, option);
+    // @ts-ignore
+    const tag = createApi("hashtag", hashtagId, option);
     const scraped = [];
 
     for await (const post of tag.generator()) {
@@ -412,7 +412,7 @@ describe("Strict mode", () => {
   test("Should fire warning if strict is false and validations are different", async () => {
     const logger = createLogger();
     logger.warn = jest.fn();
-    const iterator = new Hashtag(hashtags[0], {
+    const iterator = createApi("hashtag", hashtags[0], {
       logger,
       strict: false,
       total: 1,
@@ -429,7 +429,7 @@ describe("Strict mode", () => {
   test("Should not fire warning if strict is false and validations are ok", async () => {
     const logger = createLogger();
     logger.warn = jest.fn();
-    const iterator = new Hashtag(hashtags[0], {
+    const iterator = createApi("hashtag", hashtags[0], {
       logger,
       strict: false,
       total: 1,
@@ -442,7 +442,7 @@ describe("Strict mode", () => {
 
   test("Should throw validation error if strict is true and types are incorrect", async () => {
     expect.hasAssertions();
-    const iterator = new Hashtag(hashtags[0], {
+    const iterator = createApi("hashtag", hashtags[0], {
       strict: true,
       total: 1,
       validator: failingValidator,
@@ -458,7 +458,7 @@ describe("Strict mode", () => {
 
   test("Should throw validation error if strict is true and types are incorrect (Post)", async () => {
     expect.hasAssertions();
-    const iterator = new Post(posts, {
+    const iterator = createApi("post", posts, {
       strict: true,
       total: 1,
       validator: failingValidator,
@@ -474,7 +474,7 @@ describe("Strict mode", () => {
 
   test("Should throw validation error if strict is true and types are incorrect (Full Mode)", async () => {
     expect.hasAssertions();
-    const iterator = new Hashtag(hashtags[0], {
+    const iterator = createApi("hashtag", hashtags[0], {
       fullAPI: true,
       strict: true,
       total: 1,
