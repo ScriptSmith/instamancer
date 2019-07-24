@@ -8,6 +8,7 @@ import {
   Location,
   User,
 } from "../src/api/api";
+import {Search} from "../src/api/search";
 import {FakePage, IFakePageOptions} from "./__fixtures__/FakePage";
 import {QuickGraft} from "./__fixtures__/QuickGraft";
 import {startServer, stopServer} from "./server";
@@ -487,5 +488,37 @@ describe("Strict mode", () => {
       expect(e).toBeInstanceOf(Error);
       expect(e.message).toMatch(/^Invalid value/);
     }
+  });
+});
+
+describe("Search", () => {
+  const instamancerOptions = {
+    headless: true,
+  };
+
+  test("Search Result Users", async () => {
+    const result = await new Search("instagram", instamancerOptions).get();
+    expect(result.users.length).toBeGreaterThan(0);
+    const user = result.users[0].user;
+    expect(user.username).toBeTruthy();
+    expect(user.byline).toBeTruthy();
+    expect(user.profile_pic_url).toBeTruthy();
+  });
+
+  test("Search Result Hashtags", async () => {
+    const result = await new Search("nofilter", instamancerOptions).get();
+    expect(result.hashtags.length).toBeGreaterThan(0);
+    const hashtag = result.hashtags[0].hashtag;
+    expect(hashtag.media_count).not.toBeUndefined();
+    expect(hashtag.name).toBeTruthy();
+  });
+
+  test("Search Result Places", async () => {
+    const result = await new Search("New york", {
+      silent: true,
+    }).get();
+    expect(result.places.length).toBeGreaterThan(0);
+    const place = result.places[0].place;
+    expect(place.title).toBeTruthy();
   });
 });
