@@ -91,16 +91,19 @@ export class Search extends Instagram<ISearchResult> {
     if (!this.started) {
       await this.start();
     }
-    await this.page.click("input[type='text']");
-    await this.page.keyboard.type(this.searchQuery, {
-      delay: 0,
-    });
-    await this.page.waitForRequest((req) => this.matchURL(req.url()));
-    await this.processRequests();
-    await this.page.waitForResponse((res) => this.matchURL(res.url()));
-    await this.processResponses();
-    await this.stop();
-    return this.searchResult;
+    try {
+      await this.page.click("input[type='text']");
+      await this.page.keyboard.sendCharacter(this.searchQuery);
+      await this.page.waitForRequest((req) => this.matchURL(req.url()));
+      await this.processRequests();
+      await this.page.waitForResponse((res) => this.matchURL(res.url()));
+      await this.processResponses();
+      await this.stop();
+      return this.searchResult;
+    } catch (e) {
+      this.forceStop();
+      throw e;
+    }
   }
 
   protected matchURL(url: string) {

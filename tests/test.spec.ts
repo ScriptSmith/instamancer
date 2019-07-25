@@ -492,12 +492,8 @@ describe("Strict mode", () => {
 });
 
 describe("Search", () => {
-  const instamancerOptions = {
-    headless: true,
-  };
-
   test("Search Result Users", async () => {
-    const result = await new Search("instagram", instamancerOptions).get();
+    const result = await new Search("instagram", libraryTestOptions).get();
     expect(result.users.length).toBeGreaterThan(0);
     const user = result.users[0].user;
     expect(user.username).toBe("instagram");
@@ -506,7 +502,7 @@ describe("Search", () => {
   });
 
   test("Search Result Hashtags", async () => {
-    const result = await new Search("nofilter", instamancerOptions).get();
+    const result = await new Search("nofilter", libraryTestOptions).get();
     expect(result.hashtags.length).toBeGreaterThan(0);
     const hashtag = result.hashtags[0].hashtag;
     expect(hashtag.media_count).not.toBeUndefined();
@@ -514,11 +510,29 @@ describe("Search", () => {
   });
 
   test("Search Result Places", async () => {
-    const result = await new Search("New york", {
-      silent: true,
-    }).get();
+    const result = await new Search("New york", libraryTestOptions).get();
     expect(result.places.length).toBeGreaterThan(0);
     const place = result.places[0].place;
     expect(place.title).toMatch(/New York/);
+  });
+
+  test("Search should fire only one network request", async () => {
+    const search = new Search(
+      "A really long long long string to find something in Instagram",
+    );
+    const searchRequestsSpy = jest.fn();
+    await search.start();
+    // @ts-ignore
+    search.page.on("request", (event) => {
+      const requestUrl = event.url();
+      // @ts-ignore
+      if (!search.matchURL(requestUrl)) {
+        return;
+      }
+      searchRequestsSpy(event);
+    });
+    await search.get();
+    console.log(searchRequestsSpy.mock.calls.map((args) => args[0].url()));
+    expect(searchRequestsSpy).toBeCalledTimes(1);
   });
 });
