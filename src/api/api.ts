@@ -99,23 +99,23 @@ export type InstagramFullPostClass =
 export function createApi(
   type: "search",
   query: string,
-  options: ISearchOptions,
+  options?: ISearchOptions,
 ): Search;
-export function createApi(type: "post", id: string[], options: IOptions): Post;
+export function createApi(type: "post", id: string[], options?: IOptions): Post;
 export function createApi(
   type: "hashtag" | "user" | "location",
   id: string,
-  options: IOptionsRegular,
+  options?: IOptionsRegular,
 ): InstagramPostClass;
 export function createApi(
   type: "hashtag" | "user" | "location",
   id: string,
-  options: IOptionsFullApi,
+  options?: IOptionsFullApi,
 ): InstagramFullPostClass;
 export function createApi(
   type: "hashtag" | "user" | "location" | "post" | "search",
   id: string | string[],
-  options: IOptions,
+  options?: IOptions,
 ): Post | InstagramPostClass | InstagramFullPostClass | Search {
   let ClassConstructor: typeof Hashtag | typeof User | typeof Location;
   switch (type) {

@@ -202,6 +202,10 @@ export class Instagram<PostType> {
    * Force the API to stop
    */
   public async forceStop() {
+    if (!this.started) {
+      return;
+    }
+    this.started = false;
     this.finished = true;
     try {
       this.requestBufferLock.release();
@@ -371,7 +375,7 @@ export class Instagram<PostType> {
         this.finished = true;
       }
 
-      this.processResponseData(data);
+      await this.processResponseData(data);
     }
 
     // Switch off grafting if enabled and responses processed
@@ -470,6 +474,29 @@ export class Instagram<PostType> {
       return;
     }
     await this.addToPostBuffer(parsed);
+  }
+
+  protected validatePost(post: PostType) {
+    const validationResult = this.validator.decode(post);
+    if (this.strict) {
+      try {
+        ThrowReporter.report(validationResult);
+      } catch (e) {
+        this.forceStop();
+        throw e;
+      }
+      return;
+    }
+    if (isLeft(validationResult)) {
+      const validationReporter = PathReporter.report(validationResult);
+      this.logger.warn(
+        `
+      Warning! The Instagram API has been changed since this version of instamancer was released.
+      More info: https://github.com/ScriptSmith/instamancer/blob/master/FAQ.md#instagram-api-has-been-changed
+      `,
+        validationReporter,
+      );
+    }
   }
 
   /**
@@ -698,29 +725,6 @@ export class Instagram<PostType> {
     this.validatePost(post);
     this.postBuffer.push(post);
     this.postBufferLock.release();
-  }
-
-  private validatePost(post: PostType) {
-    const validationResult = this.validator.decode(post);
-    if (this.strict) {
-      try {
-        ThrowReporter.report(validationResult);
-      } catch (e) {
-        this.forceStop();
-        throw e;
-      }
-      return;
-    }
-    if (isLeft(validationResult)) {
-      const validationReporter = PathReporter.report(validationResult);
-      this.logger.warn(
-        `
-      Warning! The Instagram API has been changed since this version of instamancer was released.
-      More info: https://github.com/ScriptSmith/instamancer/blob/master/FAQ.md#instagram-api-has-been-changed
-      `,
-        validationReporter,
-      );
-    }
   }
 
   /**
