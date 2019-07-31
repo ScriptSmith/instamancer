@@ -1,78 +1,87 @@
 import * as t from "io-ts";
+import {excess} from "io-ts-excess";
 import {IOptions} from "./api";
 import {Instagram} from "./instagram";
 
-export interface ISearchResultUser {
-  position: number;
-  user: {
-    pk: string;
-    username: string;
-    full_name: string;
-    is_private: boolean;
-    profile_pic_url: string;
-    profile_pic_id: string;
-    is_verified: boolean;
-    has_anonymous_profile_picture: boolean;
-    follower_count: number;
-    byline: string;
-    mutual_followers_count: number;
-    latest_reel_media: number;
-    following: boolean;
-    outgoing_request: boolean;
-    seen: number;
-  };
-}
+export const Users = t.type({
+  position: t.number,
+  user: excess(
+    t.type({
+      byline: t.string,
+      follower_count: t.number,
+      full_name: t.string,
+      has_anonymous_profile_picture: t.boolean,
+      is_private: t.boolean,
+      is_verified: t.boolean,
+      latest_reel_media: t.number,
+      mutual_followers_count: t.number,
+      pk: t.string,
+      profile_pic_id: t.union([t.string, t.undefined]),
+      profile_pic_url: t.string,
+      unseen_count: t.number,
+      username: t.string,
+    }),
+  ),
+});
 
-export interface ISearchResultHashtag {
-  position: number;
-  hashtag: {
-    name: string;
-    id: any;
-    media_count: number;
-    search_result_subtitle: string;
-  };
-}
+export const Places = t.type({
+  place: excess(
+    t.type({
+      header_media: t.any,
+      location: excess(
+        t.type({
+          address: t.string,
+          city: t.string,
+          external_source: t.string,
+          facebook_places_id: t.number,
+          lat: t.union([t.undefined, t.number]),
+          lng: t.union([t.undefined, t.number]),
+          name: t.string,
+          pk: t.string,
+          short_name: t.string,
+        }),
+      ),
+      media_bundles: t.UnknownArray,
+      slug: t.string,
+      subtitle: t.string,
+      title: t.string,
+    }),
+  ),
+  position: t.number,
+});
 
-export interface ISearchResultPlace {
-  position: number;
-  place: {
-    location: {
-      pk: string;
-      name: string;
-      address: string;
-      city: string;
-      short_name: string;
-      lng: number;
-      lat: number;
-      external_source: string;
-      facebook_places_id: number;
-    };
-    title: string;
-    subtitle: string;
-    media_bundles: any[];
-    header_media: object;
-    slug: string;
-  };
-}
+export const Hashtags = t.type({
+  hashtag: excess(
+    t.type({
+      id: t.number,
+      media_count: t.number,
+      name: t.string,
+      search_result_subtitle: t.string,
+    }),
+  ),
+  position: t.number,
+});
 
-export interface ISearchResult {
-  users: ISearchResultUser[];
-  places: ISearchResultPlace[];
-  hashtags: ISearchResultHashtag[];
-  has_more: boolean;
-  rank_token: string;
-  clear_client_cache: boolean;
-  status: string;
-}
+export const SearchResult = t.type({
+  clear_client_cache: t.boolean,
+  has_more: t.boolean,
+  hashtags: t.array(Hashtags),
+  places: t.array(Places),
+  rank_token: t.string,
+  status: t.string,
+  users: t.array(Users),
+});
+
+export type TSearchResult = t.TypeOf<typeof SearchResult>;
 
 export type ISearchOptions = Pick<
   IOptions,
   Exclude<keyof IOptions, "total" | "fullAPI" | "hibernationTime" | "sleepTime">
 >;
 
-export class Search extends Instagram<ISearchResult> {
+export class Search extends Instagram<TSearchResult> {
   protected readonly catchURL = "https://www.instagram.com/web/";
-  private searchResult: ISearchResult;
+  private searchResult: TSearchResult;
   private searchQuery: string;
 
   constructor(query: string, options: ISearchOptions = {}) {
@@ -82,7 +91,7 @@ export class Search extends Instagram<ISearchResult> {
       "",
       "",
       options,
-      t.type({}),
+      SearchResult,
     );
     this.searchQuery = query;
   }
@@ -101,7 +110,7 @@ export class Search extends Instagram<ISearchResult> {
       await this.stop();
       return this.searchResult;
     } catch (e) {
-      this.forceStop();
+      await this.forceStop();
       throw e;
     }
   }
@@ -110,7 +119,8 @@ export class Search extends Instagram<ISearchResult> {
     return url.startsWith(this.catchURL);
   }
 
-  protected async processResponseData(data: ISearchResult) {
+  protected async processResponseData(data: TSearchResult) {
+    await this.validatePost(data);
     this.searchResult = data;
   }
 }
