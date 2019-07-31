@@ -164,13 +164,13 @@ Source code available at https://github.com/ScriptSmith/instamancer
 
 ES2018 Typescript example:
 ```typescript
-import * as Instamancer from "instamancer";
+import {createApi,IOptions} from "instamancer"
 
-const options: Instamancer.IOptions = {
+const options: IOptions = {
     total: 10
 };
 
-const hashtag = Instamancer.hashtag("beach", options);
+const hashtag = createApi("hashtag", "beach", options);
 (async () => {
     for await (const post of hashtag) {
         console.log(post);
@@ -181,11 +181,12 @@ const hashtag = Instamancer.hashtag("beach", options);
 #### Generator functions
 
 ```typescript
-Instamancer.hashtag(id, options);
-Instamancer.location(id, options);
-Instamancer.user(id, options);
-Instamancer.post(ids, options);
-Instamancer.search(query, options);
+import {createApi} from "instamancer"
+createApi("hashtag", id, options);
+createApi("location", id, options);
+createApi("user", id, options);
+createApi("post", ids, options);
+createApi("search", query, options);
 ```
 
 #### Options
