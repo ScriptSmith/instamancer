@@ -46,3 +46,13 @@ I'm not certain. This seems to only occur where you are able to gather tens of t
 Instamancer was originally part of another project written in Python that used the [Pyppeteer](https://github.com/miyakogi/pyppeteer) clone of Puppeteer. This version was too error-prone because of the complicated asyncio code and Pyppeteer's instability when communicating via websockets during long scraping jobs. 
 
 I decided to rewrite Instamancer in TypeScript in order to be more stable and in-sync with Puppeter. It was the first time I'd written any serious TypeScript or 'modern' JavaScript (promises, async/await etc.), so the zealous commenting helped me learn, and allowed me to figure out bugs in my algorithm and the grafting process. The comments aren't a permanent fixture and may be removed in a future commit.
+
+## Instagram API has been changed
+Instamancer is working with a pure not-public Instagram API, which can be changed at any moment without prior notice. 
+
+If you see this warning, you can:
+
+- Check the library for updates, maybe a new version has been already released.
+- Look for the issue in [open issues](https://github.com/ScriptSmith/instamancer/issues). Maybe somebody is already working on the fix.
+- Open a [new Issue](https://github.com/ScriptSmith/instamancer/issues/new/choose)
+- Create a fork of the repository and [fix the typings](https://github.com/ScriptSmith/instamancer/blob/master/utils/validation-generator/README.md#fix-typings) by yourself

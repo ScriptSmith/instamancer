@@ -1,7 +1,15 @@
+import * as t from "io-ts";
 import * as winston from "winston";
-import * as Instamancer from "..";
-import {Hashtag, IOptions, Location, User} from "../src/api/api";
-import {Instagram} from "../src/api/instagram";
+import {createApi} from "..";
+import {
+  Hashtag,
+  IOptions,
+  IOptionsFullApi,
+  Location,
+  User,
+} from "../src/api/api";
+import {FakePage, IFakePageOptions} from "./__fixtures__/FakePage";
+import {QuickGraft} from "./__fixtures__/QuickGraft";
 import {startServer, stopServer} from "./server";
 
 jest.setTimeout(120 * 60 * 1000);
@@ -17,14 +25,14 @@ const locations = [
 ];
 const users = ["snoopdogg", "arianagrande", "bbc", "whitehouse", "australia"];
 const posts = [
-  "BsOGulcndj-",
+  "By54GDoHGzK",
   "Be3rTNplCHf",
   "BlBvw2_jBKp",
-  "Bi-hISIghYe",
+  "Bzi33wDnxOz",
   "BfzEfy-lK1N",
   "Bneu_dCHVdn",
   "Brx-adXA9C1",
-  "BlTYHvXFrvm",
+  "Bz5flRagYQt",
   "BmRZH7NFwi6",
   "BpiIJCUnYwy",
 ];
@@ -47,24 +55,28 @@ const browserPath = process.env.CHROME
 // Name of an account with 0 posts to test graceful exit
 const emptyAccountName = "emptyaccount";
 
-const libraryTestOptions: IOptions = {
-  logger: winston.createLogger({
+const createLogger = () =>
+  winston.createLogger({
     format: winston.format.json(),
     level: "error",
     silent: true,
     transports: [],
-  }),
+  });
+
+const libraryTestOptions: IOptions = {
+  logger: createLogger(),
   silent: true,
+  strict: true,
   total: 10,
 };
 
 test("Library Classes", async () => {
   const total = 10;
   const objects = [
-    new Instamancer.Hashtag(hashtags[0], libraryTestOptions),
-    new Instamancer.User(users[0], libraryTestOptions),
-    new Instamancer.Location(locations[0], libraryTestOptions),
-    new Instamancer.Post(posts, libraryTestOptions),
+    createApi("hashtag", hashtags[0], libraryTestOptions),
+    createApi("user", users[0], libraryTestOptions),
+    createApi("location", locations[0], libraryTestOptions),
+    createApi("post", posts, libraryTestOptions),
   ];
 
   for (const object of objects) {
@@ -80,10 +92,33 @@ test("Library Classes", async () => {
 test("Library Functions", async () => {
   const total = 10;
   const generators = [
-    Instamancer.hashtag(hashtags[0], libraryTestOptions),
-    Instamancer.user(users[0], libraryTestOptions),
-    Instamancer.location(locations[0], libraryTestOptions),
-    Instamancer.post(posts, libraryTestOptions),
+    createApi("hashtag", hashtags[0], libraryTestOptions).generator(),
+    createApi("user", users[0], libraryTestOptions).generator(),
+    createApi("location", locations[0], libraryTestOptions).generator(),
+    createApi("post", posts, libraryTestOptions).generator(),
+  ];
+
+  for (const generator of generators) {
+    const scraped = [];
+    for await (const post of generator) {
+      expect(post).toBeDefined();
+      scraped.push(post);
+    }
+    expect(scraped.length).toBe(total);
+  }
+});
+
+test("Full API", async () => {
+  const total = 10;
+  const fullApiOption: IOptionsFullApi = {
+    ...libraryTestOptions,
+    fullAPI: true,
+  };
+  const generators = [
+    createApi("hashtag", hashtags[0], fullApiOption).generator(),
+    createApi("user", users[0], fullApiOption).generator(),
+    createApi("location", locations[0], fullApiOption).generator(),
+    createApi("post", posts, fullApiOption).generator(),
   ];
 
   for (const generator of generators) {
@@ -162,6 +197,7 @@ test("Instagram API limits", async () => {
           }),
           silent: false,
           sleepTime: 2,
+          strict: true,
           total: size,
         };
 
@@ -187,7 +223,7 @@ test("Instagram API limits", async () => {
 });
 
 test("Empty page", async () => {
-  const user = Instamancer.user(emptyAccountName, {});
+  const user = createApi("user", emptyAccountName, {}).generator();
   const userPosts = [];
   for await (const post of user) {
     userPosts.push(post);
@@ -223,7 +259,8 @@ test("API options", async () => {
 
   for (const indexOption of options.entries()) {
     const [index, option] = indexOption;
-    const tag = new Hashtag(hashtagId, option);
+    // @ts-ignore
+    const tag = createApi("hashtag", hashtagId, option);
     const scraped = [];
 
     for await (const post of tag.generator()) {
@@ -241,13 +278,6 @@ test("API options", async () => {
   }
 });
 
-class QuickGraft extends Instamancer.Hashtag {
-  constructor(id: string, options: IOptions = {}) {
-    super(id, options);
-    this.jumpMod = 2;
-  }
-}
-
 test("No grafting", async () => {
   const total = 100;
   const hashtag = hashtags[0];
@@ -262,7 +292,7 @@ test("No grafting", async () => {
 });
 
 test("Pausing", async () => {
-  const api = new Instamancer.Hashtag(hashtags[0], {total: 100});
+  const api = createApi("hashtag", hashtags[0], {total: 100});
   const iterator = api.generator();
 
   api.pause();
@@ -281,7 +311,7 @@ test("Hibernation", async () => {
     total: smallSize,
   };
 
-  const api = new Instamancer.Hashtag(hashtags[0], options);
+  const api = createApi("hashtag", hashtags[0], options);
   const iterator = api.generator();
 
   await iterator.next();
@@ -294,10 +324,11 @@ test("Hibernation", async () => {
 
 test("Sandbox", async () => {
   process.env["NO_SANDBOX"] = "true";
-  for await (const post of Instamancer.hashtag(
+  for await (const post of createApi(
+    "hashtag",
     hashtags[0],
     libraryTestOptions,
-  )) {
+  ).generator()) {
     expect(post).toBeDefined();
   }
   process.env["NO_SANDBOX"] = "";
@@ -307,7 +338,7 @@ test("Failed Page visit", async () => {
   const options: IOptions = {
     proxyURL: "127.0.0.1:9999",
   };
-  const api = new Instamancer.Hashtag(hashtags[0], options);
+  const api = createApi("hashtag", hashtags[0], options);
   const scraped = [];
 
   try {
@@ -321,45 +352,6 @@ test("Failed Page visit", async () => {
 
   expect(scraped.length).toBe(0);
 });
-
-interface IFakePageOptions {
-  // The port the server is hosted on
-  port?: number;
-
-  // The query to get API pages
-  pageQuery?: string;
-
-  // The query to get posts
-  edgeQuery?: string;
-
-  // The page to catch api requests on
-  catchPage?: string;
-
-  // The page to visit posts
-  postPage?: string;
-
-  // Regular API options
-  options?: IOptions;
-}
-
-class FakePage extends Instagram {
-  constructor(options: IFakePageOptions = {port: 0}) {
-    const baseURL = "http://127.0.0.1:" + options.port;
-
-    const silentOptions: IOptions = {silent: true};
-    super(baseURL, "", options.pageQuery, options.edgeQuery, {
-      ...options.options,
-      ...silentOptions,
-    });
-
-    this.catchURL = baseURL + "/" + options.catchPage;
-    this.postURL = baseURL + "/" + options.postPage;
-
-    setTimeout(async () => {
-      await this.forceStop();
-    }, 30000);
-  }
-}
 
 test("Network and API issues", async () => {
   const port = await startServer();
@@ -410,4 +402,90 @@ test("Network and API issues", async () => {
   });
 
   await stopServer();
+});
+
+describe("Strict mode", () => {
+  const failingValidator = t.type({
+    foo: t.string,
+  });
+
+  test("Should fire warning if strict is false and validations are different", async () => {
+    const logger = createLogger();
+    logger.warn = jest.fn();
+    const iterator = createApi("hashtag", hashtags[0], {
+      logger,
+      strict: false,
+      total: 1,
+      validator: failingValidator,
+    }).generator();
+
+    let i = 0;
+    for await (const post of iterator) {
+      i++;
+      expect(logger.warn).toBeCalledTimes(i);
+    }
+  });
+
+  test("Should not fire warning if strict is false and validations are ok", async () => {
+    const logger = createLogger();
+    logger.warn = jest.fn();
+    const iterator = createApi("hashtag", hashtags[0], {
+      logger,
+      strict: false,
+      total: 1,
+    }).generator();
+
+    for await (const post of iterator) {
+      expect(logger.warn).toBeCalledTimes(0);
+    }
+  });
+
+  test("Should throw validation error if strict is true and types are incorrect", async () => {
+    expect.hasAssertions();
+    const iterator = createApi("hashtag", hashtags[0], {
+      strict: true,
+      total: 1,
+      validator: failingValidator,
+    }).generator();
+
+    try {
+      await iterator.next();
+    } catch (e) {
+      expect(e).toBeInstanceOf(Error);
+      expect(e.message).toMatch(/^Invalid value/);
+    }
+  });
+
+  test("Should throw validation error if strict is true and types are incorrect (Post)", async () => {
+    expect.hasAssertions();
+    const iterator = createApi("post", posts, {
+      strict: true,
+      total: 1,
+      validator: failingValidator,
+    }).generator();
+
+    try {
+      await iterator.next();
+    } catch (e) {
+      expect(e).toBeInstanceOf(Error);
+      expect(e.message).toMatch(/^Invalid value/);
+    }
+  });
+
+  test("Should throw validation error if strict is true and types are incorrect (Full Mode)", async () => {
+    expect.hasAssertions();
+    const iterator = createApi("hashtag", hashtags[0], {
+      fullAPI: true,
+      strict: true,
+      total: 1,
+      validator: failingValidator,
+    }).generator();
+
+    try {
+      await iterator.next();
+    } catch (e) {
+      expect(e).toBeInstanceOf(Error);
+      expect(e.message).toMatch(/^Invalid value/);
+    }
+  });
 });

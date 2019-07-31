@@ -1,10 +1,19 @@
+import {Type} from "io-ts";
 import * as winston from "winston";
 import {Instagram} from "./instagram";
+import {
+  FullApiPost,
+  Post as PostValidator,
+  SinglePost,
+  TFullApiPost,
+  TPost,
+  TSinglePost,
+} from "./types";
 
 /**
  * Optional arguments for the API
  */
-export interface IOptions {
+export interface IOptionsCommon {
   // Total posts to download. 0 for unlimited
   total?: number;
 
@@ -20,6 +29,9 @@ export interface IOptions {
   // Time to sleep between interactions with the page
   sleepTime?: number;
 
+  // Throw an error if type validation has been failed
+  strict?: boolean;
+
   // Time to sleep when rate-limited
   hibernationTime?: number;
 
@@ -34,17 +46,30 @@ export interface IOptions {
 
   // Location of the chromium / chrome binary executable
   executablePath?: string;
+
+  // Custom io-ts validator
+  validator?: Type<unknown>;
 }
+
+export interface IOptionsFullApi extends IOptionsCommon {
+  fullAPI: true;
+}
+
+export interface IOptionsRegular extends IOptionsCommon {
+  fullAPI?: false;
+}
+
+export type IOptions = IOptionsFullApi | IOptionsRegular;
 
 /**
  * An Instagram post API wrapper
  */
-export class Post extends Instagram {
+export class Post extends Instagram<TSinglePost> {
   // Post ids
   private readonly ids: string[];
 
   constructor(ids: string[], options: IOptions = {}) {
-    super("https://instagram.com/p/", ids[0], "", "", options);
+    super("https://instagram.com/p/", ids[0], "", "", options, SinglePost);
     this.ids = ids;
   }
 
@@ -61,38 +86,104 @@ export class Post extends Instagram {
   }
 }
 
+const getPageValidator = (options: IOptions) =>
+  options.fullAPI ? FullApiPost : PostValidator;
+
+export type InstagramPostClass = Hashtag<TPost> | User<TPost> | Location<TPost>;
+export type InstagramFullPostClass =
+  | Hashtag<TFullApiPost>
+  | User<TFullApiPost>
+  | Location<TFullApiPost>;
+
+export function createApi(type: "post", id: string[], options: IOptions): Post;
+export function createApi(
+  type: "hashtag" | "user" | "location",
+  id: string,
+  options: IOptionsRegular,
+): InstagramPostClass;
+export function createApi(
+  type: "hashtag" | "user" | "location",
+  id: string,
+  options: IOptionsFullApi,
+): InstagramFullPostClass;
+export function createApi(
+  type: "hashtag" | "user" | "location" | "post",
+  id: string | string[],
+  options: IOptions,
+): Post | InstagramPostClass | InstagramFullPostClass {
+  let ClassConstructor: typeof Hashtag | typeof User | typeof Location;
+  switch (type) {
+    case "post":
+      return new Post(id as string[], options);
+    case "hashtag":
+      ClassConstructor = Hashtag;
+      break;
+    case "user":
+      ClassConstructor = User;
+      break;
+    case "location":
+      ClassConstructor = Location;
+      break;
+  }
+  if (options.fullAPI) {
+    return new ClassConstructor<TFullApiPost>(id as string, options);
+  }
+  return new ClassConstructor<TPost>(id as string, options);
+}
+
 /**
  * An Instagram hashtag API wrapper
  */
-export class Hashtag extends Instagram {
+export class Hashtag<T> extends Instagram<T> {
   constructor(id: string, options: IOptions = {}) {
     const endpoint = "https://instagram.com/explore/tags/";
     const pageQuery = "data.hashtag.edge_hashtag_to_media.page_info";
     const edgeQuery = "data.hashtag.edge_hashtag_to_media.edges";
-    super(endpoint, id, pageQuery, edgeQuery, options);
+    super(
+      endpoint,
+      id,
+      pageQuery,
+      edgeQuery,
+      options,
+      getPageValidator(options),
+    );
   }
 }
 
 /**
  * An Instagram location API wrapper
  */
-export class Location extends Instagram {
+export class Location<T> extends Instagram<T> {
   constructor(id: string, options: IOptions = {}) {
     const endpoint = "https://instagram.com/explore/locations/";
     const pageQuery = "data.location.edge_location_to_media.page_info";
     const edgeQuery = "data.location.edge_location_to_media.edges";
-    super(endpoint, id, pageQuery, edgeQuery, options);
+    super(
+      endpoint,
+      id,
+      pageQuery,
+      edgeQuery,
+      options,
+      getPageValidator(options),
+    );
   }
 }
 
 /**
  * An Instagram user API wrapper
  */
-export class User extends Instagram {
+export class User<T> extends Instagram<T> {
   constructor(id: string, options: IOptions = {}) {
     const endpoint = "https://instagram.com/";
     const pageQuery = "data.user.edge_owner_to_timeline_media.page_info";
     const edgeQuery = "data.user.edge_owner_to_timeline_media.edges";
-    super(endpoint, id, pageQuery, edgeQuery, options);
+    super(
+      endpoint,
+      id,
+      pageQuery,
+      edgeQuery,
+      options,
+      getPageValidator(options),
+    );
   }
 }

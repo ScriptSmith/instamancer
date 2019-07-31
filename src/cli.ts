@@ -6,7 +6,9 @@ import * as winston from "winston";
 
 import * as path from "path";
 import {storage} from "pkgcloud";
-import {Hashtag, IOptions, Location, Post, User} from "./api/api";
+import {createApi, IOptions} from "./api/api";
+import {Instagram} from "./api/instagram";
+import {TFullApiPost, TPost, TSinglePost} from "./api/types";
 import {upload} from "./cloud";
 import {download, toCSV, toJSON} from "./download";
 import {GetPool} from "./getpool/getPool";
@@ -122,6 +124,12 @@ function buildParser(args, callback) {
         default: false,
         describe: "Disable progress output",
       },
+      strict: {
+        boolean: true,
+        default: false,
+        describe:
+          "Throw an error if types from Instagram API have been changed",
+      },
       sync: {
         boolean: true,
         default: false,
@@ -225,22 +233,13 @@ async function spawn(args) {
   }
 
   // Pick endpoint
-  let api;
   let ids;
-  if (args["_"][0] === "hashtag") {
-    api = Hashtag;
-    ids = args["id"];
-  } else if (args["_"][0] === "location") {
-    api = Location;
-    ids = args["id"];
-  } else if (args["_"][0] === "user") {
-    api = User;
-    ids = args["id"];
-  } else if (args["_"][0] === "post") {
-    api = Post;
+  if (args["_"][0] === "post") {
     ids = args["ids"].split(",");
     args["id"] = ids.length === 1 ? ids[0] : "posts";
     args["full"] = true;
+  } else {
+    ids = args["id"];
   }
 
   // Define options
@@ -249,6 +248,7 @@ async function spawn(args) {
     headless: !args["visible"],
     logger,
     silent: args["silent"],
+    strict: args["strict"],
     sleepTime: 2,
     enableGrafting: args["graft"],
     fullAPI: args["full"],
@@ -290,7 +290,11 @@ async function spawn(args) {
 
   // Start API
   logger.info("Starting API at " + Date.now());
-  const obj = new api(ids, options);
+  const obj: Instagram<TPost | TFullApiPost | TSinglePost> = createApi(
+    args["_"][0],
+    ids,
+    options,
+  );
   await obj.start();
 
   // Start download pool
@@ -329,7 +333,8 @@ async function spawn(args) {
       // Check the scraping level
       if (args["full"]) {
         // Check if album
-        const children = post.shortcode_media.edge_sidecar_to_children;
+        const postObject = post as TFullApiPost;
+        const children = postObject.shortcode_media.edge_sidecar_to_children;
         if (children !== undefined) {
           for (const child of children.edges) {
             const shortcode = child.node.shortcode;
@@ -355,16 +360,16 @@ async function spawn(args) {
             );
           }
         } else {
-          const shortcode = post.shortcode_media.shortcode;
+          const shortcode = postObject.shortcode_media.shortcode;
 
           // Check if video
           let mediaUrl: string;
           let mediaType: FILETYPES;
-          if (post.shortcode_media.is_video && args["video"]) {
-            mediaUrl = post.shortcode_media.video_url;
+          if (postObject.shortcode_media.is_video && args["video"]) {
+            mediaUrl = postObject.shortcode_media.video_url;
             mediaType = FILETYPES.VIDEO;
           } else {
-            mediaUrl = post.shortcode_media.display_resources.pop().src;
+            mediaUrl = postObject.shortcode_media.display_resources.pop().src;
             mediaType = FILETYPES.IMAGE;
           }
           saveMediaMetadata(
@@ -378,13 +383,14 @@ async function spawn(args) {
           );
         }
       } else {
+        const postObject = post as TPost;
         saveMediaMetadata(
           post,
           args,
           downloadMedia,
           downdir,
-          post.node.thumbnail_src,
-          post.node.shortcode,
+          postObject.node.thumbnail_src,
+          postObject.node.shortcode,
           FILETYPES.IMAGE,
         );
       }

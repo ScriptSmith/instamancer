@@ -1,5 +1,9 @@
 import AwaitLock = require("await-lock");
 import chalk from "chalk";
+import {isLeft} from "fp-ts/lib/Either";
+import {Type} from "io-ts";
+import {PathReporter} from "io-ts/lib/PathReporter";
+import {ThrowReporter} from "io-ts/lib/ThrowReporter";
 import * as _ from "lodash/object";
 import {
   Browser,
@@ -17,7 +21,7 @@ import {PostIdSet} from "./postIdSet";
 /**
  * Instagram API wrapper
  */
-export class Instagram {
+export class Instagram<PostType> {
   /**
    * Apply defaults to undefined options
    */
@@ -68,6 +72,10 @@ export class Instagram {
   // Number of jumps before grafting
   protected jumpMod: number = 100;
 
+  // Validations
+  private readonly strict: boolean = false;
+  private readonly validator: Type<unknown>;
+
   // Puppeteer state
   private browser: Browser;
   private browserDisconnected: boolean = true;
@@ -75,7 +83,7 @@ export class Instagram {
   private readonly headless: boolean;
 
   // Array of scraped posts and lock
-  private postBuffer: object[] = [];
+  private postBuffer: PostType[] = [];
   private postBufferLock: AwaitLock = new AwaitLock();
 
   // Request and Response buffers and locks
@@ -151,6 +159,7 @@ export class Instagram {
     pageQuery: string,
     edgeQuery: string,
     options: IOptions = {},
+    validator: Type<unknown>,
   ) {
     this.id = id;
     this.postIds = new PostIdSet();
@@ -163,12 +172,14 @@ export class Instagram {
     this.headless = options.headless;
     this.logger = options.logger;
     this.silent = options.silent;
+    this.strict = options.strict;
     this.enableGrafting = options.enableGrafting;
     this.sleepTime = options.sleepTime;
     this.hibernationTime = options.hibernationTime;
     this.fullAPI = options.fullAPI;
     this.proxyURL = options.proxyURL;
     this.executablePath = options.executablePath;
+    this.validator = options.validator || validator;
   }
 
   /**
@@ -190,13 +201,21 @@ export class Instagram {
    */
   public async forceStop() {
     this.finished = true;
+    try {
+      this.requestBufferLock.release();
+      // tslint:disable-next-line: no-empty
+    } catch (e) {}
+    try {
+      this.responseBufferLock.release();
+      // tslint:disable-next-line: no-empty
+    } catch (e) {}
     await this.stop();
   }
 
   /**
    * Generator of posts on page
    */
-  public async *generator() {
+  public async *generator(): AsyncIterableIterator<PostType> {
     // Start if haven't done so already
     if (!this.started) {
       await this.start();
@@ -227,6 +246,28 @@ export class Instagram {
   }
 
   /**
+   * Construct page and add listeners
+   */
+  public async start() {
+    // Build page and visit url
+    await this.constructPage();
+
+    this.started = true;
+
+    // Add event listeners for requests and responses
+    await this.page.setRequestInterception(true);
+    this.page.on("request", (req) => this.interceptRequest(req));
+    this.page.on("response", (res) => this.interceptResponse(res));
+    this.page.on("requestfailed", (res) => this.interceptFailure(res));
+
+    // Ignore dialog boxes
+    this.page.on("dialog", (dialog) => dialog.dismiss());
+
+    // Log errors
+    this.page.on("error", (error) => this.logger.error(error));
+  }
+
+  /**
    * Open a post in a new page, then extract its metadata
    */
   protected async postPage(post: string, retries: number) {
@@ -244,6 +285,7 @@ export class Instagram {
 
     // Visit post and read state
     let data;
+    let parsed;
     try {
       await postPage.goto(this.postURL + post);
 
@@ -254,8 +296,7 @@ export class Instagram {
           window["_sharedData"].entry_data.PostPage[0].graphql,
         );
       });
-      await this.addToPostBuffer(JSON.parse(data));
-
+      parsed = JSON.parse(data) as PostType;
       await postPage.close();
     } catch (e) {
       // Log error and wait
@@ -271,6 +312,10 @@ export class Instagram {
         await this.postPage(post, --retries);
       }
     }
+    if (!parsed) {
+      return;
+    }
+    await this.addToPostBuffer(parsed);
   }
 
   /**
@@ -403,40 +448,10 @@ export class Instagram {
   }
 
   /**
-   * Construct page and add listeners
-   */
-  private async start() {
-    // Build page and visit url
-    await this.constructPage();
-
-    this.started = true;
-
-    // Add event listeners for requests and responses
-    await this.page.setRequestInterception(true);
-    this.page.on("request", (req) => this.interceptRequest(req));
-    this.page.on("response", (res) => this.interceptResponse(res));
-    this.page.on("requestfailed", (res) => this.interceptFailure(res));
-
-    // Ignore dialog boxes
-    this.page.on("dialog", (dialog) => dialog.dismiss());
-
-    // Log errors
-    this.page.on("error", (error) => this.logger.error(error));
-
-    // Gather initial posts from web page
-    if (this.fullAPI) {
-      await this.scrapeDefaultPosts();
-    }
-  }
-
-  /**
    * Close the page and browser
    */
   private async stop() {
     await this.progress(Progress.CLOSING);
-
-    // Finish page promises
-    await Promise.all(this.pagePromises);
 
     // Close page and browser
     if (!this.page.isClosed()) {
@@ -631,7 +646,7 @@ export class Instagram {
       }
 
       // Get posts
-      const posts = _.get(data, this.edgeQuery, []);
+      const posts: PostType[] = _.get(data, this.edgeQuery, []);
       for (const post of posts) {
         const postId = post["node"]["id"];
 
@@ -672,10 +687,34 @@ export class Instagram {
   /**
    * Add post to buffer
    */
-  private async addToPostBuffer(post: object) {
+  private async addToPostBuffer(post: PostType) {
     await this.postBufferLock.acquireAsync();
+    this.validatePost(post);
     this.postBuffer.push(post);
     this.postBufferLock.release();
+  }
+
+  private validatePost(post: PostType) {
+    const validationResult = this.validator.decode(post);
+    if (this.strict) {
+      try {
+        ThrowReporter.report(validationResult);
+      } catch (e) {
+        this.forceStop();
+        throw e;
+      }
+      return;
+    }
+    if (isLeft(validationResult)) {
+      const validationReporter = PathReporter.report(validationResult);
+      this.logger.warn(
+        `
+      Warning! The Instagram API has been changed since this version of instamancer was released.
+      More info: https://github.com/ScriptSmith/instamancer/blob/master/FAQ.md#instagram-api-has-been-changed
+      `,
+        validationReporter,
+      );
+    }
   }
 
   /**
