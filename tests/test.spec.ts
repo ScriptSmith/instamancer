@@ -8,7 +8,6 @@ import {
   Location,
   User,
 } from "../src/api/api";
-import {Search} from "../src/api/search";
 import {FakePage, IFakePageOptions} from "./__fixtures__/FakePage";
 import {QuickGraft} from "./__fixtures__/QuickGraft";
 import {startServer, stopServer} from "./server";
@@ -493,7 +492,11 @@ describe("Strict mode", () => {
 
 describe("Search", () => {
   test("Search Result Users", async () => {
-    const result = await new Search("instagram", libraryTestOptions).get();
+    const result = await createApi(
+      "search",
+      "instagram",
+      libraryTestOptions,
+    ).get();
     expect(result.users.length).toBeGreaterThan(0);
     const user = result.users[0].user;
     expect(user.username).toBe("instagram");
@@ -502,7 +505,11 @@ describe("Search", () => {
   });
 
   test("Search Result Hashtags", async () => {
-    const result = await new Search("nofilter", libraryTestOptions).get();
+    const result = await createApi(
+      "search",
+      "nofilter",
+      libraryTestOptions,
+    ).get();
     expect(result.hashtags.length).toBeGreaterThan(0);
     const hashtag = result.hashtags[0].hashtag;
     expect(hashtag.media_count).not.toBeUndefined();
@@ -510,14 +517,38 @@ describe("Search", () => {
   });
 
   test("Search Result Places", async () => {
-    const result = await new Search("New york", libraryTestOptions).get();
+    const result = await createApi(
+      "search",
+      "New york",
+      libraryTestOptions,
+    ).get();
     expect(result.places.length).toBeGreaterThan(0);
     const place = result.places[0].place;
     expect(place.title).toMatch(/New York/);
   });
 
+  test("Incorrect validation", async () => {
+    const failingValidator = t.type({
+      foo: t.string,
+    });
+
+    expect.hasAssertions();
+    const search = createApi("search", "Doesn't matter", {
+      strict: true,
+      validator: failingValidator,
+    });
+
+    try {
+      await search.get();
+    } catch (e) {
+      expect(e).toBeInstanceOf(Error);
+      expect(e.message).toMatch(/^Invalid value/);
+    }
+  });
+
   test("Search should fire only one network request", async () => {
-    const search = new Search(
+    const search = createApi(
+      "search",
       "A really long long long string to find something in Instagram",
     );
     const searchRequestsSpy = jest.fn();
@@ -532,7 +563,6 @@ describe("Search", () => {
       searchRequestsSpy(event);
     });
     await search.get();
-    console.log(searchRequestsSpy.mock.calls.map((args) => args[0].url()));
     expect(searchRequestsSpy).toBeCalledTimes(1);
   });
 });
