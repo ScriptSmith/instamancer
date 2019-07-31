@@ -26,10 +26,24 @@ const getResult = async () => {
     ],
   });
 
+  const searchResults = await getSearch({
+    queries: ["beach", "nofilter", "donald"],
+  });
+
   return {
     posts,
+    searchResults,
     singlePosts,
   };
+};
+
+const getSearch = async ({queries}: {queries: string[]}) => {
+  const result = [];
+  const objects = queries.map((q) => createApi("search", q, {}));
+  for (const object of objects) {
+    result.push(await object.get());
+  }
+  return result;
 };
 
 const getPosts = async ({

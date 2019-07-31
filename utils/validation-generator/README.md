@@ -29,7 +29,8 @@ export const SinglePost = t.type({
 });
 ```
 By make this type excessive, you will get validation error, if some new properties appeared in the API.
-5.  Fix the rest of the typings
+5.  Move `SearchResult`, `User`, `Places`, `Hashtags` types to `src/api/search.ts`
+6.  Fix the rest of the typings
 
 ## Fix typings
 
