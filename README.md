@@ -27,6 +27,7 @@ Read more about how Instamancer works [here](https://scriptsmith.github.io/insta
 - Download images, albums, and videos
 - Batch scraping
 - Search hashtags/users/locations
+- API response validation
 
 ### Data
 Metadata that Instamancer is able to gather from posts:
@@ -124,6 +125,8 @@ Options:
   --video                 Download videos. Only works in full mode
                                                       [boolean] [default: false]
   --silent                Disable progress output     [boolean] [default: false]
+  --strict                Throw an error if types from Instagram API have been
+                          changed                     [boolean] [default: false]  
   --sync                  Synchronously download files between API requests
                                                       [boolean] [default: false]
   --threads, -k           The number of parallel download / upload threads
@@ -202,6 +205,9 @@ const options: Instamancer.IOptions = {
     
     // Time to sleep between interactions with the page
     sleepTime: number,
+
+    // Throw an error if type validation has been failed
+    strict?: boolean,
     
     // Time to sleep when rate-limited
     hibernationTime: number,
@@ -217,6 +223,9 @@ const options: Instamancer.IOptions = {
     
     // Location of the chromium / chrome binary executable
     executablePath: string,
+
+    // Custom io-ts validator
+    validator?: Type<unknown>;
 }
 ```
 
@@ -244,14 +253,14 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <th>Scraping method</th>
         <th>Daily builds</th>
         <th>Main language</th>
-        <th>Speed ----------------------------</th>
-        <th>License ----------------------------</th>
-        <th>Last commit ----------------------------</th>
-        <th>Open Issues ----------------------------</th>
-        <th>Closed Issues ----------------------------</th>
-        <th>Build status ----------------------------</th>
-        <th>Test coverage ----------------------------</th>
-        <th>Code quality ----------------------------</th>
+        <th>Speed ____________________________</th>
+        <th>License ____________________________</th>
+        <th>Last commit ____________________________</th>
+        <th>Open Issues ____________________________</th>
+        <th>Closed Issues ____________________________</th>
+        <th>Build status ____________________________</th>
+        <th>Test coverage ____________________________</th>
+        <th>Code quality ____________________________</th>
     </tr>
 </thead>
 <tbody>
