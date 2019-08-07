@@ -267,11 +267,9 @@ async function spawn(args) {
     const client = storage.createClient({
       authUrl: process.env.OS_AUTH_URL,
       password: process.env.OS_PASSWORD,
-      project: process.env.OS_PROJECT_ID,
       // @ts-ignore
       provider: "openstack",
       region: process.env.OS_REGION_NAME,
-      userDomainName: "Default",
       username: process.env.OS_USERNAME,
     });
 
