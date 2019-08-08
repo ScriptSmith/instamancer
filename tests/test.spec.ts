@@ -494,12 +494,12 @@ describe("Search", () => {
   test("Search Result Users", async () => {
     const result = await createApi(
       "search",
-      "instagram",
+      "therock",
       libraryTestOptions,
     ).get();
     expect(result.users.length).toBeGreaterThan(0);
     const user = result.users[0].user;
-    expect(user.username).toBe("instagram");
+    expect(user.username).toBe("therock");
     expect(user.byline).toBeTruthy();
     expect(user.profile_pic_url).toBeTruthy();
   });
