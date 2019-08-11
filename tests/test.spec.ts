@@ -70,64 +70,74 @@ const libraryTestOptions: IOptions = {
   total: 10,
 };
 
-test("Library Classes", async () => {
+describe("Library Classes", () => {
   const total = 10;
-  const objects = [
-    createApi("hashtag", hashtags[0], libraryTestOptions),
-    createApi("user", users[0], libraryTestOptions),
-    createApi("location", locations[0], libraryTestOptions),
-    createApi("post", posts, libraryTestOptions),
-  ];
+  const objects = {
+    hashtag: createApi("hashtag", hashtags[0], libraryTestOptions),
+    location: createApi("location", locations[0], libraryTestOptions),
+    post: createApi("post", posts, libraryTestOptions),
+    user: createApi("user", users[0], libraryTestOptions),
+  };
 
-  for (const object of objects) {
-    const scraped = [];
-    for await (const post of object.generator()) {
-      expect(post).toBeDefined();
-      scraped.push(post);
-    }
-    expect(scraped.length).toBe(total);
+  for (const [key, object] of Object.entries(objects)) {
+    test(key, async () => {
+      const scraped = [];
+      for await (const post of object.generator()) {
+        expect(post).toBeDefined();
+        scraped.push(post);
+      }
+      expect(scraped.length).toBe(total);
+    });
   }
 });
 
-test("Library Functions", async () => {
+describe("Library Functions", () => {
   const total = 10;
-  const generators = [
-    createApi("hashtag", hashtags[0], libraryTestOptions).generator(),
-    createApi("user", users[0], libraryTestOptions).generator(),
-    createApi("location", locations[0], libraryTestOptions).generator(),
-    createApi("post", posts, libraryTestOptions).generator(),
-  ];
+  const generators = {
+    hashtag: createApi("hashtag", hashtags[0], libraryTestOptions).generator(),
+    location: createApi(
+      "location",
+      locations[0],
+      libraryTestOptions,
+    ).generator(),
+    post: createApi("post", posts, libraryTestOptions).generator(),
+    user: createApi("user", users[0], libraryTestOptions).generator(),
+  };
 
-  for (const generator of generators) {
-    const scraped = [];
-    for await (const post of generator) {
-      expect(post).toBeDefined();
-      scraped.push(post);
-    }
-    expect(scraped.length).toBe(total);
+  for (const [key, generator] of Object.entries(generators)) {
+    test(key, async () => {
+      const scraped = [];
+      for await (const post of generator) {
+        expect(post).toBeDefined();
+        scraped.push(post);
+      }
+      expect(scraped.length).toBe(total);
+    });
   }
 });
 
-test("Full API", async () => {
+describe("Full API", () => {
   const total = 10;
   const fullApiOption: IOptionsFullApi = {
     ...libraryTestOptions,
     fullAPI: true,
   };
-  const generators = [
-    createApi("hashtag", hashtags[0], fullApiOption).generator(),
-    createApi("user", users[0], fullApiOption).generator(),
-    createApi("location", locations[0], fullApiOption).generator(),
-    createApi("post", posts, fullApiOption).generator(),
-  ];
+  const generators = {
+    hashtag: createApi("hashtag", hashtags[0], fullApiOption).generator(),
+    location: createApi("location", locations[0], fullApiOption).generator(),
+    post: createApi("post", posts, fullApiOption).generator(),
+    user: createApi("user", users[0], fullApiOption).generator(),
+  };
 
-  for (const generator of generators) {
-    const scraped = [];
-    for await (const post of generator) {
-      expect(post).toBeDefined();
-      scraped.push(post);
-    }
-    expect(scraped.length).toBe(total);
+  for (const [key, generator] of Object.entries(generators)) {
+    test(key, async () => {
+      const scraped = [];
+      for await (const post of generator) {
+        expect(post).toBeDefined();
+        scraped.push(post);
+      }
+      expect(scraped.length).toBe(total);
+    });
   }
 });
 
