@@ -10,7 +10,7 @@
 [![Speed](https://firebasestorage.googleapis.com/v0/b/instagram-speed-test.appspot.com/o/instamancer.svg?alt=media&token=dcc3e623-ee88-4d74-ae86-2d969a1cd8ad)](https://scriptsmith.github.io/instagram-speed-test)
 [![NPM](https://img.shields.io/npm/v/instamancer.svg)](https://www.npmjs.com/package/instamancer)
 [![Dependencies](https://david-dm.org/scriptsmith/instamancer/status.svg)](https://david-dm.org/scriptsmith/instamancer)
-[![Chat](https://img.shields.io/gitter/room/instamancer/instamancer.svg)](https://gitter.im/instamancer) 
+[![Chat](https://img.shields.io/gitter/room/instamancer/instamancer.svg)](https://gitter.im/instamancer)
 
 Scrape Instagram's API with Puppeteer.
 
@@ -51,7 +51,7 @@ See [Puppeteer troubleshooting](https://github.com/GoogleChrome/puppeteer/blob/m
 Enable user namespace cloning:
 ```
 sysctl -w kernel.unprivileged_userns_clone=1
-``` 
+```
 
 Or run without a sandbox:
 
@@ -74,8 +74,9 @@ Requires [TypeScript](https://github.com/Microsoft/TypeScript#installing)
 git clone https://github.com/ScriptSmith/instamancer.git
 cd instamancer
 npm install
+npm run build
 npm install -g
-``` 
+```
 
 ### From NPM
 
@@ -124,7 +125,7 @@ Options:
                                                       [boolean] [default: false]
   --silent                Disable progress output     [boolean] [default: false]
   --strict                Throw an error if types from Instagram API have been
-                          changed                     [boolean] [default: false]  
+                          changed                     [boolean] [default: false]
   --sync                  Synchronously download files between API requests
                                                       [boolean] [default: false]
   --threads, -k           The number of parallel download / upload threads
@@ -190,34 +191,34 @@ Instamancer.post(ids, options);
 const options: Instamancer.IOptions = {
     // Total posts to download. 0 for unlimited
     total: number,
-    
+
     // Run Chrome in headless mode
     headless: boolean,
-    
+
     // Logging events
     logger: winston.Logger,
-    
+
     // Run without output to stdout
     silent: boolean,
-    
+
     // Time to sleep between interactions with the page
     sleepTime: number,
 
     // Throw an error if type validation has been failed
     strict?: boolean,
-    
+
     // Time to sleep when rate-limited
     hibernationTime: number,
-    
+
     // Enable the grafting process
     enableGrafting: boolean,
-    
+
     // Extract the full amount of information from the API
     fullAPI: boolean,
-    
+
     // Use a proxy in Chrome to connect to Instagram
     proxyURL: string,
-    
+
     // Location of the chromium / chrome binary executable
     executablePath: string,
 
@@ -337,7 +338,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>:question:</td>
     </tr>
     <tr>
-        <td><a href="https://github.com/althonos/InstaLooter">Instalooter</a></td>                
+        <td><a href="https://github.com/althonos/InstaLooter">Instalooter</a></td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
