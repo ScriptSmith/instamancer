@@ -24,10 +24,6 @@ function buildParser(args, callback) {
       await spawn(handleArgs);
       callback();
     })
-    .command("location [id]", "Scrape a location", {}, async (handleArgs) => {
-      await spawn(handleArgs);
-      callback();
-    })
     .command("user [id]", "Scrape a user", {}, async (handleArgs) => {
       await spawn(handleArgs);
       callback();
@@ -194,10 +190,6 @@ function buildParser(args, callback) {
     .example(
       "$0 hashtag instagood -d",
       "Download all the available posts, and their thumbnails from #instagood",
-    )
-    .example(
-      "$0 location 644269022 --count 200",
-      "Download 200 posts tagged as being at the Arc Du Triomphe",
     )
     .example(
       "$0 user arianagrande --filetype=csv --logging=info --visible",

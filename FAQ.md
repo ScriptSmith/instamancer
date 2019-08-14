@@ -36,7 +36,7 @@ The most I've seen is more than 100,000.
 ```
 hashtag spring -d --full
 hashtag summer -f=data.json
-location 3001373 -t csv --downdir=tsquare -d
+user greg -c100
 ```
 
 ## Why is the maximum number of posts that I'm able to scrape inconsistent?

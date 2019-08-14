@@ -89,29 +89,26 @@ export class Post extends Instagram<TSinglePost> {
 const getPageValidator = (options: IOptions) =>
   options.fullAPI ? FullApiPost : PostValidator;
 
-export type InstagramPostClass = Hashtag<TPost> | User<TPost> | Location<TPost>;
-export type InstagramFullPostClass =
-  | Hashtag<TFullApiPost>
-  | User<TFullApiPost>
-  | Location<TFullApiPost>;
+export type InstagramPostClass = Hashtag<TPost> | User<TPost>;
+export type InstagramFullPostClass = Hashtag<TFullApiPost> | User<TFullApiPost>;
 
 export function createApi(type: "post", id: string[], options: IOptions): Post;
 export function createApi(
-  type: "hashtag" | "user" | "location",
+  type: "hashtag" | "user",
   id: string,
   options: IOptionsRegular,
 ): InstagramPostClass;
 export function createApi(
-  type: "hashtag" | "user" | "location",
+  type: "hashtag" | "user",
   id: string,
   options: IOptionsFullApi,
 ): InstagramFullPostClass;
 export function createApi(
-  type: "hashtag" | "user" | "location" | "post",
+  type: "hashtag" | "user" | "post",
   id: string | string[],
   options: IOptions,
 ): Post | InstagramPostClass | InstagramFullPostClass {
-  let ClassConstructor: typeof Hashtag | typeof User | typeof Location;
+  let ClassConstructor: typeof Hashtag | typeof User;
   switch (type) {
     case "post":
       return new Post(id as string[], options);
@@ -120,9 +117,6 @@ export function createApi(
       break;
     case "user":
       ClassConstructor = User;
-      break;
-    case "location":
-      ClassConstructor = Location;
       break;
   }
   if (options.fullAPI) {
@@ -139,25 +133,6 @@ export class Hashtag<T> extends Instagram<T> {
     const endpoint = "https://instagram.com/explore/tags/";
     const pageQuery = "data.hashtag.edge_hashtag_to_media.page_info";
     const edgeQuery = "data.hashtag.edge_hashtag_to_media.edges";
-    super(
-      endpoint,
-      id,
-      pageQuery,
-      edgeQuery,
-      options,
-      getPageValidator(options),
-    );
-  }
-}
-
-/**
- * An Instagram location API wrapper
- */
-export class Location<T> extends Instagram<T> {
-  constructor(id: string, options: IOptions = {}) {
-    const endpoint = "https://instagram.com/explore/locations/";
-    const pageQuery = "data.location.edge_location_to_media.page_info";
-    const edgeQuery = "data.location.edge_location_to_media.edges";
     super(
       endpoint,
       id,

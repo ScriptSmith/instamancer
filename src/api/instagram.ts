@@ -152,6 +152,7 @@ export class Instagram<PostType> {
    * @param pageQuery the query to identify future pages in the nested API structure
    * @param edgeQuery the query to identify posts in the nested API structure
    * @param options configuration details
+   * @param validator response type validator
    */
   constructor(
     endpoint: string,
