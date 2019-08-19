@@ -114,7 +114,7 @@ export function createApi(
   id: string | string[],
   options?: IOptions,
 ): Post | InstagramPostClass | InstagramFullPostClass | Search {
-  let ClassConstructor: typeof Hashtag | typeof User | typeof Location;
+  let ClassConstructor: typeof Hashtag | typeof User;
   switch (type) {
     case "search":
       return new Search(id as string, options as ISearchOptions);

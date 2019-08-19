@@ -26,7 +26,7 @@ Read more about how Instamancer works [here](https://scriptsmith.github.io/insta
 - Output JSON, CSV
 - Download images, albums, and videos
 - Batch scraping
-- Search hashtags/users/locations
+- Search hashtags/users
 - API response validation
 
 ### Data
