@@ -1,13 +1,7 @@
 import * as t from "io-ts";
 import * as winston from "winston";
 import {createApi} from "..";
-import {
-  Hashtag,
-  IOptions,
-  IOptionsFullApi,
-  Location,
-  User,
-} from "../src/api/api";
+import {Hashtag, IOptions, IOptionsFullApi, User} from "../src/api/api";
 import {FakePage, IFakePageOptions} from "./__fixtures__/FakePage";
 import {QuickGraft} from "./__fixtures__/QuickGraft";
 import {startServer, stopServer} from "./server";
@@ -16,13 +10,6 @@ jest.setTimeout(120 * 60 * 1000);
 /* tslint:disable:no-console */
 
 const hashtags = ["beach", "gym", "puppies", "party", "throwback"];
-const locations = [
-  "1110037669039751",
-  "212988663",
-  "933522",
-  "213385402",
-  "228001889",
-];
 const users = ["snoopdogg", "arianagrande", "bbc", "whitehouse", "australia"];
 const posts = [
   "By54GDoHGzK",
@@ -74,7 +61,6 @@ describe("Library Classes", () => {
   const total = 10;
   const objects = {
     hashtag: createApi("hashtag", hashtags[0], libraryTestOptions),
-    location: createApi("location", locations[0], libraryTestOptions),
     post: createApi("post", posts, libraryTestOptions),
     user: createApi("user", users[0], libraryTestOptions),
   };
@@ -95,11 +81,6 @@ describe("Library Functions", () => {
   const total = 10;
   const generators = {
     hashtag: createApi("hashtag", hashtags[0], libraryTestOptions).generator(),
-    location: createApi(
-      "location",
-      locations[0],
-      libraryTestOptions,
-    ).generator(),
     post: createApi("post", posts, libraryTestOptions).generator(),
     user: createApi("user", users[0], libraryTestOptions).generator(),
   };
@@ -124,7 +105,6 @@ describe("Full API", () => {
   };
   const generators = {
     hashtag: createApi("hashtag", hashtags[0], fullApiOption).generator(),
-    location: createApi("location", locations[0], fullApiOption).generator(),
     post: createApi("post", posts, fullApiOption).generator(),
     user: createApi("user", users[0], fullApiOption).generator(),
   };
@@ -166,11 +146,6 @@ class InstagramEndpoint {
 
 const endpoints: ApiTestConditions[] = [
   new ApiTestConditions(Hashtag, hashtags, [largeSize, mediumSize, smallSize]),
-  new ApiTestConditions(Location, locations, [
-    largeSize,
-    mediumSize,
-    smallSize,
-  ]),
   new ApiTestConditions(User, users, [mediumSize, smallSize]),
 ];
 

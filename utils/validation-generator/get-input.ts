@@ -7,7 +7,6 @@ const getPath = () => join(dirname(__filename), "./input.json");
 const getResult = async () => {
   const posts = await getPosts({
     hashtagId: "beach",
-    locationId: "1110037669039751",
     userId: "snoopdogg",
   });
 
@@ -49,11 +48,9 @@ const getSearch = async ({queries}: {queries: string[]}) => {
 const getPosts = async ({
   hashtagId,
   userId,
-  locationId,
 }: {
   hashtagId: string;
   userId: string;
-  locationId: string;
 }) => {
   const result = [];
 
@@ -63,7 +60,6 @@ const getPosts = async ({
   const objects = [
     createApi("hashtag", hashtagId, options),
     createApi("user", userId, options),
-    createApi("location", locationId, options),
   ];
 
   for (const object of objects) {

@@ -10,7 +10,7 @@
 [![Speed](https://firebasestorage.googleapis.com/v0/b/instagram-speed-test.appspot.com/o/instamancer.svg?alt=media&token=dcc3e623-ee88-4d74-ae86-2d969a1cd8ad)](https://scriptsmith.github.io/instagram-speed-test)
 [![NPM](https://img.shields.io/npm/v/instamancer.svg)](https://www.npmjs.com/package/instamancer)
 [![Dependencies](https://david-dm.org/scriptsmith/instamancer/status.svg)](https://david-dm.org/scriptsmith/instamancer)
-[![Chat](https://img.shields.io/gitter/room/instamancer/instamancer.svg)](https://gitter.im/instamancer) 
+[![Chat](https://img.shields.io/gitter/room/instamancer/instamancer.svg)](https://gitter.im/instamancer)
 
 Scrape Instagram's API with Puppeteer.
 
@@ -22,7 +22,7 @@ Instamancer is a new type of scraping tool that leverages Puppeteer's ability to
 Read more about how Instamancer works [here](https://scriptsmith.github.io/instamancer/).
 
 ### Features
-- Scrape hashtags, locations and users
+- Scrape hashtags and users
 - Output JSON, CSV
 - Download images, albums, and videos
 - Batch scraping
@@ -52,7 +52,7 @@ See [Puppeteer troubleshooting](https://github.com/GoogleChrome/puppeteer/blob/m
 Enable user namespace cloning:
 ```
 sysctl -w kernel.unprivileged_userns_clone=1
-``` 
+```
 
 Or run without a sandbox:
 
@@ -75,8 +75,9 @@ Requires [TypeScript](https://github.com/Microsoft/TypeScript#installing)
 git clone https://github.com/ScriptSmith/instamancer.git
 cd instamancer
 npm install
+npm run build
 npm install -g
-``` 
+```
 
 ### From NPM
 
@@ -105,7 +106,6 @@ Usage: instamancer <command> [options]
 
 Commands:
   instamancer hashtag [id]       Scrape a hashtag
-  instamancer location [id]      Scrape a location
   instamancer user [id]          Scrape a user
   instamancer post [ids]         Scrape a comma-separated list of posts
   instamancer search [query]     Perform a search of users, tags and places
@@ -126,7 +126,7 @@ Options:
                                                       [boolean] [default: false]
   --silent                Disable progress output     [boolean] [default: false]
   --strict                Throw an error if types from Instagram API have been
-                          changed                     [boolean] [default: false]  
+                          changed                     [boolean] [default: false]
   --sync                  Synchronously download files between API requests
                                                       [boolean] [default: false]
   --threads, -k           The number of parallel download / upload threads
@@ -151,8 +151,6 @@ Options:
 Examples:
   instamancer hashtag instagood -d          Download all the available posts,
                                             and their thumbnails from #instagood
-  instamancer location 644269022 --count    Download 200 posts tagged as being
-  200                                       at the Arc Du Triomphe
   instamancer user arianagrande             Download Ariana Grande's posts to a
   --filetype=csv --logging=info --visible   CSV file with a non-headless
                                             browser, and log all events
@@ -183,7 +181,6 @@ const hashtag = createApi("hashtag", "beach", options);
 ```typescript
 import {createApi} from "instamancer"
 createApi("hashtag", id, options);
-createApi("location", id, options);
 createApi("user", id, options);
 createApi("post", ids, options);
 createApi("search", query, options);
@@ -194,39 +191,39 @@ createApi("search", query, options);
 const options: Instamancer.IOptions = {
     // Total posts to download. 0 for unlimited
     total: number,
-    
+
     // Run Chrome in headless mode
     headless: boolean,
-    
+
     // Logging events
     logger: winston.Logger,
-    
+
     // Run without output to stdout
     silent: boolean,
-    
+
     // Time to sleep between interactions with the page
     sleepTime: number,
 
     // Throw an error if type validation has been failed
     strict?: boolean,
-    
+
     // Time to sleep when rate-limited
     hibernationTime: number,
-    
+
     // Enable the grafting process
     enableGrafting: boolean,
-    
+
     // Extract the full amount of information from the API
     fullAPI: boolean,
-    
+
     // Use a proxy in Chrome to connect to Instagram
     proxyURL: string,
-    
+
     // Location of the chromium / chrome binary executable
     executablePath: string,
 
     // Custom io-ts validator
-    validator?: Type<unknown>;
+    validator?: Type<unknown>
 }
 ```
 
@@ -242,7 +239,6 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <th>Tool</th>
         <th>Hashtags</th>
         <th>Users</th>
-        <th>Locations</th>
         <th>Posts</th>
         <th>Login not required</th>
         <th>Private feeds</th>
@@ -271,7 +267,6 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
-        <td>:heavy_check_mark:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
@@ -294,7 +289,6 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td><a href="https://github.com/ScriptSmith/instaphyte">Instaphyte</a></td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
-        <td>:heavy_check_mark:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
@@ -322,7 +316,6 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
-        <td>:heavy_check_mark:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
@@ -341,8 +334,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>:question:</td>
     </tr>
     <tr>
-        <td><a href="https://github.com/althonos/InstaLooter">Instalooter</a></td>                
-        <td>:heavy_check_mark:</td>
+        <td><a href="https://github.com/althonos/InstaLooter">Instalooter</a></td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
@@ -369,7 +361,6 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td><a href="https://github.com/huaying/instagram-crawler">Instagram crawler</a></td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
-        <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
@@ -392,7 +383,6 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
     </tr>
     <tr>
         <td><a href="https://github.com/rarcega/instagram-scraper">Instagram Scraper</a></td>
-        <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
@@ -422,7 +412,6 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
-        <td>:heavy_check_mark:</td>
         <td>:x:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
@@ -442,7 +431,6 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
     </tr>
     <tr>
         <td><a href="https://github.com/postaddictme/instagram-php-scraper">Instagram PHP Scraper</a></td>
-        <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
