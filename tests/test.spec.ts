@@ -332,7 +332,6 @@ test("Failed Page visit", async () => {
     }
   } catch (e) {
     expect(e).toBeDefined();
-    await api.forceStop();
   }
 
   expect(scraped.length).toBe(0);

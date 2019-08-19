@@ -202,8 +202,8 @@ export class Instagram<PostType> {
   /**
    * Force the API to stop
    */
-  public async forceStop() {
-    if (!this.started) {
+  public async forceStop(force?: boolean) {
+    if (!force && !this.started) {
       return;
     }
     this.started = false;
@@ -611,6 +611,7 @@ export class Instagram<PostType> {
     } catch (e) {
       // Increment attempts
       if (this.pageUrlAttempts++ === this.maxPageUrlAttempts && !this.started) {
+        await this.forceStop(true);
         throw new Error("Failed to visit URL");
       }
 
