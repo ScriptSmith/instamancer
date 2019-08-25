@@ -266,6 +266,11 @@ export class Instagram<PostType> {
 
     // Log errors
     this.page.on("error", (error) => this.logger.error(error));
+
+    // Gather initial posts from web page
+    if (this.fullAPI) {
+      await this.scrapeDefaultPosts();
+    }
   }
 
   /**
