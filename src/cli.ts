@@ -89,6 +89,7 @@ function buildParser(args, callback) {
         describe: "Number of posts to download. 0 to download all",
       },
       visible: {
+        boolean: true,
         default: false,
         describe: "Show browser on the screen",
       },

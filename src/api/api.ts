@@ -69,6 +69,10 @@ export class Post extends Instagram<TSinglePost> {
   private readonly ids: string[];
 
   constructor(ids: string[], options: IOptions = {}) {
+    // fullAPI option makes no sense for Post class
+    // But usage with fullAPI option brings an extra post, because of scrapeDefaultPosts
+    // So we force it to be disabled
+    options.fullAPI = false;
     super("https://instagram.com/p/", ids[0], "", "", options, SinglePost);
     this.ids = ids;
   }
