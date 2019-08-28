@@ -74,6 +74,7 @@ function buildParser(args, callback) {
         const result = await search.get();
         process.stdout.write("\n");
         process.stdout.write(JSON.stringify(result, null, 2));
+        process.stdout.write("\n");
         callback();
       },
     )
