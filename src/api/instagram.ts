@@ -679,7 +679,7 @@ export class Instagram<PostType> {
     }
 
     /**
-     * Print progress to stdout
+     * Print progress to stderr
      */
     private async progress(state: Progress) {
         // End if silent
@@ -706,7 +706,7 @@ export class Instagram<PostType> {
         this.logger.debug(out);
 
         // Print output
-        process.stdout.write("\r" + out + "\u001B[K");
+        process.stderr.write("\r" + out + "\u001B[K");
 
         // Release
         this.writeLock.release();
