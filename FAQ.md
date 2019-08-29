@@ -20,6 +20,19 @@ Reducing the time between interactions with the page only seems to induce rate l
 
 If you want something *really* fast, try [Instaphyte](https://github.com/ScriptSmith/instaphyte). It's as much as 7x faster.
 
+## How do I use the `--upload` flag and depot?
+1. Download, build, and run [depot](https://github.com/ScriptSmith/depot)
+2. Generate a UUIDv4
+3. Use instamancer like so: 
+
+```
+instamancer ... -d --upload=http://127.0.0.1:8080/jobs/UUID/
+```
+
+Where `UUID` is the UUID you generated. 
+
+You can use any server that accepts `PUT` requests.
+
 ## Can I run multiple instances at the same time rather than batch scraping?
 No. Instagram will probably rate-limit your IP address and then Instamancer will have to pause until the limit is lifted.
 

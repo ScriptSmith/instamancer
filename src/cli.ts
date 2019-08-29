@@ -5,12 +5,11 @@ import * as readline from "readline";
 import * as winston from "winston";
 
 import * as path from "path";
-import {storage} from "pkgcloud";
 import {createApi, IOptions} from "./api/api";
 import {TFullApiPost, TPost} from "./api/types";
-import {upload} from "./cloud";
-import {download, toCSV, toJSON} from "./download";
 import {GetPool} from "./getpool/getPool";
+import {download, toCSV, toJSON} from "./http/download";
+import * as upload from "./http/upload";
 
 const getLogger = (args) =>
   winston.createLogger({
@@ -221,11 +220,10 @@ function buildParser(args, callback) {
         describe:
           "Location of the browser. Defaults to the copy downloaded at installation",
       },
-      swift: {
-        boolean: true,
-        default: false,
+      upload: {
+        default: undefined,
         describe:
-          "Upload media to openstack's swift object storage rather than saving to disk",
+          "Upload files to a URL with a PUT request rather than saving to disk",
       },
     })
     .demandCommand()
@@ -277,22 +275,19 @@ async function spawn(args) {
 
   // Connect to object storage
   let downloadUpload;
-  if (args["swift"]) {
+  let toCSVFunc = toCSV;
+  let toJSONFunc = toJSON;
+  if (args["upload"]) {
     // Upload
-    const client = storage.createClient({
-      authUrl: process.env.OS_AUTH_URL,
-      password: process.env.OS_PASSWORD,
-      // @ts-ignore
-      provider: "openstack",
-      region: process.env.OS_REGION_NAME,
-      username: process.env.OS_USERNAME,
-    });
-
-    downloadUpload = upload.bind({
-      client,
+    const uploadConfig = {
       directory: downdir,
+      url: args["upload"],
       logger,
-    });
+    };
+
+    downloadUpload = upload.upload.bind(uploadConfig);
+    toCSVFunc = upload.toCSV.bind(uploadConfig);
+    toJSONFunc = upload.toJSON.bind(uploadConfig);
   } else {
     // Download
     downloadUpload = download.bind({
@@ -439,14 +434,14 @@ async function spawn(args) {
     if (args["filetype"] === "both" || args["filename"] === "[id]") {
       saveFile += ".csv";
     }
-    toCSV(posts, saveFile);
+    await toCSVFunc(posts, saveFile);
   }
   if (args["filetype"] !== "csv") {
     let saveFile = filename;
     if (args["filetype"] === "both" || args["filename"] === "[id]") {
       saveFile += ".json";
     }
-    toJSON(posts, saveFile);
+    await toJSONFunc(posts, saveFile);
   }
 
   // Remove pause callback

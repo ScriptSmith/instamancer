@@ -48,7 +48,7 @@ export async function download(
 /**
  * Save list of posts to a CSV file
  */
-export function toCSV(posts: object[], filePath: string) {
+export async function toCSV(posts: object[], filePath: string) {
   const parser = new json2csv.Parser({flatten: true});
   const csv = parser.parse(posts);
   fs.writeFileSync(filePath, csv);
@@ -57,7 +57,7 @@ export function toCSV(posts: object[], filePath: string) {
 /**
  * Save list of posts to a JSON file
  */
-export function toJSON(posts: object[], filePath: string) {
+export async function toJSON(posts: object[], filePath: string) {
   let first = true;
   fs.writeFileSync(filePath, "[");
   for (const post of posts) {

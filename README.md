@@ -26,8 +26,9 @@ Read more about how Instamancer works [here](https://scriptsmith.github.io/insta
 - Output JSON, CSV
 - Download images, albums, and videos
 - Batch scraping
-- Search hashtags/users
+- Search hashtags, users, and locations
 - API response validation
+- Stream files to [depot](https://github.com/ScriptSmith/depot)
 
 ### Data
 Metadata that Instamancer is able to gather from posts:
@@ -116,7 +117,7 @@ Options:
   --version               Show version number                          [boolean]
   --count, -c             Number of posts to download. 0 to download all
                                                                     [default: 0]
-  --visible               Show browser on the screen            [default: false]
+  --visible               Show browser on the screen  [boolean] [default: false]
   --download, -d          Save images and videos from posts
                                                       [boolean] [default: false]
   --graft, -g             Enable grafting              [boolean] [default: true]
@@ -145,8 +146,8 @@ Options:
   --logfile               Name of the log file      [default: "instamancer.log"]
   --browser               Location of the browser. Defaults to the copy
                           downloaded at installation
-  --swift                 Upload media to openstack's swift object storage
-                          rather than saving to disk  [boolean] [default: false]
+  --upload                Upload files to a URL with a PUT request rather
+                          than saving to disk
 
 Examples:
   instamancer hashtag instagood -d          Download all the available posts,
