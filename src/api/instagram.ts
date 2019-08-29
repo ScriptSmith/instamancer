@@ -263,9 +263,9 @@ export class Instagram<PostType> {
 
         // Add event listeners for requests and responses
         await this.page.setRequestInterception(true);
-        this.page.on("request", (req) => this.interceptRequest(req));
-        this.page.on("response", (res) => this.interceptResponse(res));
-        this.page.on("requestfailed", (res) => this.interceptFailure(res));
+        this.page.on("request", this.interceptRequest);
+        this.page.on("response", this.interceptResponse);
+        this.page.on("requestfailed", this.interceptFailure);
 
         // Ignore dialog boxes
         this.page.on("dialog", (dialog) => dialog.dismiss());
@@ -283,6 +283,10 @@ export class Instagram<PostType> {
      * Close the page and browser
      */
     protected async stop() {
+        this.page.off("request", this.interceptRequest);
+        this.page.off("response", this.interceptResponse);
+        this.page.off("requestfailed", this.interceptFailure);
+
         await this.progress(Progress.CLOSING);
 
         // Close page and browser
