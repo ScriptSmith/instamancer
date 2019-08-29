@@ -44,6 +44,7 @@ Metadata that Instamancer is able to gather from posts:
 - Comments (Timestamp, Text, Like count, User)
 - User (Username, Full name, Profile picture, Profile privacy)
 - Location (Name, Street, Zip code, City, Region, Country)
+- Sponsored status
 
 ## Install
 
@@ -70,8 +71,6 @@ export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ```
 
 ### From this repository
-Requires [TypeScript](https://github.com/Microsoft/TypeScript#installing)
-
 ```
 git clone https://github.com/ScriptSmith/instamancer.git
 cd instamancer
@@ -181,6 +180,7 @@ const hashtag = createApi("hashtag", "beach", options);
 
 ```typescript
 import {createApi} from "instamancer"
+
 createApi("hashtag", id, options);
 createApi("user", id, options);
 createApi("post", ids, options);
@@ -240,6 +240,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <th>Tool</th>
         <th>Hashtags</th>
         <th>Users</th>
+        <th>Locations</th>
         <th>Posts</th>
         <th>Login not required</th>
         <th>Private feeds</th>
@@ -266,6 +267,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td><a href="https://github.com/ScriptSmith/instamancer">Instamancer</a></td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
+        <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
@@ -289,6 +291,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
     <tr>
         <td><a href="https://github.com/ScriptSmith/instaphyte">Instaphyte</a></td>
         <td>:heavy_check_mark:</td>
+        <td>:x:</td>
         <td>:x:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
@@ -317,6 +320,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
@@ -336,6 +340,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
     </tr>
     <tr>
         <td><a href="https://github.com/althonos/InstaLooter">Instalooter</a></td>
+        <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
@@ -362,6 +367,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td><a href="https://github.com/huaying/instagram-crawler">Instagram crawler</a></td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
+        <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
@@ -384,6 +390,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
     </tr>
     <tr>
         <td><a href="https://github.com/rarcega/instagram-scraper">Instagram Scraper</a></td>
+        <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
@@ -413,6 +420,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
         <td>:x:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
@@ -432,6 +440,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
     </tr>
     <tr>
         <td><a href="https://github.com/postaddictme/instagram-php-scraper">Instagram PHP Scraper</a></td>
+        <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
