@@ -702,11 +702,18 @@ export class Instagram<PostType> {
         );
         const indexStr = chalk.bgWhite.black(` Scraped: ${this.index} `);
 
-        const out = `${idStr}${totalStr}${stateStr}${sleepStr}${indexStr}`;
-        this.logger.debug(out);
+        this.logger.debug({
+            id: this.id,
+            index: this.index,
+            sleepRemaining: this.sleepRemaining,
+            state,
+            total,
+        });
 
         // Print output
-        process.stderr.write("\r" + out + "\u001B[K");
+        process.stderr.write(
+            `\r${idStr}${totalStr}${stateStr}${sleepStr}${indexStr}\u001B[K`,
+        );
 
         // Release
         this.writeLock.release();
