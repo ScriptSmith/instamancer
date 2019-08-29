@@ -11,17 +11,23 @@ import {GetPool} from "./getpool/getPool";
 import {download, toCSV, toJSON} from "./http/download";
 import * as upload from "./http/upload";
 
-const getLogger = (args) =>
-    winston.createLogger({
-        level: args["logging"],
-        silent: args["logging"] === "none",
-        transports: [
+const getLogger = (args) => {
+    const transports = [];
+    if (args["logging"] !== "none") {
+        transports.push(
             new winston.transports.File({
                 filename: args["logfile"],
+                level: args["logging"],
                 silent: args["logging"] === "none",
             }),
-        ],
+        );
+    }
+    return winston.createLogger({
+        level: args["logging"],
+        silent: args["logging"] === "none",
+        transports,
     });
+};
 
 const getOptions = (args, logger) => ({
     enableGrafting: args["graft"],
