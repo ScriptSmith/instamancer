@@ -170,7 +170,7 @@ const options: IOptions = {
 
 const hashtag = createApi("hashtag", "beach", options);
 (async () => {
-    for await (const post of hashtag) {
+    for await (const post of hashtag.generator()) {
         console.log(post);
     }
 })();
