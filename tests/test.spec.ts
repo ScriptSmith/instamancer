@@ -1,7 +1,7 @@
 import * as t from "io-ts";
 import * as winston from "winston";
 import {createApi} from "..";
-import {Hashtag, IOptions, IOptionsFullApi, User} from "../src/api/api";
+import {IOptions, IOptionsFullApi} from "../src/api/api";
 import {FakePage, IFakePageOptions} from "./__fixtures__/FakePage";
 import {QuickGraft} from "./__fixtures__/QuickGraft";
 import {startServer, stopServer} from "./server";
@@ -122,37 +122,30 @@ describe("Full API", () => {
 });
 
 class ApiTestConditions {
-  public api: typeof InstagramEndpoint;
+  public api: "hashtag" | "user";
   public ids: string[];
   public sizes: number[];
 
-  constructor(api: typeof InstagramEndpoint, ids: string[], sizes: number[]) {
+  constructor(api: "hashtag" | "user", ids: string[], sizes: number[]) {
     this.api = api;
     this.ids = ids;
     this.sizes = sizes;
   }
 }
 
-class InstagramEndpoint {
-  constructor(id: string, options: object = {}) {
-    id = null;
-    options = null;
-  }
-
-  public async *generator() {
-    // pass
-  }
-}
-
 const endpoints: ApiTestConditions[] = [
-  new ApiTestConditions(Hashtag, hashtags, [largeSize, mediumSize, smallSize]),
-  new ApiTestConditions(User, users, [mediumSize, smallSize]),
+  new ApiTestConditions("hashtag", hashtags, [
+    largeSize,
+    mediumSize,
+    smallSize,
+  ]),
+  new ApiTestConditions("user", users, [mediumSize, smallSize]),
 ];
 
 test("Instagram API limits", async () => {
   for (const endpoint of endpoints) {
     // Get params
-    const API = endpoint.api;
+    const sourceApi = endpoint.api;
     const ids = endpoint.ids;
     const sizes = endpoint.sizes;
 
@@ -187,7 +180,7 @@ test("Instagram API limits", async () => {
         };
 
         // Create API
-        const api = new API(id, options);
+        const api = createApi(sourceApi, id, options);
 
         // Get posts
         const scraped = [];
