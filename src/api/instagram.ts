@@ -501,7 +501,7 @@ export class Instagram<PostType> {
             this.logger.warn(
                 `
       Warning! The Instagram API has been changed since this version of instamancer was released.
-      More info: https://github.com/ScriptSmith/instamancer/blob/master/FAQ.md#instagram-api-has-been-changed
+      More info: https://scriptsmith.github.io/instamancer/api-change
       `,
                 validationReporter,
             );
