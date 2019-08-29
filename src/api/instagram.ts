@@ -734,29 +734,6 @@ export class Instagram<PostType> {
     this.postBufferLock.release();
   }
 
-  private validatePost(post: PostType) {
-    const validationResult = this.validator.decode(post);
-    if (this.strict) {
-      try {
-        ThrowReporter.report(validationResult);
-      } catch (e) {
-        this.forceStop();
-        throw e;
-      }
-      return;
-    }
-    if (isLeft(validationResult)) {
-      const validationReporter = PathReporter.report(validationResult);
-      this.logger.warn(
-        `
-      Warning! The Instagram API has been changed since this version of instamancer was released.
-      More info: https://scriptsmith.github.io/instamancer/api-change
-      `,
-        validationReporter,
-      );
-    }
-  }
-
   /**
    * Manipulate the page to stimulate a request
    */
