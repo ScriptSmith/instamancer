@@ -1,13 +1,14 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "es2018",
-    "noImplicitAny": false,
-    "inlineSourceMap": true,
-    "lib": ["dom", "es2018", "esnext.asynciterable"],
-    "resolveJsonModule": true,
-    "declaration": true,
-    "esModuleInterop": true
-  },
-  "exclude": ["node_modules", "tests/*"]
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es2018",
+        "noImplicitAny": false,
+        "inlineSourceMap": true,
+        "lib": ["dom", "es2018", "esnext.asynciterable"],
+        "resolveJsonModule": true,
+        "declaration": true,
+        "esModuleInterop": true
+    },
+    "include": ["*.ts", "!*.d.ts"],
+    "exclude": ["node_modules", "tests/*"]
 }
