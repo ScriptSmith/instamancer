@@ -287,6 +287,9 @@ export class Instagram<PostType> {
 
         // Close page and browser
         if (!this.page.isClosed()) {
+            this.page.removeAllListeners("request");
+            this.page.removeAllListeners("response");
+            this.page.removeAllListeners("requestfailed");
             await this.page.close();
         }
         if (!this.browserDisconnected) {
