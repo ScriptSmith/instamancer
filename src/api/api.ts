@@ -1,6 +1,7 @@
 import {Type} from "io-ts";
 import * as winston from "winston";
 import {Instagram} from "./instagram";
+import {ISearchOptions, Search} from "./search";
 import {
   FullApiPost,
   Post as PostValidator,
@@ -96,24 +97,31 @@ const getPageValidator = (options: IOptions) =>
 export type InstagramPostClass = Hashtag<TPost> | User<TPost>;
 export type InstagramFullPostClass = Hashtag<TFullApiPost> | User<TFullApiPost>;
 
-export function createApi(type: "post", id: string[], options: IOptions): Post;
+export function createApi(
+  type: "search",
+  query: string,
+  options?: ISearchOptions,
+): Search;
+export function createApi(type: "post", id: string[], options?: IOptions): Post;
 export function createApi(
   type: "hashtag" | "user",
   id: string,
-  options: IOptionsRegular,
+  options?: IOptionsRegular,
 ): InstagramPostClass;
 export function createApi(
   type: "hashtag" | "user",
   id: string,
-  options: IOptionsFullApi,
+  options?: IOptionsFullApi,
 ): InstagramFullPostClass;
 export function createApi(
-  type: "hashtag" | "user" | "post",
+  type: "hashtag" | "user" | "post" | "search",
   id: string | string[],
-  options: IOptions,
-): Post | InstagramPostClass | InstagramFullPostClass {
+  options?: IOptions,
+): Post | InstagramPostClass | InstagramFullPostClass | Search {
   let ClassConstructor: typeof Hashtag | typeof User;
   switch (type) {
+    case "search":
+      return new Search(id as string, options as ISearchOptions);
     case "post":
       return new Post(id as string[], options);
     case "hashtag":

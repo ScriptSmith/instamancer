@@ -72,6 +72,9 @@ export class Instagram<PostType> {
   // Number of jumps before grafting
   protected jumpMod: number = 100;
 
+  // Puppeter resources
+  protected page: Page;
+
   // Validations
   private readonly strict: boolean = false;
   private readonly validator: Type<unknown>;
@@ -79,7 +82,6 @@ export class Instagram<PostType> {
   // Puppeteer state
   private browser: Browser;
   private browserDisconnected: boolean = true;
-  private page: Page;
   private readonly headless: boolean;
 
   // Array of scraped posts and lock
@@ -200,7 +202,11 @@ export class Instagram<PostType> {
   /**
    * Force the API to stop
    */
-  public async forceStop() {
+  public async forceStop(force?: boolean) {
+    if (!force && !this.started) {
+      return;
+    }
+    this.started = false;
     this.finished = true;
     try {
       this.requestBufferLock.release();
@@ -274,6 +280,158 @@ export class Instagram<PostType> {
   }
 
   /**
+   * Close the page and browser
+   */
+  protected async stop() {
+    await this.progress(Progress.CLOSING);
+
+    // Close page and browser
+    if (!this.page.isClosed()) {
+      await this.page.close();
+    }
+    if (!this.browserDisconnected) {
+      await this.browser.close();
+    }
+
+    // Clear request buffers
+    await this.requestBufferLock.acquireAsync();
+    this.requestBuffer = [];
+    this.requestBufferLock.release();
+
+    // Clear response buffers
+    await this.responseBufferLock.acquireAsync();
+    this.responseBuffer = [];
+    this.responseBufferLock.release();
+  }
+
+  /**
+   * Process the requests in the request buffer
+   */
+  protected async processRequests() {
+    await this.requestBufferLock.acquireAsync();
+
+    for (const req of this.requestBuffer) {
+      // Match url
+      if (!this.matchURL(req.url())) {
+        continue;
+      }
+
+      // Switch url and headers if grafting enabled, else store them
+      let reqURL = req.url();
+      let reqHeaders = req.headers();
+      if (this.graft) {
+        reqURL = this.lastURL;
+        reqHeaders = this.lastHeaders;
+      } else {
+        this.lastURL = req.url();
+        this.lastHeaders = req.headers();
+      }
+
+      // Get response
+      await req.continue({
+        headers: reqHeaders,
+        url: reqURL,
+      });
+    }
+
+    // Clear buffer and release
+    this.requestBuffer = [];
+    this.requestBufferLock.release();
+  }
+
+  /**
+   * Process the responses in the response buffer
+   */
+  protected async processResponses() {
+    await this.responseBufferLock.acquireAsync();
+
+    let disableGraft = false;
+    for (const res of this.responseBuffer) {
+      // Match url
+      if (!this.matchURL(res.url())) {
+        continue;
+      } else {
+        disableGraft = true;
+      }
+
+      // Get JSON data
+      let data: JSON;
+      try {
+        data = await res.json();
+      } catch (e) {
+        this.logger.error("Error processing response JSON");
+        this.logger.error(e);
+      }
+
+      // Check for rate limiting
+      if (data && "status" in data && data["status"] === "fail") {
+        this.logger.info("Rate limited");
+        this.hibernate = true;
+        continue;
+      }
+
+      // Check for next page
+      if (
+        !(
+          _.get(data, this.pageQuery + ".has_next_page", false) &&
+          _.get(data, this.pageQuery + ".end_cursor", false)
+        )
+      ) {
+        this.logger.info("No posts remaining");
+        this.finished = true;
+      }
+
+      await this.processResponseData(data);
+    }
+
+    // Switch off grafting if enabled and responses processed
+    if (this.graft && disableGraft) {
+      this.graft = false;
+    }
+
+    // Clear buffer and release
+    this.responseBuffer = [];
+    this.responseBufferLock.release();
+  }
+
+  protected async processResponseData(data: unknown) {
+    // Get posts
+    const posts = _.get(data, this.edgeQuery, []);
+    for (const post of posts) {
+      const postId = post["node"]["id"];
+
+      // Check it hasn't already been cached
+      const contains = this.postIds.add(postId);
+      if (contains) {
+        this.logger.info("Duplicate id found: " + postId);
+        continue;
+      }
+
+      // Add to postBuffer
+      if (this.index < this.total || this.total === 0) {
+        this.index++;
+        if (this.fullAPI) {
+          this.pagePromises.push(
+            this.postPage(post["node"]["shortcode"], this.postPageRetries),
+          );
+        } else {
+          await this.addToPostBuffer(post);
+        }
+      } else {
+        this.finished = true;
+        break;
+      }
+    }
+  }
+
+  /**
+   * Match the url to the url used in API requests
+   */
+  protected matchURL(url: string) {
+    return url.startsWith(this.catchURL) && !url.includes("include_reel");
+  }
+
+  /**
    * Open a post in a new page, then extract its metadata
    */
   protected async postPage(post: string, retries: number) {
@@ -322,6 +480,29 @@ export class Instagram<PostType> {
       return;
     }
     await this.addToPostBuffer(parsed);
+  }
+
+  protected validatePost(post: PostType) {
+    const validationResult = this.validator.decode(post);
+    if (this.strict) {
+      try {
+        ThrowReporter.report(validationResult);
+      } catch (e) {
+        this.forceStop();
+        throw e;
+      }
+      return;
+    }
+    if (isLeft(validationResult)) {
+      const validationReporter = PathReporter.report(validationResult);
+      this.logger.warn(
+        `
+      Warning! The Instagram API has been changed since this version of instamancer was released.
+      More info: https://github.com/ScriptSmith/instamancer/blob/master/FAQ.md#instagram-api-has-been-changed
+      `,
+        validationReporter,
+      );
+    }
   }
 
   /**
@@ -435,6 +616,7 @@ export class Instagram<PostType> {
     } catch (e) {
       // Increment attempts
       if (this.pageUrlAttempts++ === this.maxPageUrlAttempts && !this.started) {
+        await this.forceStop(true);
         throw new Error("Failed to visit URL");
       }
 
@@ -451,31 +633,6 @@ export class Instagram<PostType> {
       // Retry
       await this.constructPage();
     }
-  }
-
-  /**
-   * Close the page and browser
-   */
-  private async stop() {
-    await this.progress(Progress.CLOSING);
-
-    // Close page and browser
-    if (!this.page.isClosed()) {
-      await this.page.close();
-    }
-    if (!this.browserDisconnected) {
-      await this.browser.close();
-    }
-
-    // Clear request buffers
-    await this.requestBufferLock.acquireAsync();
-    this.requestBuffer = [];
-    this.requestBufferLock.release();
-
-    // Clear response buffers
-    await this.responseBufferLock.acquireAsync();
-    this.responseBuffer = [];
-    this.responseBufferLock.release();
   }
 
   /**
@@ -507,13 +664,6 @@ export class Instagram<PostType> {
     }
     this.postBufferLock.release();
     return post;
-  }
-
-  /**
-   * Match the url to the url used in API requests
-   */
-  private matchURL(url: string) {
-    return url.startsWith(this.catchURL) && !url.includes("include_reel");
   }
 
   /**
@@ -572,122 +722,6 @@ export class Instagram<PostType> {
   private async interceptFailure(req: Request) {
     this.logger.info("Failed: " + req.url());
     await this.progress(Progress.ABORTED);
-  }
-
-  /**
-   * Process the requests in the request buffer
-   */
-  private async processRequests() {
-    await this.requestBufferLock.acquireAsync();
-
-    for (const req of this.requestBuffer) {
-      // Match url
-      if (!this.matchURL(req.url())) {
-        continue;
-      }
-
-      // Switch url and headers if grafting enabled, else store them
-      let reqURL = req.url();
-      let reqHeaders = req.headers();
-      if (this.graft) {
-        reqURL = this.lastURL;
-        reqHeaders = this.lastHeaders;
-      } else {
-        this.lastURL = req.url();
-        this.lastHeaders = req.headers();
-      }
-
-      // Get response
-      await req.continue({
-        headers: reqHeaders,
-        url: reqURL,
-      });
-    }
-
-    // Clear buffer and release
-    this.requestBuffer = [];
-    this.requestBufferLock.release();
-  }
-
-  /**
-   * Process the responses in the response buffer
-   */
-  private async processResponses() {
-    await this.responseBufferLock.acquireAsync();
-
-    let disableGraft = false;
-    for (const res of this.responseBuffer) {
-      // Match url
-      if (!this.matchURL(res.url())) {
-        continue;
-      } else {
-        disableGraft = true;
-      }
-
-      // Get JSON data
-      let data: JSON;
-      try {
-        data = await res.json();
-      } catch (e) {
-        this.logger.error("Error processing response JSON");
-        this.logger.error(e);
-      }
-
-      // Check for rate limiting
-      if (data && "status" in data && data["status"] === "fail") {
-        this.logger.info("Rate limited");
-        this.hibernate = true;
-        continue;
-      }
-
-      // Check for next page
-      if (
-        !(
-          _.get(data, this.pageQuery + ".has_next_page", false) &&
-          _.get(data, this.pageQuery + ".end_cursor", false)
-        )
-      ) {
-        this.logger.info("No posts remaining");
-        this.finished = true;
-      }
-
-      // Get posts
-      const posts: PostType[] = _.get(data, this.edgeQuery, []);
-      for (const post of posts) {
-        const postId = post["node"]["id"];
-
-        // Check it hasn't already been cached
-        const contains = this.postIds.add(postId);
-        if (contains) {
-          this.logger.info("Duplicate id found: " + postId);
-          continue;
-        }
-
-        // Add to postBuffer
-        if (this.index < this.total || this.total === 0) {
-          this.index++;
-          if (this.fullAPI) {
-            this.pagePromises.push(
-              this.postPage(post["node"]["shortcode"], this.postPageRetries),
-            );
-          } else {
-            await this.addToPostBuffer(post);
-          }
-        } else {
-          this.finished = true;
-          break;
-        }
-      }
-    }
-
-    // Switch off grafting if enabled and responses processed
-    if (this.graft && disableGraft) {
-      this.graft = false;
-    }
-
-    // Clear buffer and release
-    this.responseBuffer = [];
-    this.responseBufferLock.release();
   }
 
   /**

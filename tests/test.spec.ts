@@ -57,61 +57,67 @@ const libraryTestOptions: IOptions = {
   total: 10,
 };
 
-test("Library Classes", async () => {
+describe("Library Classes", () => {
   const total = 10;
-  const objects = [
-    createApi("hashtag", hashtags[0], libraryTestOptions),
-    createApi("user", users[0], libraryTestOptions),
-    createApi("post", posts, libraryTestOptions),
-  ];
+  const objects = {
+    hashtag: createApi("hashtag", hashtags[0], libraryTestOptions),
+    post: createApi("post", posts, libraryTestOptions),
+    user: createApi("user", users[0], libraryTestOptions),
+  };
 
-  for (const object of objects) {
-    const scraped = [];
-    for await (const post of object.generator()) {
-      expect(post).toBeDefined();
-      scraped.push(post);
-    }
-    expect(scraped.length).toBe(total);
+  for (const [key, object] of Object.entries(objects)) {
+    test(key, async () => {
+      const scraped = [];
+      for await (const post of object.generator()) {
+        expect(post).toBeDefined();
+        scraped.push(post);
+      }
+      expect(scraped.length).toBe(total);
+    });
   }
 });
 
-test("Library Functions", async () => {
+describe("Library Functions", () => {
   const total = 10;
-  const generators = [
-    createApi("hashtag", hashtags[0], libraryTestOptions).generator(),
-    createApi("user", users[0], libraryTestOptions).generator(),
-    createApi("post", posts, libraryTestOptions).generator(),
-  ];
+  const generators = {
+    hashtag: createApi("hashtag", hashtags[0], libraryTestOptions).generator(),
+    post: createApi("post", posts, libraryTestOptions).generator(),
+    user: createApi("user", users[0], libraryTestOptions).generator(),
+  };
 
-  for (const generator of generators) {
-    const scraped = [];
-    for await (const post of generator) {
-      expect(post).toBeDefined();
-      scraped.push(post);
-    }
-    expect(scraped.length).toBe(total);
+  for (const [key, generator] of Object.entries(generators)) {
+    test(key, async () => {
+      const scraped = [];
+      for await (const post of generator) {
+        expect(post).toBeDefined();
+        scraped.push(post);
+      }
+      expect(scraped.length).toBe(total);
+    });
   }
 });
 
-test("Full API", async () => {
+describe("Full API", () => {
   const total = 10;
   const fullApiOption: IOptionsFullApi = {
     ...libraryTestOptions,
     fullAPI: true,
   };
-  const generators = [
-    createApi("hashtag", hashtags[0], fullApiOption).generator(),
-    createApi("user", users[0], fullApiOption).generator(),
-    createApi("post", posts, fullApiOption).generator(),
-  ];
+  const generators = {
+    hashtag: createApi("hashtag", hashtags[0], fullApiOption).generator(),
+    post: createApi("post", posts, fullApiOption).generator(),
+    user: createApi("user", users[0], fullApiOption).generator(),
+  };
 
-  for (const generator of generators) {
-    const scraped = [];
-    for await (const post of generator) {
-      expect(post).toBeDefined();
-      scraped.push(post);
-    }
-    expect(scraped.length).toBe(total);
+  for (const [key, generator] of Object.entries(generators)) {
+    test(key, async () => {
+      const scraped = [];
+      for await (const post of generator) {
+        expect(post).toBeDefined();
+        scraped.push(post);
+      }
+      expect(scraped.length).toBe(total);
+    });
   }
 });
 
@@ -326,7 +332,6 @@ test("Failed Page visit", async () => {
     }
   } catch (e) {
     expect(e).toBeDefined();
-    await api.forceStop();
   }
 
   expect(scraped.length).toBe(0);
@@ -466,5 +471,82 @@ describe("Strict mode", () => {
       expect(e).toBeInstanceOf(Error);
       expect(e.message).toMatch(/^Invalid value/);
     }
+  });
+});
+
+describe("Search", () => {
+  test("Search Result Users", async () => {
+    const result = await createApi(
+      "search",
+      "therock",
+      libraryTestOptions,
+    ).get();
+    expect(result.users.length).toBeGreaterThan(0);
+    const user = result.users[0].user;
+    expect(user.username).toBe("therock");
+    expect(user.byline).toBeTruthy();
+    expect(user.profile_pic_url).toBeTruthy();
+  });
+
+  test("Search Result Hashtags", async () => {
+    const result = await createApi(
+      "search",
+      "nofilter",
+      libraryTestOptions,
+    ).get();
+    expect(result.hashtags.length).toBeGreaterThan(0);
+    const hashtag = result.hashtags[0].hashtag;
+    expect(hashtag.media_count).not.toBeUndefined();
+    expect(hashtag.name).toBe("nofilter");
+  });
+
+  test("Search Result Places", async () => {
+    const result = await createApi(
+      "search",
+      "New york",
+      libraryTestOptions,
+    ).get();
+    expect(result.places.length).toBeGreaterThan(0);
+    const place = result.places[0].place;
+    expect(place.title).toMatch(/New York/);
+  });
+
+  test("Incorrect validation", async () => {
+    const failingValidator = t.type({
+      foo: t.string,
+    });
+
+    expect.hasAssertions();
+    const search = createApi("search", "Doesn't matter", {
+      strict: true,
+      validator: failingValidator,
+    });
+
+    try {
+      await search.get();
+    } catch (e) {
+      expect(e).toBeInstanceOf(Error);
+      expect(e.message).toMatch(/^Invalid value/);
+    }
+  });
+
+  test("Search should fire only one network request", async () => {
+    const search = createApi(
+      "search",
+      "A really long long long string to find something in Instagram",
+    );
+    const searchRequestsSpy = jest.fn();
+    await search.start();
+    // @ts-ignore
+    search.page.on("request", (event) => {
+      const requestUrl = event.url();
+      // @ts-ignore
+      if (!search.matchURL(requestUrl)) {
+        return;
+      }
+      searchRequestsSpy(event);
+    });
+    await search.get();
+    expect(searchRequestsSpy).toBeCalledTimes(1);
   });
 });

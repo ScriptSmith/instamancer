@@ -10,7 +10,7 @@ export {
   IOptionsFullApi,
   IOptionsRegular,
 } from "./src/api/api";
-
+export {TSearchResult, ISearchOptions} from "./src/api/search";
 export {TPost, TSinglePost, TFullApiPost} from "./src/api/types";
 
 export function hashtag(id, options) {
@@ -23,4 +23,8 @@ export function user(id, options) {
 
 export function post(ids, options) {
   return createApi("post", ids, options).generator();
+}
+
+export function search(query, options) {
+  return createApi("search", query, options);
 }

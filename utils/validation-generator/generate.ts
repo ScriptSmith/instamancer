@@ -37,8 +37,10 @@ output = output.replace(/t\.Array/gm, "t.UnknownArray");
 output = output.replace(/\ string/gm, " t.string"); // Really weird
 output = output.replace(/t\.Integer/gm, "t.number"); // Integer does not have ts type
 output = singularizeVarNameInCode(output, "Post");
+output = singularizeVarNameInCode(output, "SearchResult");
 output = addTypeToCode(output, "Post");
 output = addTypeToCode(output, "SinglePost");
+output = addTypeToCode(output, "SearchResult");
 
 writeFileSync(getPath(), output, {
   encoding: "utf-8",

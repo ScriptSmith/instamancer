@@ -7,11 +7,34 @@ import * as winston from "winston";
 import * as path from "path";
 import {storage} from "pkgcloud";
 import {createApi, IOptions} from "./api/api";
-import {Instagram} from "./api/instagram";
-import {TFullApiPost, TPost, TSinglePost} from "./api/types";
+import {TFullApiPost, TPost} from "./api/types";
 import {upload} from "./cloud";
 import {download, toCSV, toJSON} from "./download";
 import {GetPool} from "./getpool/getPool";
+
+const getLogger = (args) =>
+  winston.createLogger({
+    level: args["logging"],
+    silent: args["logging"] === "none",
+    transports: [
+      new winston.transports.File({
+        filename: args["logfile"],
+        silent: args["logging"] === "none",
+      }),
+    ],
+  });
+
+const getOptions = (args, logger) => ({
+  enableGrafting: args["graft"],
+  executablePath: args["browser"],
+  fullAPI: args["full"],
+  headless: !args["visible"],
+  logger,
+  silent: args["silent"],
+  sleepTime: 2,
+  strict: args["strict"],
+  total: args["count"],
+});
 
 /**
  * Build argument parser
@@ -34,6 +57,24 @@ function buildParser(args, callback) {
       {},
       async (handleArgs) => {
         await spawn(handleArgs);
+        callback();
+      },
+    )
+    .command(
+      "search [query]",
+      "Perform a search of users, tags and places",
+      {},
+      async (handleArgs) => {
+        const logger = getLogger(handleArgs);
+        const options = getOptions(handleArgs, logger);
+        if (!handleArgs["query"]) {
+          throw new Error("query required");
+        }
+        const search = createApi("search", handleArgs["query"], options);
+        const result = await search.get();
+        process.stdout.write("\n");
+        process.stdout.write(JSON.stringify(result, null, 2));
+        process.stdout.write("\n");
         callback();
       },
     )
@@ -209,16 +250,7 @@ function buildParser(args, callback) {
  */
 async function spawn(args) {
   // Initiate logger
-  const logger = winston.createLogger({
-    level: args["logging"],
-    silent: args["logging"] === "none",
-    transports: [
-      new winston.transports.File({
-        filename: args["logfile"],
-        silent: args["logging"] === "none",
-      }),
-    ],
-  });
+  const logger = getLogger(args);
 
   // Check id
   if (!(args["id"] || args["ids"])) {
@@ -236,17 +268,7 @@ async function spawn(args) {
   }
 
   // Define options
-  const options: IOptions = {
-    total: args["count"],
-    headless: !args["visible"],
-    logger,
-    silent: args["silent"],
-    strict: args["strict"],
-    sleepTime: 2,
-    enableGrafting: args["graft"],
-    fullAPI: args["full"],
-    executablePath: args["browser"],
-  };
+  const options: IOptions = getOptions(args, logger);
 
   // Replace downdir
   const downdir = args["downdir"]
@@ -281,11 +303,7 @@ async function spawn(args) {
 
   // Start API
   logger.info("Starting API at " + Date.now());
-  const obj: Instagram<TPost | TFullApiPost | TSinglePost> = createApi(
-    args["_"][0],
-    ids,
-    options,
-  );
+  const obj = createApi(args["_"][0], ids, options);
   await obj.start();
 
   // Start download pool

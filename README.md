@@ -26,6 +26,7 @@ Read more about how Instamancer works [here](https://scriptsmith.github.io/insta
 - Output JSON, CSV
 - Download images, albums, and videos
 - Batch scraping
+- Search hashtags/users
 - API response validation
 
 ### Data
@@ -107,6 +108,7 @@ Commands:
   instamancer hashtag [id]       Scrape a hashtag
   instamancer user [id]          Scrape a user
   instamancer post [ids]         Scrape a comma-separated list of posts
+  instamancer search [query]     Perform a search of users, tags and places
   instamancer batch [batchfile]  Read newline-separated arguments from a file
 
 Options:
@@ -160,13 +162,13 @@ Source code available at https://github.com/ScriptSmith/instamancer
 
 ES2018 Typescript example:
 ```typescript
-import * as Instamancer from "instamancer";
+import {createApi,IOptions} from "instamancer"
 
-const options: Instamancer.IOptions = {
+const options: IOptions = {
     total: 10
 };
 
-const hashtag = Instamancer.hashtag("beach", options);
+const hashtag = createApi("hashtag", "beach", options);
 (async () => {
     for await (const post of hashtag) {
         console.log(post);
@@ -177,9 +179,11 @@ const hashtag = Instamancer.hashtag("beach", options);
 #### Generator functions
 
 ```typescript
-Instamancer.hashtag(id, options);
-Instamancer.user(id, options);
-Instamancer.post(ids, options);
+import {createApi} from "instamancer"
+createApi("hashtag", id, options);
+createApi("user", id, options);
+createApi("post", ids, options);
+createApi("search", query, options);
 ```
 
 #### Options
