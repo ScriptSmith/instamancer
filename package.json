@@ -1,6 +1,6 @@
 {
     "name": "instamancer",
-    "version": "1.4.2",
+    "version": "2.0.0",
     "description": "Scrape the Instagram API with Puppeteer",
     "main": "index.js",
     "types": "index.d.ts",
