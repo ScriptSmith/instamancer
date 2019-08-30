@@ -72,7 +72,7 @@ export class Instagram<PostType> {
     // Number of jumps before grafting
     protected jumpMod: number = 100;
 
-    // Puppeter resources
+    // Puppeteer resources
     protected page: Page;
 
     // Validations
@@ -101,8 +101,9 @@ export class Instagram<PostType> {
     // Grafting state
     private readonly enableGrafting: boolean = true;
     private graft: boolean = false;
-    private lastURL: string;
-    private lastHeaders: Headers;
+    private graftURL: string = null;
+    private graftHeaders: Headers = null;
+    private foundGraft: boolean = false;
 
     // Hibernation due to rate limiting
     private hibernate: boolean = false;
@@ -313,33 +314,55 @@ export class Instagram<PostType> {
     protected async processRequests() {
         await this.requestBufferLock.acquireAsync();
 
+        let newApiRequest = false;
         for (const req of this.requestBuffer) {
             // Match url
             if (!this.matchURL(req.url())) {
                 continue;
-            }
-
-            // Switch url and headers if grafting enabled, else store them
-            let reqURL = req.url();
-            let reqHeaders = req.headers();
-            if (this.graft) {
-                reqURL = this.lastURL;
-                reqHeaders = this.lastHeaders;
             } else {
-                this.lastURL = req.url();
-                this.lastHeaders = req.headers();
+                newApiRequest = true;
             }
 
-            // Get response
-            await req.continue({
-                headers: reqHeaders,
-                url: reqURL,
-            });
+            // Begin grafting if required, else continue the request
+            if (this.graft) {
+                if (this.foundGraft === false) {
+                    // Gather details
+                    this.graftURL = req.url();
+                    this.graftHeaders = req.headers();
+                    this.foundGraft = true;
+
+                    // Cancel request
+                    await req.abort();
+                } else {
+                    // Swap request
+                    await req.continue({
+                        headers: this.graftHeaders,
+                        url: this.graftURL,
+                    });
+
+                    // Reset grafting data
+                    this.graft = false;
+                    this.foundGraft = false;
+                    this.graftURL = null;
+                    this.graftHeaders = null;
+                }
+
+                // Stop reading requests
+                break;
+            } else {
+                await req.continue();
+            }
         }
 
         // Clear buffer and release
         this.requestBuffer = [];
         this.requestBufferLock.release();
+
+        if (this.foundGraft && newApiRequest) {
+            // Restart browser and page, clearing all buffers
+            await this.stop();
+            await this.start();
+        }
     }
 
     /**
@@ -348,13 +371,10 @@ export class Instagram<PostType> {
     protected async processResponses() {
         await this.responseBufferLock.acquireAsync();
 
-        let disableGraft = false;
         for (const res of this.responseBuffer) {
             // Match url
             if (!this.matchURL(res.url())) {
                 continue;
-            } else {
-                disableGraft = true;
             }
 
             // Get JSON data
@@ -385,11 +405,6 @@ export class Instagram<PostType> {
             }
 
             await this.processResponseData(data);
-        }
-
-        // Switch off grafting if enabled and responses processed
-        if (this.graft && disableGraft) {
-            this.graft = false;
         }
 
         // Clear buffer and release
@@ -547,6 +562,11 @@ export class Instagram<PostType> {
 
             // Enable grafting if required
             if (this.jumps % this.jumpMod === 0) {
+                if (this.graft) {
+                    this.logger.warning(
+                        "Attempting a new graft before finishing",
+                    );
+                }
                 await this.initiateGraft();
             }
 
@@ -787,14 +807,8 @@ export class Instagram<PostType> {
 
         await this.progress(Progress.GRAFTING);
 
-        // Close browser and page
-        await this.stop();
-
         // Enable grafting
         this.graft = true;
-
-        // Re-start page
-        await this.start();
     }
 
     /**
