@@ -522,9 +522,11 @@ export class Instagram<PostType> {
             await this.processResponses();
 
             // Finish page promises
-            await this.progress(Progress.BRANCHING);
-            await Promise.all(this.pagePromises);
-            this.pagePromises = [];
+            if (this.pagePromises.length > 0) {
+                await this.progress(Progress.BRANCHING);
+                await Promise.all(this.pagePromises);
+                this.pagePromises = [];
+            }
 
             // Check if finished
             if (this.finished) {
