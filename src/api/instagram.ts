@@ -562,11 +562,6 @@ export class Instagram<PostType> {
 
             // Enable grafting if required
             if (this.jumps % this.jumpMod === 0) {
-                if (this.graft) {
-                    this.logger.warning(
-                        "Attempting a new graft before finishing",
-                    );
-                }
                 await this.initiateGraft();
             }
 
