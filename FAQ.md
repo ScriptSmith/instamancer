@@ -2,7 +2,7 @@
 ## Does it still work?
 At the time of writing, Instamancer still works. It's possible that it will break when Instagram.com is updated, or Instagram tries to curb this method of scraping.
 
-There is a daily Travis cron job which tests whether Instamancer is working as expected. You can see the results here: [![Build Status](https://travis-ci.com/ScriptSmith/instamancer.svg?token=s9KJfKerUtoC75SEgCjT&branch=master)](https://travis-ci.com/ScriptSmith/instamancer) 
+There is a daily Travis cron job which tests whether Instamancer is working as expected. You can see the results here: [![Build Status](https://travis-ci.com/ScriptSmith/instamancer.svg?token=s9KJfKerUtoC75SEgCjT&branch=master)](https://travis-ci.com/ScriptSmith/instamancer)
 
 ## Is there a GUI?
 No, Instamancer only works from the command-line. In the future, I might implement a GUI using [Carlo](https://github.com/GoogleChromeLabs/carlo) or something more lightweight.
@@ -11,7 +11,7 @@ No, Instamancer only works from the command-line. In the future, I might impleme
 No. Instamancer scrapes data that Instagram makes publicly available.
 
 ## How quickly does it run?
-It processes between 2-3 posts per second. 
+It processes between 2-3 posts per second.
 
 ## Can I make it run faster?
 Running without the `--full` and `-d` arguments is faster. Disabling grafting with `-g=false` will also make the scraping quicker.
@@ -21,15 +21,22 @@ Reducing the time between interactions with the page only seems to induce rate l
 If you want something *really* fast, try [Instaphyte](https://github.com/ScriptSmith/instaphyte). It's as much as 7x faster.
 
 ## How do I use the `--upload` flag and depot?
-1. Download, build, and run [depot](https://github.com/ScriptSmith/depot)
+1. Set up [depot](https://github.com/ScriptSmith/depot)
+    1. Set up basic access authentication if you're using a public server
 2. Generate a UUIDv4
-3. Use instamancer like so: 
+3. Use instamancer like so:
 
 ```
 instamancer ... -d --upload=http://127.0.0.1:8080/jobs/UUID/
 ```
 
-Where `UUID` is the UUID you generated. 
+Where `UUID` is the UUID you generated.
+
+Example:
+
+```
+instamancer hashtag puppies -c10 -d --upload=https://depot:password@depot-vlnbfvyaiq-uc.a.run.app/jobs/4cdc21fe-6b35-473a-b26e-66f62ad66c4c/
+```
 
 You can use any server that accepts `PUT` requests.
 
@@ -56,6 +63,6 @@ user greg -c100
 I'm not certain. This seems to only occur where you are able to gather tens of thousands of posts. I believe it is because of some clandestine IP-based policy that limits the number of requests you can make in a day to a particular endpoint. It could also be a bug in Instamancer.
 
 ## Why does the code have so many comments?
-Instamancer was originally part of another project written in Python that used the [Pyppeteer](https://github.com/miyakogi/pyppeteer) clone of Puppeteer. This version was too error-prone because of the complicated asyncio code and Pyppeteer's instability when communicating via websockets during long scraping jobs. 
+Instamancer was originally part of another project written in Python that used the [Pyppeteer](https://github.com/miyakogi/pyppeteer) clone of Puppeteer. This version was too error-prone because of the complicated asyncio code and Pyppeteer's instability when communicating via websockets during long scraping jobs.
 
 I decided to rewrite Instamancer in TypeScript in order to be more stable and in-sync with Puppeter. It was the first time I'd written any serious TypeScript or 'modern' JavaScript (promises, async/await etc.), so the zealous commenting helped me learn, and allowed me to figure out bugs in my algorithm and the grafting process. The comments aren't a permanent fixture and may be removed in a future commit.
