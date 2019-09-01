@@ -20,6 +20,18 @@ Reducing the time between interactions with the page only seems to induce rate l
 
 If you want something *really* fast, try [Instaphyte](https://github.com/ScriptSmith/instaphyte). It's as much as 7x faster.
 
+## Can I run multiple instances at the same time rather than batch scraping?
+No. Instagram will probably rate-limit your IP address and then Instamancer will have to pause until the limit is lifted.
+
+## What happens if I disable grafting?
+Chrome / Chromium will eventually decide that it doesn't want the page to consume any more resources and future requests to the API will be aborted. This usually happens between 5k-10k posts regardless of the memory available on the system. There doesn't seem to be any combination of Chrome flags to avoid this.
+
+## How far back can I scrape?
+Seemingly as far as there are posts to scrape, but you can only reach old posts by scraping the most recent ones.
+
+## How many posts can I scrape from a given endpoint?
+The most I've seen is more than 5 million.
+
 ## How do I use the `--upload` flag and depot?
 1. Set up [depot](https://github.com/ScriptSmith/depot)
     1. Set up basic access authentication if you're using a public server
@@ -40,17 +52,6 @@ instamancer hashtag puppies -c10 -d --upload=https://depot:password@depot-vlnbfv
 
 You can use any server that accepts `PUT` requests.
 
-## Can I run multiple instances at the same time rather than batch scraping?
-No. Instagram will probably rate-limit your IP address and then Instamancer will have to pause until the limit is lifted.
-
-## What happens if I disable grafting?
-Chrome / Chromium will eventually decide that it doesn't want the page to consume any more resources and future requests to the API will be aborted. This usually happens between 5k-10k posts regardless of the memory available on the system. There doesn't seem to be any combination of Chrome flags to avoid this.
-
-## How far back can I scrape?
-Seemingly as far as there are posts to scrape, but you can only reach old posts by scraping the most recent ones.
-
-## How many posts can I scrape from a given endpoint?
-The most I've seen is more than 100,000.
 
 ## What does a batchfile look like?
 ```
