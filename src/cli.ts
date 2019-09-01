@@ -5,6 +5,7 @@ import * as readline from "readline";
 import * as winston from "winston";
 
 import * as path from "path";
+import {v4 as uuid} from "uuid";
 import {createApi, IOptions} from "./api/api";
 import {TFullApiPost, TPost} from "./api/types";
 import {GetPool} from "./getpool/getPool";
@@ -287,15 +288,24 @@ async function spawn(args) {
         .replace("[id]", args["id"])
         .replace("[endpoint]", args["_"]);
 
+    // Replace upload url
+    let uploadUrl = args["upload"];
+    if (uploadUrl && uploadUrl.includes("[uuid]")) {
+        uploadUrl = uploadUrl.replace("[uuid]", uuid());
+        if (!args["silent"]) {
+            process.stdout.write(uploadUrl + "\n");
+        }
+    }
+
     // Connect to object storage
     let downloadUpload;
     let toCSVFunc = toCSV;
     let toJSONFunc = toJSON;
-    if (args["upload"]) {
+    if (uploadUrl) {
         // Upload
         const uploadConfig = {
             directory: downdir,
-            url: args["upload"],
+            url: uploadUrl,
             logger,
         };
 
