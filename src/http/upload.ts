@@ -41,6 +41,7 @@ export async function upload(
                 "Content-Length": contentLength,
                 "Content-Type": contentType,
             },
+            maxContentLength: Infinity,
             method: "PUT",
             ...authURL(uploadUrl),
         }).catch((error) => {
@@ -95,6 +96,7 @@ async function uploadFile(
             "Content-Length": contentLength,
             "Content-Type": contentType,
         },
+        maxContentLength: Infinity,
         method: "PUT",
         url: uploadUrl,
     });
