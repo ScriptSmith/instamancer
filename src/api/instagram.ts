@@ -794,7 +794,8 @@ export class Instagram<PostType> extends EventEmitter {
      */
     private async jump() {
         await this.page.keyboard.press("PageUp");
-        for (let i = 0; i < this.jumpSize; i++) {
+        const jumpSize = this.graft ? 1 : this.jumpSize;
+        for (let i = 0; i < jumpSize; i++) {
             await this.page.keyboard.press("End");
         }
 
