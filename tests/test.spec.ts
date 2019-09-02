@@ -1,6 +1,7 @@
 import * as t from "io-ts";
+import {Overrides, Request} from "puppeteer";
 import * as winston from "winston";
-import {createApi} from "..";
+import {createApi, DType, Instagram, IPlugin} from "..";
 import {plugins} from "..";
 import {IOptions, IOptionsFullApi} from "../src/api/api";
 import {FakePage, IFakePageOptions} from "./__fixtures__/FakePage";
@@ -529,21 +530,28 @@ describe("Search", () => {
     });
 
     test("Search should fire only one network request", async () => {
+        const searchRequestsSpy = jest.fn();
+        class RequestCounter implements IPlugin {
+            public requestEvent(
+                req: Request,
+                overrides: Overrides,
+                state: Instagram<DType>,
+            ): void {
+                // @ts-ignore
+                if (state.matchURL(req.url())) {
+                    searchRequestsSpy();
+                }
+            }
+        }
+
         const search = createApi(
             "search",
             "A really long long long string to find something in Instagram",
+            {
+                plugins: [new RequestCounter()],
+            },
         );
-        const searchRequestsSpy = jest.fn();
-        await search.start();
-        // @ts-ignore
-        search.page.on("request", (event) => {
-            const requestUrl = event.url();
-            // @ts-ignore
-            if (!search.matchURL(requestUrl)) {
-                return;
-            }
-            searchRequestsSpy(event);
-        });
+
         await search.get();
         expect(searchRequestsSpy).toBeCalledTimes(1);
     });
