@@ -1,0 +1,15 @@
+{
+    "name": "instamancer-examples",
+    "version": "1.0.0",
+    "description": "Examples of instamancer usage",
+    "author": "ScriptSmith",
+    "license": "MIT-0",
+    "dependencies": {
+        "express": "^4.17.1",
+        "instamancer": "file:..",
+        "puppeteer": "^1.19.0"
+    },
+    "devDependencies": {
+        "@types/puppeteer": "^1.19.1"
+    }
+}
