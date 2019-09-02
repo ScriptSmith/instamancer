@@ -45,9 +45,14 @@ const emptyAccountName = "emptyaccount";
 const createLogger = () =>
     winston.createLogger({
         format: winston.format.json(),
-        level: "error",
-        silent: true,
-        transports: [],
+        level: "debug",
+        silent: false,
+        transports: [
+            new winston.transports.File({
+                filename: "instamancer_tests.log",
+                level: "debug",
+            }),
+        ],
     });
 
 const libraryTestOptions: IOptions = {
@@ -171,12 +176,7 @@ test("Instagram API limits", async () => {
                     enableGrafting: true,
                     fullAPI: false,
                     headless: true,
-                    logger: winston.createLogger({
-                        format: winston.format.json(),
-                        level: "error",
-                        silent: true,
-                        transports: [],
-                    }),
+                    logger: createLogger(),
                     silent: false,
                     sleepTime: 2,
                     strict: true,
