@@ -46,8 +46,8 @@ function getOptions(args, logger) {
     };
 
     for (const pluginName of args["plugin"]) {
-        if (plugins[pluginName]) {
-            options.plugins.push(new plugins[pluginName]());
+        if (plugins.plugins[pluginName]) {
+            options.plugins.push(new plugins.plugins[pluginName]());
         } else {
             throw new Error("Couldn't find plugin " + pluginName);
         }
