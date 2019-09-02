@@ -861,6 +861,10 @@ export class Instagram<PostType> extends EventEmitter {
     }
 
     private addPlugins(plugins: IPlugin[]) {
+        if (!plugins) {
+            return;
+        }
+
         const events = [
             "construction",
             "request",
