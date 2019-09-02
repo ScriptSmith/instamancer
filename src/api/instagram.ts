@@ -16,6 +16,7 @@ import {
     Response,
 } from "puppeteer";
 import * as winston from "winston";
+import {IPlugin} from "../../plugins/plugin";
 import {IOptions} from "./api";
 import {PostIdSet} from "./postIdSet";
 
@@ -190,6 +191,7 @@ export class Instagram<PostType> extends EventEmitter {
         this.executablePath = options.executablePath;
         this.validator = options.validator || validator;
 
+        this.addPlugins(options.plugins);
         this.emit("construction", this);
     }
 
@@ -854,6 +856,25 @@ export class Instagram<PostType> extends EventEmitter {
             } else {
                 this.finished = true;
                 break;
+            }
+        }
+    }
+
+    private addPlugins(plugins: IPlugin[]) {
+        const events = [
+            "construction",
+            "request",
+            "response",
+            "postPage",
+            "grafting",
+        ];
+
+        for (const plugin of plugins) {
+            for (const event of events) {
+                const pluginEvent = plugin[event + "Event"];
+                if (pluginEvent) {
+                    this.on(event, pluginEvent);
+                }
             }
         }
     }

@@ -29,6 +29,7 @@ Read more about how Instamancer works [here](https://scriptsmith.github.io/insta
 - Search hashtags, users, and locations
 - API response validation
 - Stream files to [depot](https://github.com/ScriptSmith/depot)
+- [Plugins](plugins)
 
 ### Data
 Metadata that Instamancer is able to gather from posts:
@@ -145,8 +146,10 @@ Options:
   --logfile               Name of the log file      [default: "instamancer.log"]
   --browser               Location of the browser. Defaults to the copy
                           downloaded at installation
-  --upload                Upload files to a URL with a PUT request rather
-                          than saving to disk
+  --upload                Upload files to a URL with a PUT request rather than
+                          saving to disk
+  --plugin                Use a plugin from the plugins directory
+                                                           [array] [default: []]
 
 Examples:
   instamancer hashtag instagood -d          Download all the available posts,
@@ -224,7 +227,10 @@ const options: Instamancer.IOptions = {
     executablePath: string,
 
     // Custom io-ts validator
-    validator?: Type<unknown>
+    validator?: Type<unknown>,
+
+    // Custom plugins
+    plugins?: IPlugin[]
 }
 ```
 

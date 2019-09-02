@@ -1,5 +1,6 @@
 import {Type} from "io-ts";
 import * as winston from "winston";
+import {IPlugin} from "../../plugins/plugin";
 import {Instagram} from "./instagram";
 import {ISearchOptions, Search} from "./search";
 import {
@@ -50,6 +51,9 @@ export interface IOptionsCommon {
 
     // Custom io-ts validator
     validator?: Type<unknown>;
+
+    // Custom plugins
+    plugins?: IPlugin[];
 }
 
 export interface IOptionsFullApi extends IOptionsCommon {

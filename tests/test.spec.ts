@@ -1,6 +1,7 @@
 import * as t from "io-ts";
 import * as winston from "winston";
 import {createApi} from "..";
+import {plugins} from "..";
 import {IOptions, IOptionsFullApi} from "../src/api/api";
 import {FakePage, IFakePageOptions} from "./__fixtures__/FakePage";
 import {QuickGraft} from "./__fixtures__/QuickGraft";
@@ -545,5 +546,28 @@ describe("Search", () => {
         });
         await search.get();
         expect(searchRequestsSpy).toBeCalledTimes(1);
+    });
+});
+
+describe("Plugins", () => {
+    test("Internal plugins", async () => {
+        for (const plugin in plugins) {
+            if (!plugins.hasOwnProperty(plugin)) {
+                continue;
+            }
+
+            const options: IOptions = {
+                plugins: [new plugins[plugin]()],
+                silent: true,
+                total: 100,
+            };
+            const hashtag = createApi("hashtag", hashtags[0], options);
+
+            const mock = jest.fn();
+            for await (const post of hashtag.generator()) {
+                mock(post);
+            }
+            expect(mock).toBeCalledTimes(100);
+        }
     });
 });

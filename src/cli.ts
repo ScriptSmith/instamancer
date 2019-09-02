@@ -6,6 +6,7 @@ import * as winston from "winston";
 
 import * as path from "path";
 import {v4 as uuid} from "uuid";
+import * as plugins from "../plugins";
 import {createApi, IOptions} from "./api/api";
 import {TFullApiPost, TPost} from "./api/types";
 import {GetPool} from "./getpool/getPool";
@@ -30,17 +31,29 @@ const getLogger = (args) => {
     });
 };
 
-const getOptions = (args, logger) => ({
-    enableGrafting: args["graft"],
-    executablePath: args["browser"],
-    fullAPI: args["full"],
-    headless: !args["visible"],
-    logger,
-    silent: args["silent"],
-    sleepTime: 2,
-    strict: args["strict"],
-    total: args["count"],
-});
+function getOptions(args, logger) {
+    const options: IOptions = {
+        enableGrafting: args["graft"],
+        executablePath: args["browser"],
+        fullAPI: args["full"],
+        headless: !args["visible"],
+        logger,
+        plugins: [],
+        silent: args["silent"],
+        sleepTime: 2,
+        strict: args["strict"],
+        total: args["count"],
+    };
+
+    for (const pluginName of args["plugin"]) {
+        if (plugins[pluginName]) {
+            options.plugins.push(new plugins[pluginName]());
+        } else {
+            throw new Error("Couldn't find plugin " + pluginName);
+        }
+    }
+    return options;
+}
 
 /**
  * Build argument parser
@@ -239,6 +252,11 @@ function buildParser(args, callback) {
                 default: undefined,
                 describe:
                     "Upload files to a URL with a PUT request rather than saving to disk",
+            },
+            plugin: {
+                array: true,
+                default: [],
+                describe: "Use a plugin from the plugins directory",
             },
         })
         .demandCommand()
