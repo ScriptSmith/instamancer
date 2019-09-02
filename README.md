@@ -248,9 +248,11 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <th>Users</th>
         <th>Locations</th>
         <th>Posts</th>
+        <th>Stories</th>
         <th>Login not required</th>
         <th>Private feeds</th>
         <th>Batch mode</th>
+        <th>Plugins</th>
         <th>Command-line</th>
         <th>Library/Module</th>
         <th>Download media</th>
@@ -275,8 +277,10 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
+        <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
+        <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
@@ -300,7 +304,9 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>:x:</td>
         <td>:x:</td>
         <td>:x:</td>
+        <td>:x:</td>
         <td>:heavy_check_mark:</td>
+        <td>:x:</td>
         <td>:x:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
@@ -327,6 +333,8 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:x:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
@@ -351,8 +359,10 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
+        <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
+        <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
@@ -375,7 +385,9 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
+        <td>:x:</td>
         <td>:heavy_check_mark:</td>
+        <td>:x:</td>
         <td>:x:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
@@ -400,8 +412,10 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>
+        <td>:heavy_check_mark:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
+        <td>:x:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
@@ -427,6 +441,8 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
+        <td>:heavy_check_mark:</td>
+        <td>:x:</td>
         <td>:x:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
@@ -450,8 +466,10 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
+        <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
+        <td>:x:</td>
         <td>:x:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
