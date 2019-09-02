@@ -56,24 +56,27 @@ export class Instagram<PostType> {
     }
 
     // Resource identifier
-    protected id: string;
-    protected url: string;
+    public id: string;
+    public url: string;
 
     // Iteration state
-    protected started: boolean = false;
-    protected paused: boolean = false;
-    protected finished: boolean = false;
+    public started: boolean = false;
+    public paused: boolean = false;
+    public finished: boolean = false;
 
     // Instagram URLs
-    protected catchURL: string = "https://www.instagram.com/graphql/query";
-    protected postURL: string = "https://instagram.com/p/";
-    protected defaultPostURL: string = "https://www.instagram.com/p/";
+    public catchURL: string = "https://www.instagram.com/graphql/query";
+    public postURL: string = "https://instagram.com/p/";
+    public defaultPostURL: string = "https://www.instagram.com/p/";
 
     // Number of jumps before grafting
-    protected jumpMod: number = 100;
+    public jumpMod: number = 100;
+
+    // Depth of jumps
+    public jumpSize: number = 2;
 
     // Puppeteer resources
-    protected page: Page;
+    public page: Page;
 
     // Validations
     private readonly strict: boolean = false;

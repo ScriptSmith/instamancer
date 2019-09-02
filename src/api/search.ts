@@ -83,7 +83,7 @@ export type ISearchOptions = Pick<
 >;
 
 export class Search extends Instagram<TSearchResult> {
-    protected readonly catchURL = "https://www.instagram.com/web/";
+    public readonly catchURL = "https://www.instagram.com/web/";
     private searchResult: TSearchResult;
     private searchQuery: string;
 
