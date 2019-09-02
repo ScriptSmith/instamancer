@@ -14,16 +14,12 @@ export interface IPlugin {
     ): void;
 
     responseEvent?(
-        res: puppeteer.Request,
+        res: puppeteer.Response,
         data: DType,
         state: instamancer.Instagram<DType>,
     ): void;
 
-    postPageEvent?(
-        res: puppeteer.Request,
-        data: DType,
-        state: instamancer.Instagram<DType>,
-    ): void;
+    postPageEvent?(data: DType, state: instamancer.Instagram<DType>): void;
 
     graftingEvent?(state: instamancer.Instagram<DType>): void;
 }
