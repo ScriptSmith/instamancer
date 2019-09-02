@@ -6,9 +6,8 @@
         "inlineSourceMap": true,
         "lib": ["dom", "es2018", "esnext.asynciterable"],
         "resolveJsonModule": true,
-        "declaration": true,
         "esModuleInterop": true
     },
-    "include": ["*.ts", "!*.d.ts"],
+    "include": ["*.ts", "!*.d.ts", "src/cli.ts"],
     "exclude": ["node_modules", "tests/*"]
 }
