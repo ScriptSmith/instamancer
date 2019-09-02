@@ -1,5 +1,6 @@
 import AwaitLock = require("await-lock");
 import chalk from "chalk";
+import {EventEmitter} from "events";
 import {isLeft} from "fp-ts/lib/Either";
 import {Type} from "io-ts";
 import {PathReporter} from "io-ts/lib/PathReporter";
@@ -21,7 +22,7 @@ import {PostIdSet} from "./postIdSet";
 /**
  * Instagram API wrapper
  */
-export class Instagram<PostType> {
+export class Instagram<PostType> extends EventEmitter {
     /**
      * Apply defaults to undefined options
      */
@@ -168,6 +169,7 @@ export class Instagram<PostType> {
         options: IOptions = {},
         validator: Type<unknown>,
     ) {
+        super();
         this.id = id;
         this.postIds = new PostIdSet();
         this.url = endpoint + id;
@@ -187,6 +189,8 @@ export class Instagram<PostType> {
         this.proxyURL = options.proxyURL;
         this.executablePath = options.executablePath;
         this.validator = options.validator || validator;
+
+        this.emit("construction", this);
     }
 
     /**
@@ -338,10 +342,12 @@ export class Instagram<PostType> {
                     await req.abort();
                 } else {
                     // Swap request
-                    await req.continue({
+                    const overrides = {
                         headers: this.graftHeaders,
                         url: this.graftURL,
-                    });
+                    };
+                    this.emit("request", req, overrides, this);
+                    await req.continue(overrides);
 
                     // Reset grafting data
                     this.graft = false;
@@ -353,7 +359,9 @@ export class Instagram<PostType> {
                 // Stop reading requests
                 break;
             } else {
-                await req.continue();
+                const overrides = {};
+                this.emit("request", req, overrides, this);
+                await req.continue(overrides);
             }
         }
 
@@ -388,6 +396,9 @@ export class Instagram<PostType> {
                 this.logger.error("Error processing response JSON");
                 this.logger.error(e);
             }
+
+            // Emit event
+            this.emit("response", res, data, this);
 
             // Check for rate limiting
             if (data && "status" in data && data["status"] === "fail") {
@@ -503,6 +514,7 @@ export class Instagram<PostType> {
         if (!parsed) {
             return;
         }
+        this.emit("postPage", parsed, this);
         await this.addToPostBuffer(parsed);
     }
 
@@ -780,8 +792,9 @@ export class Instagram<PostType> {
      */
     private async jump() {
         await this.page.keyboard.press("PageUp");
-        await this.page.keyboard.press("End");
-        await this.page.keyboard.press("End");
+        for (let i = 0; i < this.jumpSize; i++) {
+            await this.page.keyboard.press("End");
+        }
 
         // Move mouse randomly
         const width = this.page.viewport()["width"];
@@ -804,6 +817,8 @@ export class Instagram<PostType> {
         }
 
         await this.progress(Progress.GRAFTING);
+
+        this.emit("grafting", this);
 
         // Enable grafting
         this.graft = true;
