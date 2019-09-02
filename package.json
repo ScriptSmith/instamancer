@@ -11,7 +11,11 @@
         "index.js",
         "index.d.ts",
         "src/**/*.js",
-        "src/**/*.d.ts"
+        "src/**/*.d.ts",
+        "plugins/*.js",
+        "plugins/*.d.ts",
+        "plugins/**/*.js",
+        "plugins/**/*.d.ts"
     ],
     "scripts": {
         "build": "tsc",
@@ -20,7 +24,7 @@
         "lint": "tslint -p tsconfig.json -p tests/tsconfig.json",
         "lint:fix": "npm run lint -- --fix",
         "prettier": "prettier --write \"{src,tests}/**/*.ts\"",
-        "clean": "rimraf src/**/*{.js,.d.ts} src/*{.js,.d.ts} plugins/*{.js,.d.ts} index{.js,.d.ts}"
+        "clean": "rimraf src/**/*{.js,.d.ts} src/*{.js,.d.ts} plugins/**/*{.js,.d.ts} plugins/*{.js,.d.ts} index{.js,.d.ts}"
     },
     "author": "ScriptSmith",
     "license": "MIT",
