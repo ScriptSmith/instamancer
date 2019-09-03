@@ -22,5 +22,7 @@ install:
   - npm install
 script:
   - npm run build -- --noEmit
-  - npm test
+  - npm test:ci
   - if [[ $TRAVIS_PULL_REQUEST = "false" ]] ; then cat ./coverage/lcov.info | codacy-coverage --language=typescript; fi
+after_failure:
+  - tail -n 2000 instamancer_tests.log
