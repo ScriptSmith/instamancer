@@ -1,7 +1,5 @@
 import * as instamancer from "instamancer";
-import {TPost} from "instamancer";
 import {Response} from "puppeteer";
-import {IPluginContext} from "../plugins/plugin";
 
 class Complexity<PostType> implements instamancer.IPlugin<PostType> {
     private query: string;
@@ -11,7 +9,7 @@ class Complexity<PostType> implements instamancer.IPlugin<PostType> {
     }
 
     public responseEvent(
-        this: IPluginContext<Complexity<PostType>, PostType>,
+        this: instamancer.IPluginContext<Complexity<PostType>, PostType>,
         res: Response,
         data: {[key: string]: any},
     ): void {
@@ -39,7 +37,7 @@ const user = instamancer.createApi("user", "therock", {
 });
 
 (async () => {
-    const posts: TPost[] = [];
+    const posts: instamancer.TPost[] = [];
     for await (const post of user.generator()) {
         posts.push(post);
     }
