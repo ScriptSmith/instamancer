@@ -1,26 +1,39 @@
 import * as instamancer from "instamancer";
-import {DType, Instagram, TPost} from "instamancer";
-import * as puppeteer from "puppeteer";
+import {TPost} from "instamancer";
+import {Response} from "puppeteer";
+import {IPluginContext} from "../plugins/plugin";
 
-class Complexity implements instamancer.IPlugin {
+class Complexity<PostType> implements instamancer.IPlugin<PostType> {
+    private query: string;
+
+    constructor(query: string) {
+        this.query = query;
+    }
+
     public responseEvent(
-        res: puppeteer.Response,
-        data: DType,
-        state: Instagram<DType>,
+        this: IPluginContext<Complexity<PostType>, PostType>,
+        res: Response,
+        data: {[key: string]: any},
     ): void {
-        state.page
-            .evaluate(() => {
-                return document.getElementsByTagName("*").length;
-            })
+        this.state.page
+            .evaluate((query) => {
+                return document.querySelectorAll(query).length;
+            }, this.plugin.query)
             .then((count) => {
-                process.stdout.write(`Page elements: ${count}\n`);
+                process.stdout.write(
+                    `${this.plugin.query} elements: ${count}\n`,
+                );
             });
     }
 }
 
 const user = instamancer.createApi("user", "therock", {
     enableGrafting: false,
-    plugins: [new Complexity()],
+    plugins: [
+        new Complexity("div"),
+        new Complexity("span"),
+        new Complexity("img"),
+    ],
     silent: true,
     total: 500,
 });
