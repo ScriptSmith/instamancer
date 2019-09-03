@@ -424,7 +424,7 @@ export class Instagram<PostType> extends EventEmitter {
                     _.get(data, this.pageQuery + ".end_cursor", false)
                 )
             ) {
-                this.logger.info("No posts remaining");
+                this.logger.info("No posts remaining", {data});
                 this.finished = true;
             }
 
