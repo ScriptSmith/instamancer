@@ -533,12 +533,12 @@ describe("Search", () => {
         const searchRequestsSpy = jest.fn();
         class RequestCounter implements IPlugin {
             public requestEvent(
+                this: Instagram<DType>,
                 req: Request,
                 overrides: Overrides,
-                state: Instagram<DType>,
             ): void {
                 // @ts-ignore
-                if (state.matchURL(req.url())) {
+                if (this.matchURL(req.url())) {
                     searchRequestsSpy();
                 }
             }

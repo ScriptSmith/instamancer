@@ -16,7 +16,7 @@ import {
     Response,
 } from "puppeteer";
 import * as winston from "winston";
-import {IPlugin} from "../../plugins/plugin";
+import {IPlugin} from "../../plugins";
 import {IOptions} from "./api";
 import {PostIdSet} from "./postIdSet";
 
@@ -192,7 +192,7 @@ export class Instagram<PostType> extends EventEmitter {
         this.validator = options.validator || validator;
 
         this.addPlugins(options.plugins);
-        this.emit("construction", this);
+        this.emit("construction");
     }
 
     /**
@@ -348,7 +348,7 @@ export class Instagram<PostType> extends EventEmitter {
                         headers: this.graftHeaders,
                         url: this.graftURL,
                     };
-                    this.emit("request", req, overrides, this);
+                    this.emit("request", req, overrides);
                     await req.continue(overrides);
 
                     // Reset grafting data
@@ -362,7 +362,7 @@ export class Instagram<PostType> extends EventEmitter {
                 break;
             } else {
                 const overrides = {};
-                this.emit("request", req, overrides, this);
+                this.emit("request", req, overrides);
                 await req.continue(overrides);
             }
         }
@@ -400,7 +400,7 @@ export class Instagram<PostType> extends EventEmitter {
             }
 
             // Emit event
-            this.emit("response", res, data, this);
+            this.emit("response", res, data);
 
             // Check for rate limiting
             if (data && "status" in data && data["status"] === "fail") {
@@ -516,7 +516,7 @@ export class Instagram<PostType> extends EventEmitter {
         if (!parsed) {
             return;
         }
-        this.emit("postPage", parsed, this);
+        this.emit("postPage", parsed);
         await this.addToPostBuffer(parsed);
     }
 
@@ -821,7 +821,7 @@ export class Instagram<PostType> extends EventEmitter {
 
         await this.progress(Progress.GRAFTING);
 
-        this.emit("grafting", this);
+        this.emit("grafting");
 
         // Enable grafting
         this.graft = true;

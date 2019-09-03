@@ -5,15 +5,11 @@ import {Instagram} from "../../src/api/instagram";
 import {DType, IPlugin} from "../plugin";
 
 export class LargeFirst implements IPlugin {
-    public constructionEvent(state: Instagram<DType>): void {
-        state.jumpSize = 150;
+    public constructionEvent(this: Instagram<DType>): void {
+        this.jumpSize = 150;
     }
 
-    public requestEvent(
-        req: Request,
-        overrides: Overrides,
-        state: Instagram<DType>,
-    ): void {
+    public requestEvent(req: Request, overrides: Overrides): void {
         const url = overrides["url"] ? overrides["url"] : req.url();
         const parsedUrl = urlParse(url);
         const query = querystring.parse(parsedUrl.query);
