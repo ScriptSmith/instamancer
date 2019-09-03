@@ -1,12 +1,13 @@
 import {Overrides, Request} from "puppeteer";
 import * as querystring from "querystring";
 import {format as urlFormat, parse as urlParse} from "url";
-import {Instagram} from "../../src/api/instagram";
-import {DType, IPlugin} from "../plugin";
+import {IPlugin, IPluginContext} from "../plugin";
 
-export class LargeFirst implements IPlugin {
-    public constructionEvent(this: Instagram<DType>): void {
-        this.jumpSize = 150;
+export class LargeFirst<PostType> implements IPlugin<PostType> {
+    public constructionEvent(
+        this: IPluginContext<IPlugin<PostType>, PostType>,
+    ): void {
+        this.state.jumpSize = 150;
     }
 
     public requestEvent(req: Request, overrides: Overrides): void {

@@ -1,5 +1,6 @@
 import * as t from "io-ts";
 import {excess} from "io-ts-excess";
+import {IPlugin} from "../../plugins";
 import {IOptions} from "./api";
 import {Instagram} from "./instagram";
 
@@ -82,10 +83,14 @@ export type ISearchOptions = Pick<
     >
 >;
 
+export interface ISearchOptionsPlugins<PostType> extends ISearchOptions {
+    plugins?: Array<IPlugin<PostType>>;
+}
+
 export class Search extends Instagram<TSearchResult> {
     public readonly catchURL = "https://www.instagram.com/web/";
     private searchResult: TSearchResult;
-    private searchQuery: string;
+    private readonly searchQuery: string;
 
     constructor(query: string, options: ISearchOptions = {}) {
         super(
@@ -118,7 +123,7 @@ export class Search extends Instagram<TSearchResult> {
         }
     }
 
-    protected matchURL(url: string) {
+    public matchURL(url: string) {
         return url.startsWith(this.catchURL);
     }
 

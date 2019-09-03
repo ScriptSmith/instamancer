@@ -17,6 +17,7 @@ import {
 } from "puppeteer";
 import * as winston from "winston";
 import {IPlugin} from "../../plugins";
+import {IPluginContext} from "../../plugins/plugin";
 import {IOptions} from "./api";
 import {PostIdSet} from "./postIdSet";
 
@@ -191,7 +192,7 @@ export class Instagram<PostType> extends EventEmitter {
         this.executablePath = options.executablePath;
         this.validator = options.validator || validator;
 
-        this.addPlugins(options.plugins);
+        this.addPlugins(options["plugins"]);
         this.emit("construction");
     }
 
@@ -287,6 +288,13 @@ export class Instagram<PostType> extends EventEmitter {
         if (this.fullAPI) {
             await this.scrapeDefaultPosts();
         }
+    }
+
+    /**
+     * Match the url to the url used in API requests
+     */
+    public matchURL(url: string) {
+        return url.startsWith(this.catchURL) && !url.includes("include_reel");
     }
 
     /**
@@ -459,13 +467,6 @@ export class Instagram<PostType> extends EventEmitter {
                 break;
             }
         }
-    }
-
-    /**
-     * Match the url to the url used in API requests
-     */
-    protected matchURL(url: string) {
-        return url.startsWith(this.catchURL) && !url.includes("include_reel");
     }
 
     /**
@@ -861,7 +862,7 @@ export class Instagram<PostType> extends EventEmitter {
         }
     }
 
-    private addPlugins(plugins: IPlugin[]) {
+    private addPlugins(plugins: Array<IPlugin<PostType>>) {
         if (!plugins) {
             return;
         }
@@ -878,7 +879,12 @@ export class Instagram<PostType> extends EventEmitter {
             for (const event of events) {
                 const pluginEvent = plugin[event + "Event"];
                 if (pluginEvent) {
-                    this.on(event, pluginEvent);
+                    const context: IPluginContext<typeof plugin, PostType> = {
+                        plugin,
+                        state: this,
+                    };
+
+                    this.on(event, pluginEvent.bind(context));
                 }
             }
         }

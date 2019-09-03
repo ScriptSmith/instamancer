@@ -1,8 +1,9 @@
 import * as t from "io-ts";
 import {Overrides, Request} from "puppeteer";
 import * as winston from "winston";
-import {createApi, DType, Instagram, IPlugin} from "..";
+import {createApi, IPlugin} from "..";
 import {plugins} from "..";
+import {IPluginContext} from "../plugins/plugin";
 import {IOptions, IOptionsFullApi} from "../src/api/api";
 import {FakePage, IFakePageOptions} from "./__fixtures__/FakePage";
 import {QuickGraft} from "./__fixtures__/QuickGraft";
@@ -531,14 +532,13 @@ describe("Search", () => {
 
     test("Search should fire only one network request", async () => {
         const searchRequestsSpy = jest.fn();
-        class RequestCounter implements IPlugin {
+        class RequestCounter<PostType> implements IPlugin<PostType> {
             public requestEvent(
-                this: Instagram<DType>,
+                this: IPluginContext<IPlugin<PostType>, PostType>,
                 req: Request,
                 overrides: Overrides,
             ): void {
-                // @ts-ignore
-                if (this.matchURL(req.url())) {
+                if (this.state.matchURL(req.url())) {
                     searchRequestsSpy();
                 }
             }

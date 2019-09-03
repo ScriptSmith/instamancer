@@ -1,8 +1,13 @@
 import {Type} from "io-ts";
 import * as winston from "winston";
-import {IPlugin} from "../../plugins/plugin";
+import {DType, IPlugin} from "../../plugins";
 import {Instagram} from "./instagram";
-import {ISearchOptions, Search} from "./search";
+import {
+    ISearchOptions,
+    ISearchOptionsPlugins,
+    Search,
+    TSearchResult,
+} from "./search";
 import {
     FullApiPost,
     Post as PostValidator,
@@ -51,9 +56,6 @@ export interface IOptionsCommon {
 
     // Custom io-ts validator
     validator?: Type<unknown>;
-
-    // Custom plugins
-    plugins?: IPlugin[];
 }
 
 export interface IOptionsFullApi extends IOptionsCommon {
@@ -64,7 +66,19 @@ export interface IOptionsRegular extends IOptionsCommon {
     fullAPI?: false;
 }
 
-export type IOptions = IOptionsFullApi | IOptionsRegular;
+export interface IOptionsFullApiPlugins<PostType> extends IOptionsFullApi {
+    plugins?: Array<IPlugin<PostType>>;
+}
+
+export interface IOptionsRegularPlugins<PostType> extends IOptionsRegular {
+    plugins?: Array<IPlugin<PostType>>;
+}
+
+export type IOptions =
+    | IOptionsFullApi
+    | IOptionsRegular
+    | IOptionsFullApiPlugins<DType>
+    | IOptionsRegularPlugins<DType>;
 
 /**
  * An Instagram post API wrapper
@@ -104,19 +118,20 @@ export type InstagramFullPostClass = Hashtag<TFullApiPost> | User<TFullApiPost>;
 export function createApi(
     type: "search",
     query: string,
-    options?: ISearchOptions,
+    options?: ISearchOptions | ISearchOptionsPlugins<TSearchResult>,
 ): Search;
 export function createApi(type: "post", id: string[], options?: IOptions): Post;
 export function createApi(
     type: "hashtag" | "user",
     id: string,
-    options?: IOptionsRegular,
+    options?: IOptionsRegular | IOptionsRegularPlugins<InstagramPostClass>,
 ): InstagramPostClass;
 export function createApi(
     type: "hashtag" | "user",
     id: string,
-    options?: IOptionsFullApi,
+    options?: IOptionsFullApi | IOptionsFullApiPlugins<InstagramFullPostClass>,
 ): InstagramFullPostClass;
+
 export function createApi(
     type: "hashtag" | "user" | "post" | "search",
     id: string | string[],

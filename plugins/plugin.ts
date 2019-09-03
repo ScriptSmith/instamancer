@@ -1,25 +1,32 @@
 import * as puppeteer from "puppeteer";
-import * as instamancer from "..";
-import {TFullApiPost, TPost, TSearchResult, TSinglePost} from "..";
+import {Instagram, TFullApiPost, TPost, TSearchResult, TSinglePost} from "..";
 
 export type DType = TPost | TSinglePost | TFullApiPost | TSearchResult;
 
-export interface IPlugin {
-    constructionEvent?(this: instamancer.Instagram<DType>): void;
+export interface IPluginContext<Plugin, PostType> {
+    plugin: Plugin;
+    state: Instagram<PostType>;
+}
+
+export interface IPlugin<PostType> {
+    constructionEvent?(this: IPluginContext<IPlugin<PostType>, PostType>): void;
 
     requestEvent?(
-        this: instamancer.Instagram<DType>,
+        this: IPluginContext<IPlugin<PostType>, PostType>,
         req: puppeteer.Request,
         overrides: puppeteer.Overrides,
     ): void;
 
     responseEvent?(
-        this: instamancer.Instagram<DType>,
+        this: IPluginContext<IPlugin<PostType>, PostType>,
         res: puppeteer.Response,
-        data: DType,
+        data: {[key: string]: any},
     ): void;
 
-    postPageEvent?(this: instamancer.Instagram<DType>, data: DType): void;
+    postPageEvent?(
+        this: IPluginContext<IPlugin<PostType>, PostType>,
+        data: PostType,
+    ): void;
 
-    graftingEvent?(this: instamancer.Instagram<DType>): void;
+    graftingEvent?(this: IPluginContext<IPlugin<PostType>, PostType>): void;
 }
