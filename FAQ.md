@@ -11,7 +11,7 @@ No, Instamancer only works from the command-line. In the future, I might impleme
 No. Instamancer scrapes data that Instagram makes publicly available.
 
 ## How quickly does it run?
-It processes between 2-3 posts per second.
+It can processes anywhere from 3-30 posts per second depending on configuration.
 
 ## Can I make it run faster?
 Running without the `--full` and `-d` arguments is faster. 
