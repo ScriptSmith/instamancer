@@ -60,9 +60,6 @@ hashtag summer -f=data.json
 user greg -c100
 ```
 
-## Why is the maximum number of posts that I'm able to scrape inconsistent?
-I'm not certain. This seems to only occur where you are able to gather tens of thousands of posts. I believe it is because of some clandestine IP-based policy that limits the number of requests you can make in a day to a particular endpoint. It could also be a bug in Instamancer.
-
 ## Why does the code have so many comments?
 Instamancer was originally part of another project written in Python that used the [Pyppeteer](https://github.com/miyakogi/pyppeteer) clone of Puppeteer. This version was too error-prone because of the complicated asyncio code and Pyppeteer's instability when communicating via websockets during long scraping jobs.
 
