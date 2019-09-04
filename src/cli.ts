@@ -39,7 +39,7 @@ function getOptions(args, logger) {
         headless: !args["visible"],
         logger,
         plugins: [],
-        silent: args["silent"],
+        silent: args["quiet"],
         sleepTime: args["sleep"],
         strict: args["strict"],
         total: args["count"],
@@ -342,7 +342,7 @@ async function spawn(args) {
     let uploadUrl = args["upload"];
     if (uploadUrl && uploadUrl.includes("[uuid]")) {
         uploadUrl = uploadUrl.replace("[uuid]", uuid());
-        if (!args["silent"]) {
+        if (!args["quiet"]) {
             process.stdout.write(uploadUrl + "\n");
         }
     }
