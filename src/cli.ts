@@ -40,7 +40,7 @@ function getOptions(args, logger) {
         logger,
         plugins: [],
         silent: args["silent"],
-        sleepTime: 2,
+        sleepTime: args["sleep"],
         strict: args["strict"],
         total: args["count"],
     };
@@ -152,117 +152,149 @@ function buildParser(args, callback) {
         .options({
             count: {
                 alias: "c",
+                number: true,
                 default: 0,
-                describe: "Number of posts to download. 0 to download all",
+                describe: "Number of posts to download (0 for all)",
+                group: "Configuration",
             },
-            visible: {
+            full: {
+                alias: ["f"],
                 boolean: true,
                 default: false,
-                describe: "Show browser on the screen",
+                describe: "Retrieve full post data",
+                group: "Configuration",
             },
-            download: {
-                alias: "d",
-                boolean: true,
-                default: false,
-                describe: "Save images and videos from posts",
+            sleep: {
+                alias: ["s"],
+                number: true,
+                default: 2,
+                describe: "Seconds to sleep between interactions",
+                group: "Configuration",
             },
             graft: {
                 alias: "g",
                 boolean: true,
                 default: true,
                 describe: "Enable grafting",
+                group: "Configuration",
             },
-            full: {
+            browser: {
+                alias: ["b"],
+                string: true,
+                default: undefined,
+                describe: "Browser path. Defaults to the puppeteer version",
+                group: "Configuration",
+            },
+            download: {
+                alias: "d",
                 boolean: true,
                 default: false,
-                describe:
-                    "Get the full list of posts and their details from the API and web page",
+                describe: "Save images from posts",
+                group: "Download",
+            },
+            downdir: {
+                default: "downloads/[endpoint]/[id]",
+                describe: "Download path",
+                group: "Download",
             },
             video: {
+                alias: "v",
                 boolean: true,
                 default: false,
-                describe: "Download videos. Only works in full mode",
+                describe: "Download videos (requires full)",
+                implies: "full",
+                group: "Download",
             },
-            silent: {
-                boolean: true,
-                default: false,
-                describe: "Disable progress output",
-            },
-            strict: {
-                boolean: true,
-                default: false,
-                describe:
-                    "Throw an error if types from Instagram API have been changed",
+            upload: {
+                alias: ["u"],
+                string: true,
+                default: undefined,
+                describe: "Upload files to a URL with a PUT request",
+                group: "Download",
             },
             sync: {
                 boolean: true,
                 default: false,
-                describe: "Synchronously download files between API requests",
+                describe: "Force download between requests",
+                group: "Download",
             },
             threads: {
                 alias: "k",
                 number: true,
                 default: 4,
-                describe: "The number of parallel download / upload threads",
+                describe: "Parallel download / upload threads",
+                group: "Download",
             },
             waitDownload: {
                 alias: "w",
                 boolean: true,
                 default: false,
-                describe:
-                    "When true, media will only download once scraping is finished",
+                describe: "Download media after scraping",
+                group: "Download",
             },
             filename: {
-                alias: ["file", "f"],
+                alias: ["file", "o"],
+                string: true,
                 default: "[id]",
                 describe: "Name of the output file",
+                group: "Output",
             },
             filetype: {
                 alias: ["type", "t"],
                 default: "json",
                 choices: ["csv", "json", "both"],
-                describe: "Type of output file ",
-            },
-            downdir: {
-                default: "downloads/[endpoint]/[id]",
-                describe: "Directory / Container to save media",
+                group: "Output",
             },
             mediaPath: {
-                alias: "mp",
+                alias: ["m"],
                 boolean: true,
                 default: false,
-                describe:
-                    "Store the paths of downloaded media in the '_mediaPath' key",
+                describe: "Add filepaths to _mediaPath",
+                group: "Output",
+            },
+            visible: {
+                boolean: true,
+                default: false,
+                describe: "Show browser on the screen",
+                group: "Display",
+            },
+            quiet: {
+                alias: ["q"],
+                boolean: true,
+                default: false,
+                describe: "Disable progress output",
+                group: "Display",
             },
             logging: {
+                alias: ["l"],
                 default: "none",
-                choices: ["error", "none", "info", "debug"],
-                describe: "Level of logger",
+                choices: ["none", "error", "info", "debug"],
+                group: "Logging",
             },
             logfile: {
+                string: true,
                 default: "instamancer.log",
-                describe: "Name of the log file",
+                describe: "Log file name",
+                group: "Logging",
             },
-            browser: {
-                default: undefined,
-                describe:
-                    "Location of the browser. Defaults to the copy downloaded at installation",
-            },
-            upload: {
-                default: undefined,
-                describe:
-                    "Upload files to a URL with a PUT request rather than saving to disk",
+            strict: {
+                boolean: true,
+                default: false,
+                describe: "Throw an error on response type mismatch",
+                group: "Validation",
             },
             plugin: {
+                alias: ["p"],
                 array: true,
                 default: [],
                 describe: "Use a plugin from the plugins directory",
+                group: "Plugins",
             },
         })
         .demandCommand()
         .example(
-            "$0 hashtag instagood -d",
-            "Download all the available posts, and their thumbnails from #instagood",
+            "$0 hashtag instagood -fvd",
+            "Download all the available posts, and their media from #instagood",
         )
         .example(
             "$0 user arianagrande --filetype=csv --logging=info --visible",
