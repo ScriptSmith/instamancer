@@ -22,9 +22,9 @@ Instamancer is a new type of scraping tool that leverages Puppeteer's ability to
 Read more about how Instamancer works [here](https://scriptsmith.github.io/instamancer/).
 
 ### Features
-- Scrape hashtags and users
-- Output JSON, CSV
+- Scrape hashtags, users, and posts
 - Download images, albums, and videos
+- Output JSON, CSV
 - Batch scraping
 - Search hashtags, users, and locations
 - API response validation
@@ -50,8 +50,6 @@ Metadata that Instamancer is able to gather from posts:
 ## Install
 
 #### Linux
-See [Puppeteer troubleshooting](https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#chrome-headless-fails-due-to-sandbox-issues)
-
 Enable user namespace cloning:
 ```
 sysctl -w kernel.unprivileged_userns_clone=1
@@ -64,20 +62,13 @@ Or run without a sandbox:
 export NO_SANDBOX=true
 ```
 
+See [Puppeteer troubleshooting](https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#chrome-headless-fails-due-to-sandbox-issues)
+
 #### Without downloading chromium
 If you wish to install Instamancer without downloading chromium, enable the `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` environment variable before installation
 
 ```
 export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-```
-
-### From this repository
-```
-git clone https://github.com/ScriptSmith/instamancer.git
-cd instamancer
-npm install
-npm run build
-npm install -g
 ```
 
 ### From NPM
@@ -98,6 +89,15 @@ sudo npm install -g instamancer --unsafe-perm=true
 npx instamancer
 ```
 
+### From this repository
+```
+git clone https://github.com/ScriptSmith/instamancer.git
+cd instamancer
+npm install
+npm run build
+npm install -g
+```
+
 ## Usage
 
 ### Command Line
@@ -112,48 +112,48 @@ Commands:
   instamancer search [query]     Perform a search of users, tags and places
   instamancer batch [batchfile]  Read newline-separated arguments from a file
 
+Configuration
+  --count, -c    Number of posts to download (0 for all)   [number] [default: 0]
+  --full, -f     Retrieve full post data              [boolean] [default: false]
+  --sleep, -s    Seconds to sleep between interactions     [number] [default: 2]
+  --graft, -g    Enable grafting                       [boolean] [default: true]
+  --browser, -b  Browser path. Defaults to the puppeteer version        [string]
+
+Download
+  --download, -d      Save images from posts          [boolean] [default: false]
+  --downdir           Download path       [default: "downloads/[endpoint]/[id]"]
+  --video, -v         Download videos (requires full) [boolean] [default: false]
+  --upload, -u        Upload files to a URL with a PUT request          [string]
+  --sync              Force download between requests [boolean] [default: false]
+  --threads, -k       Parallel download / upload threads   [number] [default: 4]
+  --waitDownload, -w  Download media after scraping   [boolean] [default: false]
+
+Output
+  --filename, --file, -o  Name of the output file     [string] [default: "[id]"]
+  --filetype, --type, -t      [choices: "csv", "json", "both"] [default: "json"]
+  --mediaPath, -m         Add filepaths to _mediaPath [boolean] [default: false]
+
+Display
+  --visible    Show browser on the screen             [boolean] [default: false]
+  --quiet, -q  Disable progress output                [boolean] [default: false]
+
+Logging
+  --logging, -l    [choices: "none", "error", "info", "debug"] [default: "none"]
+  --logfile      Log file name             [string] [default: "instamancer.log"]
+
+Validation
+  --strict  Throw an error on response type mismatch  [boolean] [default: false]
+
+Plugins
+  --plugin, -p  Use a plugin from the plugins directory    [array] [default: []]
+
 Options:
-  --help                  Show help                                    [boolean]
-  --version               Show version number                          [boolean]
-  --count, -c             Number of posts to download. 0 to download all
-                                                                    [default: 0]
-  --visible               Show browser on the screen  [boolean] [default: false]
-  --download, -d          Save images and videos from posts
-                                                      [boolean] [default: false]
-  --graft, -g             Enable grafting              [boolean] [default: true]
-  --full                  Get the full list of posts and their details from the
-                          API and web page            [boolean] [default: false]
-  --video                 Download videos. Only works in full mode
-                                                      [boolean] [default: false]
-  --silent                Disable progress output     [boolean] [default: false]
-  --strict                Throw an error if types from Instagram API have been
-                          changed                     [boolean] [default: false]
-  --sync                  Synchronously download files between API requests
-                                                      [boolean] [default: false]
-  --threads, -k           The number of parallel download / upload threads
-                                                           [number] [default: 4]
-  --waitDownload, -w      When true, media will only download once scraping is
-                          finished                    [boolean] [default: false]
-  --filename, --file, -f  Name of the output file              [default: "[id]"]
-  --filetype, --type, -t  Type of output file
-                              [choices: "csv", "json", "both"] [default: "json"]
-  --downdir               Directory / Container to save media
-                                          [default: "downloads/[endpoint]/[id]"]
-  --mediaPath, --mp       Store the paths of downloaded media in the
-                          '_mediaPath' key            [boolean] [default: false]
-  --logging               Level of logger
-                   [choices: "error", "none", "info", "debug"] [default: "none"]
-  --logfile               Name of the log file      [default: "instamancer.log"]
-  --browser               Location of the browser. Defaults to the copy
-                          downloaded at installation
-  --upload                Upload files to a URL with a PUT request rather than
-                          saving to disk
-  --plugin                Use a plugin from the plugins directory
-                                                           [array] [default: []]
+  --help     Show help                                                 [boolean]
+  --version  Show version number                                       [boolean]
 
 Examples:
-  instamancer hashtag instagood -d          Download all the available posts,
-                                            and their thumbnails from #instagood
+  instamancer hashtag instagood -fvd        Download all the available posts,
+                                            and their media from #instagood
   instamancer user arianagrande             Download Ariana Grande's posts to a
   --filetype=csv --logging=info --visible   CSV file with a non-headless
                                             browser, and log all events
@@ -165,13 +165,13 @@ Source code available at https://github.com/ScriptSmith/instamancer
 
 ES2018 Typescript example:
 ```typescript
-import {createApi,IOptions} from "instamancer"
+import {createApi, IOptions} from "instamancer"
 
 const options: IOptions = {
     total: 10
 };
-
 const hashtag = createApi("hashtag", "beach", options);
+
 (async () => {
     for await (const post of hashtag.generator()) {
         console.log(post);
@@ -209,7 +209,7 @@ const options: Instamancer.IOptions = {
     sleepTime: number,
 
     // Throw an error if type validation has been failed
-    strict?: boolean,
+    strict: boolean,
 
     // Time to sleep when rate-limited
     hibernationTime: number,
@@ -227,10 +227,10 @@ const options: Instamancer.IOptions = {
     executablePath: string,
 
     // Custom io-ts validator
-    validator?: Type<unknown>,
+    validator: Type<unknown>,
 
     // Custom plugins
-    plugins?: IPlugin[]
+    plugins: IPlugin[]
 }
 ```
 
