@@ -6,7 +6,6 @@ const port = 3000;
 
 async function getPosts(tag: string): Promise<instamancer.TPost[]> {
     const hashtag = instamancer.createApi("hashtag", tag, {
-        silent: true,
         total: 5,
     });
     const posts = [];
