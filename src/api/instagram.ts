@@ -16,8 +16,7 @@ import {
     Response,
 } from "puppeteer";
 import * as winston from "winston";
-import {IPlugin} from "../../plugins";
-import {IPluginContext} from "../../plugins/plugin";
+import {IPlugin, IPluginContext} from "../../plugins";
 import {IOptions} from "./api";
 import {PostIdSet} from "./postIdSet";
 
@@ -575,6 +574,7 @@ export class Instagram<PostType> extends EventEmitter {
             // Stop if no data is being gathered
             if (this.jumps === this.failedJumps && this.index === 0) {
                 this.finished = true;
+                this.logger.error("Page failed to make requests");
                 break;
             }
 
@@ -610,8 +610,9 @@ export class Instagram<PostType> extends EventEmitter {
         for (let i = time; i > 0; i--) {
             this.sleepRemaining = i;
             await this.progress(Progress.SCRAPING);
+
             await new Promise((resolve) => {
-                setTimeout(resolve, 1000);
+                setTimeout(resolve, i >= 1 ? 1000 : i * 1000);
             });
         }
         this.sleepRemaining = 0;
