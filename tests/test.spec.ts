@@ -3,7 +3,7 @@ import {Overrides, Request} from "puppeteer";
 import * as winston from "winston";
 import {createApi, IPlugin} from "..";
 import {plugins} from "..";
-import {IPluginContext} from "../plugins/plugin";
+import {IPluginContext} from "../plugins";
 import {IOptions, IOptionsFullApi} from "../src/api/api";
 import {FakePage, IFakePageOptions} from "./__fixtures__/FakePage";
 import {QuickGraft} from "./__fixtures__/QuickGraft";
@@ -70,6 +70,7 @@ describe("Library Classes", () => {
     const objects = {
         hashtag: createApi("hashtag", hashtags[0], libraryTestOptions),
         post: createApi("post", posts, libraryTestOptions),
+        tagged: createApi("tagged", users[0], libraryTestOptions),
         user: createApi("user", users[0], libraryTestOptions),
     };
 
@@ -94,6 +95,7 @@ describe("Library Functions", () => {
             libraryTestOptions,
         ).generator(),
         post: createApi("post", posts, libraryTestOptions).generator(),
+        tagged: createApi("tagged", users[0], libraryTestOptions).generator(),
         user: createApi("user", users[0], libraryTestOptions).generator(),
     };
 
@@ -118,6 +120,7 @@ describe("Full API", () => {
     const generators = {
         hashtag: createApi("hashtag", hashtags[0], fullApiOption).generator(),
         post: createApi("post", posts, fullApiOption).generator(),
+        tagged: createApi("tagged", users[0], fullApiOption).generator(),
         user: createApi("user", users[0], fullApiOption).generator(),
     };
 
@@ -134,11 +137,15 @@ describe("Full API", () => {
 });
 
 class ApiTestConditions {
-    public api: "hashtag" | "user";
+    public api: "hashtag" | "user" | "tagged";
     public ids: string[];
     public sizes: number[];
 
-    constructor(api: "hashtag" | "user", ids: string[], sizes: number[]) {
+    constructor(
+        api: "hashtag" | "user" | "tagged",
+        ids: string[],
+        sizes: number[],
+    ) {
         this.api = api;
         this.ids = ids;
         this.sizes = sizes;
@@ -152,6 +159,7 @@ const endpoints: ApiTestConditions[] = [
         smallSize,
     ]),
     new ApiTestConditions("user", users, [mediumSize, smallSize]),
+    new ApiTestConditions("tagged", users, [mediumSize, smallSize]),
 ];
 
 test("Instagram API limits", async () => {

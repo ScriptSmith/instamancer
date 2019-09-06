@@ -66,10 +66,24 @@ function buildParser(args, callback) {
             await spawn(handleArgs);
             callback();
         })
-        .command("user [id]", "Scrape a user", {}, async (handleArgs) => {
-            await spawn(handleArgs);
-            callback();
-        })
+        .command(
+            "user [id]",
+            "Scrape a users posts",
+            {},
+            async (handleArgs) => {
+                await spawn(handleArgs);
+                callback();
+            },
+        )
+        .command(
+            "tagged [id]",
+            "Scrape a user's tagged posts",
+            {},
+            async (handleArgs) => {
+                await spawn(handleArgs);
+                callback();
+            },
+        )
         .command(
             "post [ids]",
             "Scrape a comma-separated list of posts",

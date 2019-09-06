@@ -173,7 +173,7 @@ export class Instagram<PostType> extends EventEmitter {
         super();
         this.id = id;
         this.postIds = new PostIdSet();
-        this.url = endpoint + id;
+        this.url = endpoint.replace("[id]", id);
 
         options = Instagram.defaultOptions(options);
         this.total = options.total;
