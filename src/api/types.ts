@@ -177,7 +177,7 @@ export const ShortcodeMedia = t.type({
     display_resources: DisplayResources,
     accessibility_caption: t.union([t.string, t.undefined]),
     is_video: t.boolean,
-    should_log_client_event: t.boolean,
+    should_log_client_event: t.union([t.boolean, t.undefined]),
     tracking_token: t.string,
     edge_media_to_tagged_user: EdgeMediaToCaption,
     edge_media_to_caption: EdgeMediaToCaption,
