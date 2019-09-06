@@ -7,7 +7,7 @@ export const Location = t.type({
     has_public_page: t.boolean,
     name: t.string,
     slug: t.string,
-    address_json: t.union([t.string, t.undefined]),
+    address_json: t.union([t.string, t.undefined, t.null]),
 });
 
 export const PostNodeOwner = t.type({
@@ -71,6 +71,13 @@ export const EdgeMediaToCaption = t.type({
 
 export const EdgeMediaToComment = t.type({
     count: t.number,
+});
+
+export const GatingInfo = t.type({
+    buttons: t.array(t.string),
+    description: t.string,
+    gating_type: t.string,
+    title: t.string,
 });
 
 export const PostNode = t.type({
@@ -171,7 +178,7 @@ export const ShortcodeMedia = t.type({
     edge_media_to_comment: t.union([EdgeMediaToComment, t.undefined]),
     thumbnail_src: t.union([t.undefined, t.string]),
     dimensions: Dimensions,
-    gating_info: t.union([t.string, t.null]),
+    gating_info: t.union([GatingInfo, t.null, t.undefined]),
     media_preview: t.union([t.string, t.null]),
     display_url: t.string,
     display_resources: DisplayResources,
