@@ -538,7 +538,7 @@ export class Instagram<PostType> extends EventEmitter {
       Warning! The Instagram API has been changed since this version of instamancer was released.
       More info: https://scriptsmith.github.io/instamancer/api-change
       `,
-                validationReporter,
+                {validationReporter, post},
             );
         }
     }
