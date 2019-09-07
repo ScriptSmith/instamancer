@@ -89,6 +89,7 @@ export const PostNode = t.type({
     shortcode: t.string,
     edge_media_to_comment: EdgeMediaToComment,
     taken_at_timestamp: t.number,
+    fact_check_information: t.union([t.null, t.undefined]),
     dimensions: Dimensions,
     display_url: t.string,
     edge_liked_by: t.union([EdgeMediaToComment, t.undefined]),
