@@ -22,7 +22,7 @@ Instamancer is a new type of scraping tool that leverages Puppeteer's ability to
 Read more about how Instamancer works [here](https://scriptsmith.github.io/instamancer/).
 
 ### Features
-- Scrape hashtags, users, tagged users, and posts
+- Scrape hashtags, users' posts, tagged posts, and individual posts
 - Download images, albums, and videos
 - Output JSON, CSV
 - Batch scraping
