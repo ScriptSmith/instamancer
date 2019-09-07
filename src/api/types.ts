@@ -96,7 +96,7 @@ export const PostNode = t.type({
     edge_media_preview_like: EdgeMediaToComment,
     owner: PostNodeOwner,
     thumbnail_src: t.string,
-    thumbnail_resources: DisplayResources,
+    thumbnail_resources: t.union([DisplayResources, t.undefined]),
     is_video: t.boolean,
     accessibility_caption: t.union([t.string, t.undefined, t.null]),
     display_resources: t.union([DisplayResources, t.undefined]),
