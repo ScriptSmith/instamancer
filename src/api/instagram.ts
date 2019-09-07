@@ -1,4 +1,4 @@
-import AwaitLock = require("await-lock");
+import AwaitLock from "await-lock";
 import chalk from "chalk";
 import {EventEmitter} from "events";
 import {isLeft} from "fp-ts/lib/Either";
