@@ -246,16 +246,17 @@ function buildParser(args, callback) {
                 describe: "Download media after scraping",
                 group: "Download",
             },
-            filename: {
-                alias: ["file", "o"],
+            file: {
+                alias: ["o"],
                 string: true,
                 default: "[id]",
-                describe: "Name of the output file",
+                describe: "Output filename. '-' for stdout",
                 group: "Output",
             },
-            filetype: {
-                alias: ["type", "t"],
+            type: {
+                alias: ["t"],
                 default: "json",
+                describe: "Filetype",
                 choices: ["csv", "json", "both"],
                 group: "Output",
             },
