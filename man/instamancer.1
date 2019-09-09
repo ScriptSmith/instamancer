@@ -1,0 +1,28 @@
+.\" Manpage for instamancer.
+.TH Instamancer 1
+.SH NAME
+instamancer \- Scrape Instagram's API with Puppeteer
+.SH SYNOPSIS
+.B instamancer
+[\fIoptions\fR]
+.IR command
+.IR query
+.SH DESCRIPTION
+Instamancer is an Instagram scraper that uses Puppeteer to control a chromium / chrome browser instance and intercept requests made to APIs.
+
+Instamancer scrapes hashtags, users, tagged posts, search results, and individual posts.
+
+Both data and media can be scraped, and then saved to disk or uploaded to external object storage.
+
+The plugin system can be used to extend instamancer and add other functionality.
+.SH OPTIONS
+.TP
+.BR \-h ", " \-\-help
+Show the list of options and examples
+.SH SEE ALSO
+The Instamancer project and further documentation can be accessed at https://github.com/ScriptSmith/instamancer
+.SH BUGS
+Please report bugs at
+https://github.com/ScriptSmith/instamancer/issues
+.SH AUTHOR
+Adam Smith https://github.com/ScriptSmith

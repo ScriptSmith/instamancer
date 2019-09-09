@@ -7,6 +7,9 @@
     "bin": {
         "instamancer": "src/cli.js"
     },
+    "man": [
+        "./man/instamancer.1"
+    ],
     "files": [
         "index.js",
         "index.d.ts",
