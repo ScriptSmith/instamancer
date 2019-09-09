@@ -312,8 +312,12 @@ function buildParser(args, callback) {
             "Download all the available posts, and their media from #instagood",
         )
         .example(
-            "$0 user arianagrande --filetype=csv --logging=info --visible",
+            "$0 user arianagrande --type=csv --logging=info --visible",
             "Download Ariana Grande's posts to a CSV file with a non-headless browser, and log all events",
+        )
+        .example(
+            "$0 tagged nasa -c100 -qo -",
+            "Output 100 tagged photos of nasa to stdout without status updates",
         )
         .epilog(
             "Source code available at https://github.com/ScriptSmith/instamancer",
@@ -361,6 +365,9 @@ async function spawn(args) {
             process.stdout.write(uploadUrl + "\n");
         }
     }
+
+    // Check if outputting to stdout
+    const printOutput = args["file"] === "-";
 
     // Connect to object storage
     let downloadUpload;
@@ -494,6 +501,11 @@ async function spawn(args) {
         // Save post
         posts.push(post);
 
+        // Output if required
+        if (printOutput) {
+            process.stdout.write(JSON.stringify(post, null, 2) + "\n");
+        }
+
         // Download the identified media
         if (!args["waitDownload"]) {
             for (const asset of downloadMedia) {
@@ -515,24 +527,26 @@ async function spawn(args) {
     await Promise.all(getPool.promises);
 
     // Replace filename
-    const filename = args["filename"]
+    const filename = args["file"]
         .replace("[id]", args["id"])
         .replace("[endpoint]", args["_"]);
 
     // Save file
-    if (args["filetype"] !== "json") {
-        let saveFile = filename;
-        if (args["filetype"] === "both" || args["filename"] === "[id]") {
-            saveFile += ".csv";
+    if (!printOutput) {
+        if (args["type"] !== "json") {
+            let saveFile = filename;
+            if (args["type"] === "both" || args["file"] === "[id]") {
+                saveFile += ".csv";
+            }
+            await toCSVFunc(posts, saveFile);
         }
-        await toCSVFunc(posts, saveFile);
-    }
-    if (args["filetype"] !== "csv") {
-        let saveFile = filename;
-        if (args["filetype"] === "both" || args["filename"] === "[id]") {
-            saveFile += ".json";
+        if (args["type"] !== "csv") {
+            let saveFile = filename;
+            if (args["type"] === "both" || args["file"] === "[id]") {
+                saveFile += ".json";
+            }
+            await toJSONFunc(posts, saveFile);
         }
-        await toJSONFunc(posts, saveFile);
     }
 
     // Remove pause callback
