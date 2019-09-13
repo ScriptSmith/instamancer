@@ -9,7 +9,7 @@ import {FakePage, IFakePageOptions} from "./__fixtures__/FakePage";
 import {QuickGraft} from "./__fixtures__/QuickGraft";
 import {startServer, stopServer} from "./server";
 
-jest.setTimeout(120 * 60 * 1000);
+jest.setTimeout(8 * 60 * 1000);
 /* tslint:disable:no-console */
 
 const hashtags = ["beach", "gym", "puppies", "party", "throwback"];
@@ -65,6 +65,20 @@ const libraryTestOptions: IOptions = {
     total: 10,
 };
 
+/**
+ * Used to debug stalled builds in travis
+ * @param name Test name
+ * @param callback Test function
+ */
+function testWrapper(name: string, callback: () => void) {
+    test(name, async () => {
+        if (process.env.TRAVIS) {
+            console.log(`Testing ${name}`);
+        }
+        await callback();
+    });
+}
+
 describe("Library Classes", () => {
     const total = 10;
     const objects = {
@@ -75,7 +89,7 @@ describe("Library Classes", () => {
     };
 
     for (const [key, object] of Object.entries(objects)) {
-        test(key, async () => {
+        testWrapper(key, async () => {
             const scraped = [];
             for await (const post of object.generator()) {
                 expect(post).toBeDefined();
@@ -100,7 +114,7 @@ describe("Library Functions", () => {
     };
 
     for (const [key, generator] of Object.entries(generators)) {
-        test(key, async () => {
+        testWrapper(key, async () => {
             const scraped = [];
             for await (const post of generator) {
                 expect(post).toBeDefined();
@@ -125,7 +139,7 @@ describe("Full API", () => {
     };
 
     for (const [key, generator] of Object.entries(generators)) {
-        test(key, async () => {
+        testWrapper(key, async () => {
             const scraped = [];
             for await (const post of generator) {
                 expect(post).toBeDefined();
@@ -136,33 +150,33 @@ describe("Full API", () => {
     }
 });
 
-class ApiTestConditions {
-    public api: "hashtag" | "user" | "tagged";
-    public ids: string[];
-    public sizes: number[];
+describe("API limits", () => {
+    class ApiTestConditions {
+        public api: "hashtag" | "user" | "tagged";
+        public ids: string[];
+        public sizes: number[];
 
-    constructor(
-        api: "hashtag" | "user" | "tagged",
-        ids: string[],
-        sizes: number[],
-    ) {
-        this.api = api;
-        this.ids = ids;
-        this.sizes = sizes;
+        constructor(
+            api: "hashtag" | "user" | "tagged",
+            ids: string[],
+            sizes: number[],
+        ) {
+            this.api = api;
+            this.ids = ids;
+            this.sizes = sizes;
+        }
     }
-}
 
-const endpoints: ApiTestConditions[] = [
-    new ApiTestConditions("hashtag", hashtags, [
-        largeSize,
-        mediumSize,
-        smallSize,
-    ]),
-    new ApiTestConditions("user", users, [mediumSize, smallSize]),
-    new ApiTestConditions("tagged", users, [mediumSize, smallSize]),
-];
+    const endpoints: ApiTestConditions[] = [
+        new ApiTestConditions("tagged", users, [mediumSize, smallSize]),
+        new ApiTestConditions("hashtag", hashtags, [
+            largeSize,
+            mediumSize,
+            smallSize,
+        ]),
+        new ApiTestConditions("user", users, [mediumSize, smallSize]),
+    ];
 
-test("Instagram API limits", async () => {
     for (const endpoint of endpoints) {
         // Get params
         const sourceApi = endpoint.api;
@@ -181,219 +195,211 @@ test("Instagram API limits", async () => {
             sizeIds = ids.slice(0, splitLen);
 
             for (const id of sizeIds) {
-                console.log(`Testing ${id} ${size}`);
-                // Specify API options
-                const options: IOptions = {
-                    enableGrafting: true,
-                    fullAPI: false,
-                    headless: true,
-                    logger: createLogger(),
-                    silent: false,
-                    sleepTime: 2,
-                    strict: true,
-                    total: size,
-                };
+                testWrapper(`${endpoint.api} ${id} ${size}`, async () => {
+                    // Specify API options
+                    const options: IOptions = {
+                        enableGrafting: true,
+                        fullAPI: false,
+                        headless: true,
+                        logger: createLogger(),
+                        silent: false,
+                        sleepTime: 2,
+                        strict: true,
+                        total: size,
+                    };
 
-                // Create API
-                const api = createApi(sourceApi, id, options);
+                    // Create API
+                    const api = createApi(sourceApi, id, options);
 
-                // Get posts
-                const scraped = [];
-                const postIds = new Set();
-                for await (const post of api.generator()) {
-                    postIds.add(post.node.id);
-                    scraped.push(post);
-                }
+                    // Get posts
+                    const scraped = [];
+                    const postIds = new Set();
+                    for await (const post of api.generator()) {
+                        postIds.add(post.node.id);
+                        scraped.push(post);
+                    }
 
-                // Assert sizes
-                expect(scraped.length).toBe(size);
+                    // Assert sizes
+                    expect(scraped.length).toBe(size);
 
-                // Check duplicates
-                expect(scraped.length).toBe(postIds.size);
+                    // Check duplicates
+                    expect(scraped.length).toBe(postIds.size);
+                });
             }
         }
     }
 });
 
-test("Empty page", async () => {
-    const user = createApi("user", emptyAccountName, {}).generator();
-    const userPosts = [];
-    for await (const post of user) {
-        userPosts.push(post);
-    }
-    expect(userPosts.length).toBe(0);
-});
-
-const apiOptions: IOptions[] = [
-    {silent: true},
-    {sleepTime: 5},
-    {headless: false},
-    {enableGrafting: false},
-    {executablePath: browserPath},
-    {fullAPI: true},
-    {fullAPI: true, total: 5},
-];
-
-test("API options", async () => {
+describe("API options", () => {
     const hashtagId = "vetinari";
     const total = 50;
-    let options: IOptions[] = [];
+    const optionsCollection: Array<[string, IOptions]> = [
+        ["No options", {}],
+        ["Silence", {silent: true, total}],
+        ["Sleep", {sleepTime: 5, total}],
+        ["Headless", {headless: false, total}],
+        ["Grafting", {enableGrafting: false, total}],
+        ["Executable path", {executablePath: browserPath, total}],
+        ["Full api", {fullAPI: true, total}],
+        ["Limited full api", {fullAPI: true, total: 5}],
+    ];
 
-    // No options default
-    options.push({});
+    for (const [index, [name, options]] of optionsCollection.entries()) {
+        testWrapper(name, async () => {
+            // @ts-ignore
+            const tag = createApi("hashtag", hashtagId, options);
+            const scraped = [];
 
-    // Add options list
-    options = options.concat(
-        apiOptions.map((option) => {
-            option.total = option.total < total ? option.total : total;
-            return option;
-        }),
-    );
+            for await (const post of tag.generator()) {
+                expect(post).toBeDefined();
+                scraped.push(post);
+            }
 
-    for (const indexOption of options.entries()) {
-        const [index, option] = indexOption;
-        // @ts-ignore
-        const tag = createApi("hashtag", hashtagId, option);
+            if (index === 0) {
+                expect(scraped.length).toBeGreaterThan(total);
+            } else if (index === optionsCollection.length - 1) {
+                expect(scraped.length).toBe(5);
+            } else {
+                expect(scraped.length).toBe(total);
+            }
+        });
+    }
+});
+
+describe("Unusual behavior", () => {
+    testWrapper("Empty page", async () => {
+        const user = createApi("user", emptyAccountName, {}).generator();
+        const userPosts = [];
+        for await (const post of user) {
+            userPosts.push(post);
+        }
+        expect(userPosts.length).toBe(0);
+    });
+
+    testWrapper("No grafting", async () => {
+        const total = 100;
+        const hashtag = hashtags[0];
+        const api = new QuickGraft(hashtag, {total, enableGrafting: false});
         const scraped = [];
 
-        for await (const post of tag.generator()) {
-            expect(post).toBeDefined();
-            scraped.push(post);
-        }
-
-        if (index === 0) {
-            expect(scraped.length).toBeGreaterThan(total);
-        } else if (index === options.length - 1) {
-            expect(scraped.length).toBe(5);
-        } else {
-            expect(scraped.length).toBe(total);
-        }
-    }
-});
-
-test("No grafting", async () => {
-    const total = 100;
-    const hashtag = hashtags[0];
-    const api = new QuickGraft(hashtag, {total, enableGrafting: false});
-    const scraped = [];
-
-    for await (const post of api.generator()) {
-        scraped.push(post);
-    }
-
-    expect(scraped.length).toBe(total);
-});
-
-test("Pausing", async () => {
-    const api = createApi("hashtag", hashtags[0], {total: 100});
-    const iterator = api.generator();
-
-    api.pause();
-    setTimeout(() => {
-        api.pause();
-    }, 20000);
-
-    for await (const post of iterator) {
-        expect(post).toBeDefined();
-    }
-});
-
-test("Hibernation", async () => {
-    const options: IOptions = {
-        hibernationTime: 10,
-        total: smallSize,
-    };
-
-    const api = createApi("hashtag", hashtags[0], options);
-    const iterator = api.generator();
-
-    await iterator.next();
-    api.toggleHibernation();
-
-    for await (const post of iterator) {
-        expect(post).toBeDefined();
-    }
-});
-
-test("Sandbox", async () => {
-    process.env["NO_SANDBOX"] = "true";
-    for await (const post of createApi(
-        "hashtag",
-        hashtags[0],
-        libraryTestOptions,
-    ).generator()) {
-        expect(post).toBeDefined();
-    }
-    process.env["NO_SANDBOX"] = "";
-});
-
-test("Failed Page visit", async () => {
-    const options: IOptions = {
-        proxyURL: "127.0.0.1:9999",
-    };
-    const api = createApi("hashtag", hashtags[0], options);
-    const scraped = [];
-
-    try {
         for await (const post of api.generator()) {
             scraped.push(post);
         }
-    } catch (e) {
-        expect(e).toBeDefined();
-    }
 
-    expect(scraped.length).toBe(0);
+        expect(scraped.length).toBe(total);
+    });
+
+    testWrapper("Pausing", async () => {
+        const api = createApi("hashtag", hashtags[0], {total: 100});
+        const iterator = api.generator();
+
+        api.pause();
+        setTimeout(() => {
+            api.pause();
+        }, 20000);
+
+        for await (const post of iterator) {
+            expect(post).toBeDefined();
+        }
+    });
+
+    testWrapper("Hibernation", async () => {
+        const options: IOptions = {
+            hibernationTime: 10,
+            total: smallSize,
+        };
+
+        const api = createApi("hashtag", hashtags[0], options);
+        const iterator = api.generator();
+
+        await iterator.next();
+        api.toggleHibernation();
+
+        for await (const post of iterator) {
+            expect(post).toBeDefined();
+        }
+    });
+
+    testWrapper("Sandbox", async () => {
+        process.env["NO_SANDBOX"] = "true";
+        for await (const post of createApi(
+            "hashtag",
+            hashtags[0],
+            libraryTestOptions,
+        ).generator()) {
+            expect(post).toBeDefined();
+        }
+        process.env["NO_SANDBOX"] = "";
+    });
+
+    testWrapper("Failed Page visit", async () => {
+        const options: IOptions = {
+            proxyURL: "127.0.0.1:9999",
+        };
+        const api = createApi("hashtag", hashtags[0], options);
+        const scraped = [];
+
+        try {
+            for await (const post of api.generator()) {
+                scraped.push(post);
+            }
+        } catch (e) {
+            expect(e).toBeDefined();
+        }
+
+        expect(scraped.length).toBe(0);
+    });
 });
 
-test("Network and API issues", async () => {
-    const port = await startServer();
-    console.log("Server: http://127.0.0.1:" + port);
-
+describe("Network and API issues", () => {
     async function testOptions(options: IFakePageOptions) {
-        process.stdout.write("Testing " + options.catchPage + "\n");
-
+        options.port = await startServer();
         const api = new FakePage(options);
+        const mock = jest.fn();
+
         try {
-            for await (let _ of api.generator()) {
-                _ = null;
+            for await (const post of api.generator()) {
+                mock(post);
             }
         } catch (e) {
             expect(e).toBeDefined();
         }
         await api.forceStop();
+
+        await stopServer();
     }
 
-    // Test rate limiting
-    await testOptions({
-        catchPage: "rate_limit",
-        options: {hibernationTime: 10},
-        port,
+    testWrapper("Rate limit", async () => {
+        await testOptions({
+            catchPage: "rate_limit",
+            options: {hibernationTime: 10},
+        });
     });
 
-    // Test invalid JSON response
-    await testOptions({port, catchPage: "invalid_json"});
-
-    // Test no next page in JSON response
-    await testOptions({port, catchPage: "no_next_page", pageQuery: "data"});
-
-    // Test duplicate post ids scraped
-    await testOptions({
-        catchPage: "duplicate_ids",
-        edgeQuery: "data.edges",
-        pageQuery: "data",
-        port,
+    testWrapper("Invalid JSON", async () => {
+        await testOptions({catchPage: "invalid_json"});
     });
 
-    // Test invalid post id page
-    await testOptions({
-        catchPage: "invalid_id",
-        edgeQuery: "data.edges",
-        options: {fullAPI: true, total: 1},
-        pageQuery: "data",
-        port,
+    testWrapper("No next page", async () => {
+        await testOptions({catchPage: "no_next_page", pageQuery: "data"});
     });
 
-    await stopServer();
+    testWrapper("Duplicate post ids", async () => {
+        await testOptions({
+            catchPage: "duplicate_ids",
+            edgeQuery: "data.edges",
+            pageQuery: "data",
+        });
+    });
+
+    testWrapper("Invalid post id", async () => {
+        await testOptions({
+            catchPage: "invalid_id",
+            edgeQuery: "data.edges",
+            options: {fullAPI: true, total: 1},
+            pageQuery: "data",
+        });
+    });
 });
 
 describe("Strict mode", () => {
@@ -401,89 +407,104 @@ describe("Strict mode", () => {
         foo: t.string,
     });
 
-    test("Should fire warning if strict is false and validations are different", async () => {
-        const logger = createLogger();
-        logger.warn = jest.fn();
-        const iterator = createApi("hashtag", hashtags[0], {
-            logger,
-            strict: false,
-            total: 1,
-            validator: failingValidator,
-        }).generator();
+    testWrapper(
+        "Should fire warning if strict is false and validations are different",
+        async () => {
+            const logger = createLogger();
+            logger.warn = jest.fn();
+            const iterator = createApi("hashtag", hashtags[0], {
+                logger,
+                strict: false,
+                total: 1,
+                validator: failingValidator,
+            }).generator();
 
-        let i = 0;
-        for await (const post of iterator) {
-            i++;
-            expect(logger.warn).toBeCalledTimes(i);
-        }
-    });
+            let i = 0;
+            for await (const post of iterator) {
+                i++;
+                expect(logger.warn).toBeCalledTimes(i);
+            }
+        },
+    );
 
-    test("Should not fire warning if strict is false and validations are ok", async () => {
-        const logger = createLogger();
-        logger.warn = jest.fn();
-        const iterator = createApi("hashtag", hashtags[0], {
-            logger,
-            strict: false,
-            total: 1,
-        }).generator();
+    testWrapper(
+        "Should not fire warning if strict is false and validations are ok",
+        async () => {
+            const logger = createLogger();
+            logger.warn = jest.fn();
+            const iterator = createApi("hashtag", hashtags[0], {
+                logger,
+                strict: false,
+                total: 1,
+            }).generator();
 
-        for await (const post of iterator) {
-            expect(logger.warn).toBeCalledTimes(0);
-        }
-    });
+            for await (const post of iterator) {
+                expect(logger.warn).toBeCalledTimes(0);
+            }
+        },
+    );
 
-    test("Should throw validation error if strict is true and types are incorrect", async () => {
-        expect.hasAssertions();
-        const iterator = createApi("hashtag", hashtags[0], {
-            strict: true,
-            total: 1,
-            validator: failingValidator,
-        }).generator();
+    testWrapper(
+        "Should throw validation error if strict is true and types are incorrect",
+        async () => {
+            expect.hasAssertions();
+            const iterator = createApi("hashtag", hashtags[0], {
+                strict: true,
+                total: 1,
+                validator: failingValidator,
+            }).generator();
 
-        try {
-            await iterator.next();
-        } catch (e) {
-            expect(e).toBeInstanceOf(Error);
-            expect(e.message).toMatch(/^Invalid value/);
-        }
-    });
+            try {
+                await iterator.next();
+            } catch (e) {
+                expect(e).toBeInstanceOf(Error);
+                expect(e.message).toMatch(/^Invalid value/);
+            }
+        },
+    );
 
-    test("Should throw validation error if strict is true and types are incorrect (Post)", async () => {
-        expect.hasAssertions();
-        const iterator = createApi("post", posts, {
-            strict: true,
-            total: 1,
-            validator: failingValidator,
-        }).generator();
+    testWrapper(
+        "Should throw validation error if strict is true and types are incorrect (Post)",
+        async () => {
+            expect.hasAssertions();
+            const iterator = createApi("post", posts, {
+                strict: true,
+                total: 1,
+                validator: failingValidator,
+            }).generator();
 
-        try {
-            await iterator.next();
-        } catch (e) {
-            expect(e).toBeInstanceOf(Error);
-            expect(e.message).toMatch(/^Invalid value/);
-        }
-    });
+            try {
+                await iterator.next();
+            } catch (e) {
+                expect(e).toBeInstanceOf(Error);
+                expect(e.message).toMatch(/^Invalid value/);
+            }
+        },
+    );
 
-    test("Should throw validation error if strict is true and types are incorrect (Full Mode)", async () => {
-        expect.hasAssertions();
-        const iterator = createApi("hashtag", hashtags[0], {
-            fullAPI: true,
-            strict: true,
-            total: 1,
-            validator: failingValidator,
-        }).generator();
+    testWrapper(
+        "Should throw validation error if strict is true and types are incorrect (Full Mode)",
+        async () => {
+            expect.hasAssertions();
+            const iterator = createApi("hashtag", hashtags[0], {
+                fullAPI: true,
+                strict: true,
+                total: 1,
+                validator: failingValidator,
+            }).generator();
 
-        try {
-            await iterator.next();
-        } catch (e) {
-            expect(e).toBeInstanceOf(Error);
-            expect(e.message).toMatch(/^Invalid value/);
-        }
-    });
+            try {
+                await iterator.next();
+            } catch (e) {
+                expect(e).toBeInstanceOf(Error);
+                expect(e.message).toMatch(/^Invalid value/);
+            }
+        },
+    );
 });
 
 describe("Search", () => {
-    test("Search Result Users", async () => {
+    testWrapper("Search Result Users", async () => {
         const result = await createApi(
             "search",
             "therock",
@@ -496,7 +517,7 @@ describe("Search", () => {
         expect(user.profile_pic_url).toBeTruthy();
     });
 
-    test("Search Result Hashtags", async () => {
+    testWrapper("Search Result Hashtags", async () => {
         const result = await createApi(
             "search",
             "nofilter",
@@ -508,7 +529,7 @@ describe("Search", () => {
         expect(hashtag.name).toBe("nofilter");
     });
 
-    test("Search Result Places", async () => {
+    testWrapper("Search Result Places", async () => {
         const result = await createApi(
             "search",
             "New york",
@@ -519,7 +540,7 @@ describe("Search", () => {
         expect(place.title).toMatch(/New York/);
     });
 
-    test("Incorrect validation", async () => {
+    testWrapper("Incorrect validation", async () => {
         const failingValidator = t.type({
             foo: t.string,
         });
@@ -538,8 +559,9 @@ describe("Search", () => {
         }
     });
 
-    test("Search should fire only one network request", async () => {
+    testWrapper("Search should fire only one network request", async () => {
         const searchRequestsSpy = jest.fn();
+
         class RequestCounter<PostType> implements IPlugin<PostType> {
             public requestEvent(
                 this: IPluginContext<IPlugin<PostType>, PostType>,
@@ -566,7 +588,7 @@ describe("Search", () => {
 });
 
 describe("Plugins", () => {
-    test("Internal plugins", async () => {
+    testWrapper("Internal plugins", async () => {
         for (const plugin in plugins) {
             if (!plugins.hasOwnProperty(plugin)) {
                 continue;
