@@ -70,7 +70,7 @@ const libraryTestOptions: IOptions = {
  * @param name Test name
  * @param callback Test function
  */
-function testWrapper(name: string, callback: () => void) {
+function testWrapper(name: string, callback: () => Promise<void>) {
     test(name, async () => {
         if (process.env.TRAVIS) {
             console.log(`Testing ${name}`);
