@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - "node"
   - "lts/*"
-dist: trusty
+dist: bionic
 addons:
   apt:
     packages:
