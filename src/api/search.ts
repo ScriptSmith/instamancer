@@ -58,6 +58,7 @@ export const Hashtags = t.type({
             media_count: t.number,
             name: t.string,
             search_result_subtitle: t.string,
+            use_default_avatar: t.boolean,
         }),
     ),
     position: t.number,
