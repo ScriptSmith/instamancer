@@ -8,8 +8,6 @@ export const Users = t.type({
     position: t.number,
     user: excess(
         t.type({
-            byline: t.string,
-            follower_count: t.number,
             full_name: t.string,
             has_anonymous_profile_picture: t.boolean,
             is_private: t.boolean,
@@ -19,7 +17,6 @@ export const Users = t.type({
             pk: t.string,
             profile_pic_id: t.union([t.string, t.undefined]),
             profile_pic_url: t.string,
-            unseen_count: t.number,
             username: t.string,
         }),
     ),
