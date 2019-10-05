@@ -76,6 +76,9 @@ function testWrapper(name: string, callback: () => Promise<void>) {
             console.log(`Testing ${name}`);
         }
         await callback();
+        await new Promise((resolve) => {
+            setTimeout(resolve, 10000);
+        });
     });
 }
 
