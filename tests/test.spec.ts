@@ -76,9 +76,6 @@ function testWrapper(name: string, callback: () => Promise<void>) {
             console.log(`Testing ${name}`);
         }
         await callback();
-        await new Promise((resolve) => {
-            setTimeout(resolve, 10000);
-        });
     });
 }
 
@@ -171,9 +168,9 @@ describe("API limits", () => {
     }
 
     const endpoints: ApiTestConditions[] = [
-        new ApiTestConditions("tagged", users, [mediumSize]),
-        new ApiTestConditions("hashtag", hashtags, [largeSize]),
-        new ApiTestConditions("user", users, [mediumSize]),
+        // new ApiTestConditions("tagged", users, [mediumSize]),
+        // new ApiTestConditions("hashtag", hashtags, [largeSize]),
+        // new ApiTestConditions("user", users, [mediumSize]),
     ];
 
     for (const endpoint of endpoints) {
