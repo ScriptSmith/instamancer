@@ -681,7 +681,7 @@ export class Instagram<PostType> extends EventEmitter {
             await this.browser.close();
 
             // Retry
-            await this.apuppeteer_1();
+            await this.constructPage();
         }
     }
 
