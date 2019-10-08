@@ -10,6 +10,7 @@ import {
     Browser,
     Headers,
     launch,
+    executablePath,
     LaunchOptions,
     Page,
     Request,
