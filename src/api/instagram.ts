@@ -636,6 +636,7 @@ export class Instagram<PostType> extends EventEmitter {
         // Browser launch options
         const options: LaunchOptions = {
             args,
+            executablePath: executablePath().replace('app.asar', 'app.asar.unpacked'),
             headless: this.headless,
         };
         if (this.executablePath !== undefined) {
@@ -679,7 +680,7 @@ export class Instagram<PostType> extends EventEmitter {
             await this.browser.close();
 
             // Retry
-            await this.constructPage();
+            await this.apuppeteer_1();
         }
     }
 
