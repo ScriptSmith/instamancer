@@ -276,6 +276,9 @@ export class Instagram<PostType> extends EventEmitter {
         this.page.on("request", (req) => this.interceptRequest(req));
         this.page.on("response", (res) => this.interceptResponse(res));
         this.page.on("requestfailed", (res) => this.interceptFailure(res));
+        this.page.on("console", (message) =>
+            this.logger.info("Console log", message),
+        );
 
         // Ignore dialog boxes
         this.page.on("dialog", (dialog) => dialog.dismiss());
