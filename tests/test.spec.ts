@@ -55,6 +55,9 @@ const createLogger = () =>
                 filename: "instamancer_tests.log",
                 level: "debug",
             }),
+            new winston.transports.Console({
+                level: "error",
+            }),
         ],
     });
 
