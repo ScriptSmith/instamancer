@@ -669,7 +669,7 @@ export class Instagram<PostType> extends EventEmitter {
             }
 
             // Log error and wait
-            this.logger.error(e);
+            this.logger.error("Error", e);
             this.logger.error(this.url);
             await this.progress(Progress.ABORTED);
             await this.sleep(60);
