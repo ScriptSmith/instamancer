@@ -798,6 +798,9 @@ export class Instagram<PostType> extends EventEmitter {
      * Manipulate the page to stimulate a request
      */
     private async jump() {
+        /* istanbul ignore next */
+        await this.page.evaluate(() => (document.body.style.overflow = ""));
+
         await this.page.keyboard.press("PageUp");
         const jumpSize = this.graft ? 1 : this.jumpSize;
         for (let i = 0; i < jumpSize; i++) {
