@@ -80,6 +80,9 @@ export class Instagram<PostType> extends EventEmitter {
     // Puppeteer resources
     public page: Page;
 
+    // Logging object
+    public logger: winston.Logger;
+
     // Validations
     private readonly strict: boolean = false;
     private readonly validator: Type<unknown>;
@@ -143,9 +146,6 @@ export class Instagram<PostType> extends EventEmitter {
 
     // Length of time to sleep for
     private readonly sleepTime: number = 2;
-
-    // Logging object
-    private logger: winston.Logger;
 
     // Proxy for Instagram connection
     private readonly proxyURL: string;
