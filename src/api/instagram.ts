@@ -666,8 +666,15 @@ export class Instagram<PostType> extends EventEmitter {
             /* istanbul ignore next */
             await this.page.evaluate(() => {
                 setInterval(() => {
-                    document.body.style.overflow = "";
-                }, 30000);
+                    try {
+                        document.body.style.overflow = "";
+                    } catch (e) {
+                        // tslint:disable-next-line:no-console
+                        console.log("Failed to update style");
+                        // tslint:disable-next-line:no-console
+                        console.error(e.message);
+                    }
+                }, 10000);
             });
         } catch (e) {
             // Increment attempts
