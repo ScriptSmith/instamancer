@@ -89,6 +89,7 @@ export class Search extends Instagram<TSearchResult> {
     public readonly catchURL = "https://www.instagram.com/web/";
     private searchResult: TSearchResult;
     private readonly searchQuery: string;
+    private readonly inputElementQuery: string = "input[type='text']";
 
     constructor(query: string, options: ISearchOptions = {}) {
         super(
@@ -107,7 +108,15 @@ export class Search extends Instagram<TSearchResult> {
             await this.start();
         }
         try {
-            await this.page.click("input[type='text']");
+            const inputElement = await this.page.$(this.inputElementQuery);
+            if (inputElement === null) {
+                const pageContent = await this.page.content();
+                this.logger.error("Couldn't find input", {
+                    content: pageContent,
+                });
+            }
+
+            await inputElement.click();
             await this.page.keyboard.sendCharacter(this.searchQuery);
             await this.page.waitForRequest((req) => this.matchURL(req.url()));
             await this.processRequests();
