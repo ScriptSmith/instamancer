@@ -108,13 +108,10 @@ export class Search extends Instagram<TSearchResult> {
             await this.start();
         }
         try {
-            const inputElement = await this.page.$(this.inputElementQuery);
-            if (inputElement === null) {
-                const pageContent = await this.page.content();
-                this.logger.error("Couldn't find input", {
-                    content: pageContent,
-                });
-            }
+            const inputElement = await this.page.waitForSelector(
+                this.inputElementQuery,
+                {timeout: 30000},
+            );
 
             await inputElement.click();
             await this.page.keyboard.sendCharacter(this.searchQuery);
@@ -125,6 +122,11 @@ export class Search extends Instagram<TSearchResult> {
             await this.stop();
             return this.searchResult;
         } catch (e) {
+            const pageContent = await this.page.content();
+            this.logger.error(e.message, {
+                content: pageContent,
+            });
+
             await this.forceStop();
             throw e;
         }
