@@ -122,11 +122,6 @@ export class Search extends Instagram<TSearchResult> {
             await this.stop();
             return this.searchResult;
         } catch (e) {
-            const pageContent = await this.page.content();
-            this.logger.error(e.message, {
-                content: pageContent,
-            });
-
             await this.forceStop();
             throw e;
         }
