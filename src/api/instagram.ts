@@ -606,7 +606,15 @@ export class Instagram<PostType> {
             // Stop if no data is being gathered
             if (this.jumps === this.failedJumps && this.index === 0) {
                 this.finished = true;
-                this.logger.error("Page failed to make requests");
+
+                const pageContent = {content: ""};
+                try {
+                    pageContent.content = await this.page.content();
+                } catch (e) {
+                    this.logger.error("Failed reading page content");
+                }
+
+                this.logger.error("Page failed to make requests", pageContent);
                 break;
             }
 
