@@ -45,6 +45,9 @@ export class Instagram<PostType> {
         if (options.enableGrafting === undefined) {
             options.enableGrafting = true;
         }
+        if (options.sameBrowser === undefined) {
+            options.sameBrowser = false;
+        }
         if (options.fullAPI === undefined) {
             options.fullAPI = false;
         }
@@ -122,6 +125,7 @@ export class Instagram<PostType> {
 
     // Grafting state
     private readonly enableGrafting: boolean = true;
+    private readonly sameBrowser: boolean = false;
     private graft: boolean = false;
     private graftURL: string = null;
     private graftHeaders: Headers = null;
@@ -207,6 +211,7 @@ export class Instagram<PostType> {
         this.silent = options.silent;
         this.strict = options.strict;
         this.enableGrafting = options.enableGrafting;
+        this.sameBrowser = options.sameBrowser;
         this.sleepTime = options.sleepTime;
         this.hibernationTime = options.hibernationTime;
         this.fullAPI = options.fullAPI;
@@ -336,7 +341,7 @@ export class Instagram<PostType> {
             this.page.removeAllListeners("requestfailed");
             await this.page.close();
         }
-        if (!this.browserDisconnected) {
+        if (this.finished && !this.browserDisconnected) {
             await this.browser.close();
         }
 
@@ -670,13 +675,15 @@ export class Instagram<PostType> {
         }
 
         // Launch browser
-        await this.progress(Progress.LAUNCHING);
-        this.browser = await launch(options);
-        this.browserDisconnected = false;
-        this.browser.on(
-            "disconnected",
-            () => (this.browserDisconnected = true),
-        );
+        if (!this.sameBrowser || (this.sameBrowser && !this.started)) {
+            await this.progress(Progress.LAUNCHING);
+            this.browser = await launch(options);
+            this.browserDisconnected = false;
+            this.browser.on(
+                "disconnected",
+                () => (this.browserDisconnected = true),
+            );
+        }
 
         // New page
         this.page = await this.browser.newPage();

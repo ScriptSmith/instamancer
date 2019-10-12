@@ -39,6 +39,7 @@ function getOptions(args, logger) {
         headless: !args["visible"],
         logger,
         plugins: [],
+        sameBrowser: args["sameBrowser"],
         silent: args["quiet"],
         sleepTime: args["sleep"],
         strict: args["strict"],
@@ -197,6 +198,12 @@ function buildParser(args, callback) {
                 string: true,
                 default: undefined,
                 describe: "Browser path. Defaults to the puppeteer version",
+                group: "Configuration",
+            },
+            sameBrowser: {
+                boolean: true,
+                default: false,
+                describe: "Use a single browser when grafting",
                 group: "Configuration",
             },
             download: {

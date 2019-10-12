@@ -45,6 +45,9 @@ export interface IOptionsCommon {
     // Enable the grafting process
     enableGrafting?: boolean;
 
+    // Use the same browser instance when grafting
+    sameBrowser?: boolean;
+
     // Extract the full amount of information from the API
     fullAPI?: boolean;
 
