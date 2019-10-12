@@ -87,7 +87,6 @@ describe("Library Classes", () => {
     const objects = {
         hashtag: createApi("hashtag", hashtags[0], libraryTestOptions),
         post: createApi("post", posts, libraryTestOptions),
-        tagged: createApi("tagged", users[0], libraryTestOptions),
         user: createApi("user", users[0], libraryTestOptions),
     };
 
@@ -112,7 +111,6 @@ describe("Library Functions", () => {
             libraryTestOptions,
         ).generator(),
         post: createApi("post", posts, libraryTestOptions).generator(),
-        tagged: createApi("tagged", users[0], libraryTestOptions).generator(),
         user: createApi("user", users[0], libraryTestOptions).generator(),
     };
 
@@ -137,7 +135,6 @@ describe("Full API", () => {
     const generators = {
         hashtag: createApi("hashtag", hashtags[0], fullApiOption).generator(),
         post: createApi("post", posts, fullApiOption).generator(),
-        tagged: createApi("tagged", users[0], fullApiOption).generator(),
         user: createApi("user", users[0], fullApiOption).generator(),
     };
 
@@ -155,15 +152,11 @@ describe("Full API", () => {
 
 describe("API limits", () => {
     class ApiTestConditions {
-        public api: "hashtag" | "user" | "tagged";
+        public api: "hashtag" | "user";
         public ids: string[];
         public sizes: number[];
 
-        constructor(
-            api: "hashtag" | "user" | "tagged",
-            ids: string[],
-            sizes: number[],
-        ) {
+        constructor(api: "hashtag" | "user", ids: string[], sizes: number[]) {
             this.api = api;
             this.ids = ids;
             this.sizes = sizes;
@@ -171,7 +164,6 @@ describe("API limits", () => {
     }
 
     const endpoints: ApiTestConditions[] = [
-        new ApiTestConditions("tagged", users, [mediumSize]),
         new ApiTestConditions("hashtag", hashtags, [largeSize]),
         new ApiTestConditions("user", users, [mediumSize]),
     ];

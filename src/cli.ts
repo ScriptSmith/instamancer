@@ -77,15 +77,6 @@ function buildParser(args, callback) {
             },
         )
         .command(
-            "tagged [id]",
-            "Scrape a user's tagged posts",
-            {},
-            async (handleArgs) => {
-                await spawn(handleArgs);
-                callback();
-            },
-        )
-        .command(
             "post [ids]",
             "Scrape a comma-separated list of posts",
             {},
@@ -321,10 +312,6 @@ function buildParser(args, callback) {
         .example(
             "$0 user arianagrande --type=csv --logging=info --visible",
             "Download Ariana Grande's posts to a CSV file with a non-headless browser, and log all events",
-        )
-        .example(
-            "$0 tagged nasa -c100 -qo -",
-            "Output 100 tagged photos of nasa to stdout without status updates",
         )
         .epilog(
             "Source code available at https://github.com/ScriptSmith/instamancer",

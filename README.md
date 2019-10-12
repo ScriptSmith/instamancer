@@ -22,7 +22,7 @@ Instamancer is a new type of scraping tool that leverages Puppeteer's ability to
 Read more about how Instamancer works [here](https://scriptsmith.github.io/instamancer/).
 
 ### Features
-- Scrape hashtags, users' posts, tagged posts, and individual posts
+- Scrape hashtags, users' posts, and individual posts
 - Download images, albums, and videos
 - Output JSON, CSV
 - Batch scraping
@@ -110,7 +110,6 @@ Usage: instamancer <command> [options]
 Commands:
   instamancer hashtag [id]       Scrape a hashtag
   instamancer user [id]          Scrape a users posts
-  instamancer tagged [id]        Scrape a user's tagged posts
   instamancer post [ids]         Scrape a comma-separated list of posts
   instamancer search [query]     Perform a search of users, tags and places
   instamancer batch [batchfile]  Read newline-separated arguments from a file
@@ -189,7 +188,6 @@ import {createApi} from "instamancer"
 
 createApi("hashtag", id, options);
 createApi("user", id, options);
-createApi("tagged", id, options);
 createApi("post", ids, options);
 createApi("search", query, options);
 ```
@@ -280,7 +278,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td><a href="https://github.com/ScriptSmith/instamancer">Instamancer</a></td>
         <td>:heavy_check_mark:</td>
         <td>:heavy_check_mark:</td>
-        <td>:heavy_check_mark:</td>
+        <td>:x:</td>
         <td>:x:</td>
         <td>:heavy_check_mark:</td>
         <td>:x:</td>

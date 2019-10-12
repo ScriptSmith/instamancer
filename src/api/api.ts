@@ -132,18 +132,18 @@ export function createApi(
 ): Search;
 export function createApi(type: "post", id: string[], options?: IOptions): Post;
 export function createApi(
-    type: "hashtag" | "user" | "tagged",
+    type: "hashtag" | "user",
     id: string,
     options?: IOptionsRegular | IOptionsRegularPlugins<InstagramPostClass>,
 ): InstagramPostClass;
 export function createApi(
-    type: "hashtag" | "user" | "tagged",
+    type: "hashtag" | "user",
     id: string,
     options?: IOptionsFullApi | IOptionsFullApiPlugins<InstagramFullPostClass>,
 ): InstagramFullPostClass;
 
 export function createApi(
-    type: "hashtag" | "user" | "tagged" | "post" | "search",
+    type: "hashtag" | "user" | "post" | "search",
     id: string | string[],
     options?: IOptions,
 ): Post | InstagramPostClass | InstagramFullPostClass | Search {
@@ -158,9 +158,6 @@ export function createApi(
             break;
         case "user":
             ClassConstructor = User;
-            break;
-        case "tagged":
-            ClassConstructor = Tagged;
             break;
     }
     if (options.fullAPI) {
@@ -196,25 +193,6 @@ export class User<T> extends Instagram<T> {
         const endpoint = "https://instagram.com/[id]";
         const pageQuery = "data.user.edge_owner_to_timeline_media.page_info";
         const edgeQuery = "data.user.edge_owner_to_timeline_media.edges";
-        super(
-            endpoint,
-            id,
-            pageQuery,
-            edgeQuery,
-            options,
-            getPageValidator(options),
-        );
-    }
-}
-
-/**
- * An Instagram user's tagged posts API wrapper
- */
-export class Tagged<T> extends Instagram<T> {
-    constructor(id: string, options: IOptions = {}) {
-        const endpoint = "https://instagram.com/[id]/tagged";
-        const pageQuery = "data.user.edge_user_to_photos_of_you.page_info";
-        const edgeQuery = "data.user.edge_user_to_photos_of_you.edges";
         super(
             endpoint,
             id,
