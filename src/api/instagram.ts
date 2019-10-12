@@ -136,7 +136,7 @@ export class Instagram<PostType> {
     private readonly hibernationTime: number = 60 * 20; // 20 minutes
 
     // Number of jumps before exiting because lack of data
-    private failedJumps: number = 10;
+    private failedJumps: number = 20;
 
     // Strings denoting the access methods of API objects
     private readonly pageQuery: string;
