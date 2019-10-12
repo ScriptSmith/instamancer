@@ -562,11 +562,11 @@ describe("Search", () => {
         const searchRequestsSpy = jest.fn();
 
         class RequestCounter<PostType> implements IPlugin<PostType> {
-            public requestEvent(
+            public async requestEvent(
                 this: IPluginContext<IPlugin<PostType>, PostType>,
                 req: Request,
                 overrides: Overrides,
-            ): void {
+            ) {
                 if (this.state.matchURL(req.url())) {
                     searchRequestsSpy();
                 }
