@@ -1,6 +1,5 @@
 import AwaitLock from "await-lock";
 import chalk from "chalk";
-import {EventEmitter} from "events";
 import {isLeft} from "fp-ts/lib/Either";
 import {Type} from "io-ts";
 import {PathReporter} from "io-ts/lib/PathReporter";
@@ -16,14 +15,22 @@ import {
     Response,
 } from "puppeteer";
 import * as winston from "winston";
-import {IPlugin, IPluginContext} from "../../plugins";
+import {
+    AsyncPluginEvents,
+    AsyncPluginEventsType,
+    IPlugin,
+    IPluginContext,
+    PluginEventsType,
+    SyncPluginEvents,
+    SyncPluginEventsType,
+} from "../../plugins";
 import {IOptions} from "./api";
 import {PostIdSet} from "./postIdSet";
 
 /**
  * Instagram API wrapper
  */
-export class Instagram<PostType> extends EventEmitter {
+export class Instagram<PostType> {
     /**
      * Apply defaults to undefined options
      */
@@ -153,6 +160,25 @@ export class Instagram<PostType> extends EventEmitter {
     // Location of chromium / chrome binary executable
     private readonly executablePath: string;
 
+    // Plugins to be run
+    private pluginFunctions: {
+        [key in keyof typeof AsyncPluginEvents]: Array<
+            (...args: any[]) => Promise<void>
+        >;
+    } &
+        {
+            [key in keyof typeof SyncPluginEvents]: Array<
+                (...args: any[]) => void
+            >;
+        } = {
+        browser: [],
+        construction: [],
+        grafting: [],
+        postPage: [],
+        request: [],
+        response: [],
+    };
+
     /**
      * Create API wrapper instance
      * @param endpoint the url for the type of resource to scrape
@@ -170,7 +196,6 @@ export class Instagram<PostType> extends EventEmitter {
         options: IOptions = {},
         validator: Type<unknown>,
     ) {
-        super();
         this.id = id;
         this.postIds = new PostIdSet();
         this.url = endpoint.replace("[id]", id);
@@ -192,7 +217,7 @@ export class Instagram<PostType> extends EventEmitter {
         this.validator = options.validator || validator;
 
         this.addPlugins(options["plugins"]);
-        this.emit("construction");
+        this.executePlugins("construction");
     }
 
     /**
@@ -268,6 +293,7 @@ export class Instagram<PostType> extends EventEmitter {
     public async start() {
         // Build page and visit url
         await this.constructPage();
+        await this.executePlugins("browser");
 
         this.started = true;
 
@@ -358,7 +384,7 @@ export class Instagram<PostType> extends EventEmitter {
                         headers: this.graftHeaders,
                         url: this.graftURL,
                     };
-                    this.emit("request", req, overrides);
+                    await this.executePlugins("request", req, overrides);
                     await req.continue(overrides);
 
                     // Reset grafting data
@@ -372,7 +398,7 @@ export class Instagram<PostType> extends EventEmitter {
                 break;
             } else {
                 const overrides = {};
-                this.emit("request", req, overrides);
+                this.executePlugins("request", req, overrides);
                 await req.continue(overrides);
             }
         }
@@ -410,7 +436,7 @@ export class Instagram<PostType> extends EventEmitter {
             }
 
             // Emit event
-            this.emit("response", res, data);
+            this.executePlugins("response", res, data);
 
             // Check for rate limiting
             if (data && "status" in data && data["status"] === "fail") {
@@ -519,7 +545,7 @@ export class Instagram<PostType> extends EventEmitter {
         if (!parsed) {
             return;
         }
-        this.emit("postPage", parsed);
+        await this.executePlugins("postPage", parsed);
         await this.addToPostBuffer(parsed);
     }
 
@@ -841,7 +867,7 @@ export class Instagram<PostType> extends EventEmitter {
 
         await this.progress(Progress.GRAFTING);
 
-        this.emit("grafting");
+        this.executePlugins("grafting");
 
         // Enable grafting
         this.graft = true;
@@ -886,16 +912,8 @@ export class Instagram<PostType> extends EventEmitter {
             return;
         }
 
-        const events = [
-            "construction",
-            "request",
-            "response",
-            "postPage",
-            "grafting",
-        ];
-
         for (const plugin of plugins) {
-            for (const event of events) {
+            for (const event of Object.keys(this.pluginFunctions)) {
                 const pluginEvent = plugin[event + "Event"];
                 if (pluginEvent) {
                     const context: IPluginContext<typeof plugin, PostType> = {
@@ -903,10 +921,29 @@ export class Instagram<PostType> extends EventEmitter {
                         state: this,
                     };
 
-                    this.on(event, pluginEvent.bind(context));
+                    this.pluginFunctions[event].push(pluginEvent.bind(context));
                 }
             }
         }
+    }
+
+    private executePlugins(event: SyncPluginEventsType, ...args): void;
+    private executePlugins(
+        event: AsyncPluginEventsType,
+        ...args
+    ): Promise<unknown>;
+    private executePlugins(event: PluginEventsType, ...args) {
+        if (event in SyncPluginEvents) {
+            for (const pluginFunction of this.pluginFunctions["construction"]) {
+                pluginFunction();
+            }
+            return;
+        }
+
+        // @ts-ignore
+        return Promise.all(
+            this.pluginFunctions[event].map((cb) => cb(...args)),
+        );
     }
 }
 

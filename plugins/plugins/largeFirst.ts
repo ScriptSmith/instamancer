@@ -10,7 +10,7 @@ export class LargeFirst<PostType> implements IPlugin<PostType> {
         this.state.jumpSize = 150;
     }
 
-    public requestEvent(req: Request, overrides: Overrides): void {
+    public async requestEvent(req: Request, overrides: Overrides) {
         const url = overrides["url"] ? overrides["url"] : req.url();
         const parsedUrl = urlParse(url);
         const query = querystring.parse(parsedUrl.query);

@@ -15,18 +15,38 @@ export interface IPlugin<PostType> {
         this: IPluginContext<IPlugin<PostType>, PostType>,
         req: puppeteer.Request,
         overrides: puppeteer.Overrides,
-    ): void;
+    ): Promise<void>;
 
     responseEvent?(
         this: IPluginContext<IPlugin<PostType>, PostType>,
         res: puppeteer.Response,
         data: {[key: string]: any},
-    ): void;
+    ): Promise<void>;
 
     postPageEvent?(
         this: IPluginContext<IPlugin<PostType>, PostType>,
         data: PostType,
-    ): void;
+    ): Promise<void>;
 
-    graftingEvent?(this: IPluginContext<IPlugin<PostType>, PostType>): void;
+    graftingEvent?(
+        this: IPluginContext<IPlugin<PostType>, PostType>,
+    ): Promise<void>;
 }
+
+export enum AsyncPluginEvents {
+    browser,
+    grafting,
+    postPage,
+    request,
+    response,
+}
+
+export type AsyncPluginEventsType = keyof typeof AsyncPluginEvents;
+
+export enum SyncPluginEvents {
+    construction,
+}
+
+export type SyncPluginEventsType = keyof typeof SyncPluginEvents;
+
+export type PluginEventsType = SyncPluginEventsType | AsyncPluginEventsType;
