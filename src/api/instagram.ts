@@ -16,7 +16,6 @@ import {
 } from "puppeteer";
 import * as winston from "winston";
 import {
-    AsyncPluginEvents,
     AsyncPluginEventsType,
     IPlugin,
     IPluginContext,
@@ -26,6 +25,14 @@ import {
 } from "../../plugins";
 import {IOptions} from "./api";
 import {PostIdSet} from "./postIdSet";
+
+type AsyncPluginFunctions = {
+    [key in AsyncPluginEventsType]: Array<(...args: any[]) => Promise<void>>;
+};
+type SyncPluginFunctions = {
+    [key in SyncPluginEventsType]: Array<(...args: any[]) => void>;
+};
+type PluginFunctions = AsyncPluginFunctions & SyncPluginFunctions;
 
 /**
  * Instagram API wrapper
@@ -161,16 +168,7 @@ export class Instagram<PostType> {
     private readonly executablePath: string;
 
     // Plugins to be run
-    private pluginFunctions: {
-        [key in keyof typeof AsyncPluginEvents]: Array<
-            (...args: any[]) => Promise<void>
-        >;
-    } &
-        {
-            [key in keyof typeof SyncPluginEvents]: Array<
-                (...args: any[]) => void
-            >;
-        } = {
+    private pluginFunctions: PluginFunctions = {
         browser: [],
         construction: [],
         grafting: [],
@@ -940,8 +938,8 @@ export class Instagram<PostType> {
             return;
         }
 
-        // @ts-ignore
         return Promise.all(
+            // @ts-ignore
             this.pluginFunctions[event].map((cb) => cb(...args)),
         );
     }
