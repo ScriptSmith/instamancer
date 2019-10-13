@@ -108,12 +108,17 @@ export class Search extends Instagram<TSearchResult> {
             await this.start();
         }
         try {
-            const inputElement = await this.page.waitForSelector(
-                this.inputElementQuery,
-                {timeout: 30000},
-            );
+            // Attempt to click search element
+            try {
+                const inputElement = await this.page.waitForSelector(
+                    this.inputElementQuery,
+                    {timeout: 30000},
+                );
+                await inputElement.click();
+            } catch (e) {
+                await this.page.click(this.inputElementQuery);
+            }
 
-            await inputElement.click();
             await this.page.keyboard.sendCharacter(this.searchQuery);
             await this.page.waitForRequest((req) => this.matchURL(req.url()));
             await this.processRequests();
