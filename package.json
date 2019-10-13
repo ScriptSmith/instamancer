@@ -42,17 +42,17 @@
         "await-lock": "^2.0.0",
         "axios": "^0.19.0",
         "chalk": "^2.4.2",
-        "fp-ts": "^2.0.5",
+        "fp-ts": "^2.1.0",
         "io-ts": "^2.0.1",
         "io-ts-excess": "^1.0.1",
-        "json2csv": "^4.5.3",
+        "json2csv": "^4.5.4",
         "lodash": "^4.17.15",
         "mkdirp": "^0.5.1",
         "puppeteer": "^1.20.0",
         "tmp": "^0.1.0",
         "uuid": "^3.3.3",
         "winston": "^3.2.1",
-        "yargs": "^14.0.0"
+        "yargs": "^14.2.0"
     },
     "engines": {
         "node": ">=10.15.0"
@@ -67,21 +67,21 @@
         "@types/jest": "^24.0.18",
         "@types/json2csv": "^4.5.0",
         "@types/mkdirp": "^0.5.2",
-        "@types/node": "^12.7.5",
-        "@types/puppeteer": "^1.19.1",
+        "@types/node": "^12.7.12",
+        "@types/puppeteer": "^1.20.2",
         "@types/tmp": "^0.1.0",
         "@types/uuid": "^3.4.5",
-        "@types/yargs": "^13.0.2",
+        "@types/yargs": "^13.0.3",
         "express": "^4.17.1",
-        "husky": "^3.0.5",
+        "husky": "^3.0.9",
         "jest": "^24.9.0",
-        "lint-staged": "^9.2.5",
+        "lint-staged": "^9.4.2",
         "prettier": "^1.18.2",
         "rimraf": "^3.0.0",
         "transform-json-types": "^0.7.0",
         "ts-jest": "^24.1.0",
         "tslint": "^5.20.0",
-        "typescript": "^3.6.3"
+        "typescript": "^3.6.4"
     },
     "jest": {
         "coverageDirectory": "./coverage/",
