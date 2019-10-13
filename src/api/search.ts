@@ -127,7 +127,7 @@ export class Search extends Instagram<TSearchResult> {
             await this.stop();
             return this.searchResult;
         } catch (e) {
-            await this.forceStop();
+            await this.stop();
             throw e;
         }
     }
