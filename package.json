@@ -24,7 +24,7 @@
         "build": "tsc",
         "prepack": "tsc --declaration",
         "test": "jest",
-        "test:ci": "jest --detectOpenHandles",
+        "test:ci": "jest --forceExit",
         "lint": "tslint -p tsconfig.json -p tests/tsconfig.json",
         "lint:fix": "npm run lint -- --fix",
         "prettier": "prettier --write \"{src,tests}/**/*.ts\"",
