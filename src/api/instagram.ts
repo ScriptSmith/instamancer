@@ -611,7 +611,7 @@ export class Instagram<PostType> {
                 try {
                     pageContent.content = await this.page.content();
                 } catch (e) {
-                    this.logger.error("Failed reading page content");
+                    // No content
                 }
 
                 this.logger.error("Page failed to make requests", pageContent);
