@@ -548,6 +548,7 @@ describe("Search", () => {
             expect(e).toBeInstanceOf(Error);
             expect(e.message).toMatch(/^Invalid value/);
         }
+        await search.forceStop();
     });
 
     testWrapper("Search should fire only one network request", async () => {
