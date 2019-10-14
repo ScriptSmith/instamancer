@@ -334,15 +334,11 @@ export class Instagram<PostType> {
     protected async stop() {
         await this.progress(Progress.CLOSING);
 
-        // Close page and browser
+        // Remove listeners
         if (!this.page.isClosed()) {
             this.page.removeAllListeners("request");
             this.page.removeAllListeners("response");
             this.page.removeAllListeners("requestfailed");
-            await this.page.close();
-        }
-        if (this.finished && !this.browserDisconnected) {
-            await this.browser.close();
         }
 
         // Clear request buffers
@@ -354,6 +350,15 @@ export class Instagram<PostType> {
         await this.responseBufferLock.acquireAsync();
         this.responseBuffer = [];
         this.responseBufferLock.release();
+
+        // Close page
+        if (!this.page.isClosed()) {
+            await this.page.close();
+        }
+
+        if (this.finished && !this.browserDisconnected) {
+            await this.browser.close();
+        }
     }
 
     /**
