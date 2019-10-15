@@ -8,20 +8,17 @@ class Complexity<PostType> implements instamancer.IPlugin<PostType> {
         this.query = query;
     }
 
-    public responseEvent(
+    public async responseEvent(
         this: instamancer.IPluginContext<Complexity<PostType>, PostType>,
         res: Response,
         data: {[key: string]: any},
-    ): void {
-        this.state.page
-            .evaluate((query) => {
-                return document.querySelectorAll(query).length;
-            }, this.plugin.query)
-            .then((count) => {
-                process.stdout.write(
-                    `${this.plugin.query} elements: ${count}\n`,
-                );
-            });
+    ): Promise<void> {
+        const elementCount = await this.state.page.evaluate((query) => {
+            return document.querySelectorAll(query).length;
+        }, this.plugin.query);
+        process.stdout.write(
+            `${this.plugin.query} elements: ${elementCount}\n`,
+        );
     }
 }
 
