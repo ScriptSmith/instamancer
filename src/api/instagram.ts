@@ -557,13 +557,13 @@ export class Instagram<PostType> {
         await this.addToPostBuffer(parsed);
     }
 
-    protected validatePost(post: PostType) {
+    protected async validatePost(post: PostType) {
         const validationResult = this.validator.decode(post);
         if (this.strict) {
             try {
                 ThrowReporter.report(validationResult);
             } catch (e) {
-                this.forceStop();
+                await this.forceStop();
                 throw e;
             }
             return;
@@ -848,7 +848,7 @@ export class Instagram<PostType> {
      */
     private async addToPostBuffer(post: PostType) {
         await this.postBufferLock.acquireAsync();
-        this.validatePost(post);
+        await this.validatePost(post);
         this.postBuffer.push(post);
         this.postBufferLock.release();
     }
