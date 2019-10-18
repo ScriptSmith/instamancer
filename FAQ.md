@@ -14,17 +14,17 @@ No. Instamancer scrapes data that Instagram makes publicly available.
 It can processes anywhere from 3-30 posts per second depending on configuration.
 
 ## Can I make it run faster?
-Running without the `--full` and `-d` arguments is faster. 
+Running without the `--full` and `-d` arguments is faster.
 
 Not using `--sync` and customising the `-k` option can make downloading files quicker.
 
 Disabling grafting with `-g=false` will make the scraping quicker at the cost of not being able to access all posts (see [here](#what-happens-if-i-disable-grafting)).
 
-Setting `--sleep` to a decimal number below 1 speeds up page interactions at the cost of stability, as it makes you more likely to be rate limited.   
+Setting `--sleep` to a decimal number below 1 speeds up page interactions at the cost of stability, as it makes you more likely to be rate limited.
 
 Scraping is not parallelisable (see [here](#can-i-run-multiple-instances-at-the-same-time-rather-than-batch-scraping)).
 
-Using `--plugin LargeFist` is as much as 5x faster, but may result in undefined behavior.
+Using `--plugin LargeFirst` is as much as 5x faster, but may result in undefined behavior.
 
 If you want something *really* fast, try [Instaphyte](https://github.com/ScriptSmith/instaphyte). It's as much as 12x faster.
 
