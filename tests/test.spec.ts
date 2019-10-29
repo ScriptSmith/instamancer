@@ -151,7 +151,6 @@ describe("Full API", () => {
 });
 
 testWrapper("Account with < 10 photos", async () => {
-    jest.setTimeout(20 * 1000);
     // This is a not well-known account and it can be deleted at any moment
     // If this test starts to fail, need to find another user
     // which has less then 10 photos
