@@ -150,6 +150,28 @@ describe("Full API", () => {
     }
 });
 
+testWrapper("Account with < 10 photos", async () => {
+    jest.setTimeout(20 * 1000);
+    // This is a not well-known account and it can be deleted at any moment
+    // If this test starts to fail, need to find another user
+    // which has less then 10 photos
+    const id = "zhiznizmelochei";
+    const fullApiOption: IOptionsFullApi = {
+        ...libraryTestOptions,
+        fullAPI: true,
+    };
+    const api = createApi("user", id, fullApiOption);
+    const scraped = [];
+    for await (const post of api.generator()) {
+        expect(post).toBeDefined();
+        scraped.push(post);
+    }
+    expect(scraped.length).toBeGreaterThan(0);
+    // If this user will start to do new posts
+    // Need to find a new one
+    expect(scraped.length).toBeLessThan(10);
+});
+
 describe("API limits", () => {
     class ApiTestConditions {
         public api: "hashtag" | "user";

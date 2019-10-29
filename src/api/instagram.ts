@@ -918,6 +918,9 @@ export class Instagram<PostType> {
                 this.pagePromises.push(
                     this.postPage(shortCode, this.postPageRetries),
                 );
+                if (this.index + 1 === shortCodes.length) {
+                    this.finished = true;
+                }
             } else {
                 this.finished = true;
                 break;
