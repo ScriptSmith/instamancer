@@ -7,9 +7,9 @@
     "dependencies": {
         "express": "^4.17.1",
         "instamancer": "file:..",
-        "puppeteer": "^1.19.0"
+        "puppeteer": "^1.20.0"
     },
     "devDependencies": {
-        "@types/puppeteer": "^1.19.1"
+        "@types/puppeteer": "^1.20.2"
     }
 }
