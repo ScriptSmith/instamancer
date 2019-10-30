@@ -84,6 +84,7 @@ const EdgeSidecarToChildren = t.type({
                 display_resources: DisplayResources,
                 accessibility_caption: t.string,
                 is_video: t.boolean,
+                video_url: t.union([t.string, t.undefined]),
                 tracking_token: t.string,
                 edge_media_to_tagged_user: EdgeMediaToCaption,
             }),
