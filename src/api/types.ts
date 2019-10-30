@@ -210,7 +210,30 @@ export const ShortcodeMedia = t.type({
     owner: ShortcodeMediaOwner,
     is_ad: t.boolean,
     edge_web_media_to_related_media: EdgeMediaToCaption,
-    edge_sidecar_to_children: t.union([EdgeMediaToCaption, t.undefined]),
+    edge_sidecar_to_children: t.union([
+        t.type({
+            edges: t.array(
+                t.type({
+                    node: t.type({
+                        __typename: t.string,
+                        id: t.string,
+                        shortcode: t.string,
+                        dimensions: Dimensions,
+                        gating_info: t.null,
+                        fact_check_information: t.null,
+                        media_preview: t.string,
+                        display_url: t.string,
+                        display_resources: DisplayResources,
+                        accessibility_caption: t.string,
+                        is_video: t.boolean,
+                        tracking_token: t.string,
+                        edge_media_to_tagged_user: EdgeMediaToCaption,
+                    }),
+                }),
+            ),
+        }),
+        t.undefined,
+    ]),
     dash_info: t.union([
         t.undefined,
         t.type({
