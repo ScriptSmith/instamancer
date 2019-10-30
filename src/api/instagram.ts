@@ -137,6 +137,7 @@ export class Instagram<PostType> {
 
     // Number of jumps before exiting because lack of data
     private failedJumps: number = 20;
+    private responseFromAPI: boolean = false;
 
     // Strings denoting the access methods of API objects
     private readonly pageQuery: string;
@@ -434,6 +435,9 @@ export class Instagram<PostType> {
                 continue;
             }
 
+            // Acknowlege receipt of response
+            this.responseFromAPI = true;
+
             // Get JSON data
             let data: JSON;
             try {
@@ -609,18 +613,27 @@ export class Instagram<PostType> {
             await this.jump();
 
             // Stop if no data is being gathered
-            if (this.jumps === this.failedJumps && this.index === 0) {
-                this.finished = true;
+            if (this.jumps === this.failedJumps) {
+                if (this.fullAPI) {
+                    if (!this.responseFromAPI) {
+                        this.finished = true;
+                    }
+                } else if (this.index === 0) {
+                    this.finished = true;
 
-                const pageContent = {content: ""};
-                try {
-                    pageContent.content = await this.page.content();
-                } catch (e) {
-                    // No content
+                    const pageContent = {content: ""};
+                    try {
+                        pageContent.content = await this.page.content();
+                    } catch (e) {
+                        // No content
+                    }
+
+                    this.logger.error(
+                        "Page failed to make requests",
+                        pageContent,
+                    );
+                    break;
                 }
-
-                this.logger.error("Page failed to make requests", pageContent);
-                break;
             }
 
             // Enable grafting if required
