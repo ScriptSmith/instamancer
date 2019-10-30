@@ -47,7 +47,6 @@
         "io-ts": "^2.0.1",
         "io-ts-excess": "^1.0.1",
         "json2csv": "^4.5.4",
-        "live-plugin-manager": "^0.13.2",
         "lodash": "^4.17.15",
         "mkdirp": "^0.5.1",
         "puppeteer": "^2.0.0",
