@@ -609,18 +609,22 @@ export class Instagram<PostType> {
             await this.jump();
 
             // Stop if no data is being gathered
-            if (this.jumps === this.failedJumps && this.index === 0) {
+            if (this.jumps === this.failedJumps) {
                 this.finished = true;
+                if (this.index === 0) {
+                    const pageContent = {content: ""};
+                    try {
+                        pageContent.content = await this.page.content();
+                    } catch (e) {
+                        // No content
+                    }
 
-                const pageContent = {content: ""};
-                try {
-                    pageContent.content = await this.page.content();
-                } catch (e) {
-                    // No content
+                    this.logger.error(
+                        "Page failed to make requests",
+                        pageContent,
+                    );
+                    break;
                 }
-
-                this.logger.error("Page failed to make requests", pageContent);
-                break;
             }
 
             // Enable grafting if required
@@ -918,9 +922,6 @@ export class Instagram<PostType> {
                 this.pagePromises.push(
                     this.postPage(shortCode, this.postPageRetries),
                 );
-                if (this.index + 1 === shortCodes.length) {
-                    this.finished = true;
-                }
             } else {
                 this.finished = true;
                 break;
