@@ -181,6 +181,7 @@ export const ShortcodeMedia = t.type({
     dimensions: Dimensions,
     gating_info: t.union([GatingInfo, t.null, t.undefined]),
     fact_check_information: t.null,
+    fact_check_overall_rating: t.null,
     media_preview: t.union([t.string, t.null]),
     display_url: t.string,
     display_resources: DisplayResources,
