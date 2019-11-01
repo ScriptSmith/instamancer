@@ -69,6 +69,29 @@ export const EdgeMediaToCaption = t.type({
     ),
 });
 
+const EdgeSidecarToChildren = t.type({
+    edges: t.array(
+        t.type({
+            node: t.type({
+                __typename: t.string,
+                id: t.string,
+                shortcode: t.union([t.string, t.undefined]),
+                dimensions: Dimensions,
+                gating_info: t.union([t.null, t.undefined]),
+                fact_check_information: t.union([t.null, t.undefined]),
+                media_preview: t.union([t.undefined, t.string, t.null]),
+                display_url: t.string,
+                display_resources: DisplayResources,
+                accessibility_caption: t.union([t.string, t.undefined, t.null]),
+                is_video: t.boolean,
+                video_url: t.union([t.string, t.undefined]),
+                tracking_token: t.string,
+                edge_media_to_tagged_user: EdgeMediaToCaption,
+            }),
+        }),
+    ),
+});
+
 export const EdgeMediaToComment = t.type({
     count: t.number,
 });
@@ -90,6 +113,7 @@ export const PostNode = t.type({
     edge_media_to_comment: EdgeMediaToComment,
     taken_at_timestamp: t.number,
     fact_check_information: t.union([t.null, t.undefined]),
+    fact_check_overall_rating: t.union([t.undefined, t.null]),
     dimensions: Dimensions,
     display_url: t.string,
     edge_liked_by: t.union([EdgeMediaToComment, t.undefined]),
@@ -121,7 +145,7 @@ export const PostNode = t.type({
     viewer_has_saved_to_collection: t.union([t.boolean, t.undefined]),
     viewer_in_photo_of_you: t.union([t.boolean, t.undefined]),
     viewer_can_reshare: t.union([t.boolean, t.undefined]),
-    edge_sidecar_to_children: t.union([EdgeMediaToCaption, t.undefined]),
+    edge_sidecar_to_children: t.union([EdgeSidecarToChildren, t.undefined]),
 });
 
 export const CommentNode = t.type({
@@ -181,7 +205,7 @@ export const ShortcodeMedia = t.type({
     dimensions: Dimensions,
     gating_info: t.union([GatingInfo, t.null, t.undefined]),
     fact_check_information: t.null,
-    fact_check_overall_rating: t.null,
+    fact_check_overall_rating: t.union([t.undefined, t.null]),
     media_preview: t.union([t.string, t.null]),
     display_url: t.string,
     display_resources: DisplayResources,
@@ -211,7 +235,7 @@ export const ShortcodeMedia = t.type({
     owner: ShortcodeMediaOwner,
     is_ad: t.boolean,
     edge_web_media_to_related_media: EdgeMediaToCaption,
-    edge_sidecar_to_children: t.union([EdgeMediaToCaption, t.undefined]),
+    edge_sidecar_to_children: t.union([EdgeSidecarToChildren, t.undefined]),
     dash_info: t.union([
         t.undefined,
         t.type({
