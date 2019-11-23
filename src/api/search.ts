@@ -54,6 +54,7 @@ export const Hashtags = t.type({
             id: t.number,
             media_count: t.number,
             name: t.string,
+            profile_pic_url: t.string,
             search_result_subtitle: t.string,
             use_default_avatar: t.boolean,
         }),
