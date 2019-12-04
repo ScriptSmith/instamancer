@@ -8,6 +8,7 @@ export const Users = t.type({
     position: t.number,
     user: excess(
         t.type({
+            can_see_primary_country_in_settings: t.boolean,
             full_name: t.string,
             has_anonymous_profile_picture: t.boolean,
             is_private: t.boolean,
