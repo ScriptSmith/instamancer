@@ -392,6 +392,10 @@ describe("Network and API issues", () => {
         await testOptions({catchPage: "invalid_json"});
     });
 
+    testWrapper("Non object", async () => {
+        await testOptions({catchPage: "non_object"});
+    });
+
     testWrapper("No next page", async () => {
         await testOptions({catchPage: "no_next_page", pageQuery: "data"});
     });

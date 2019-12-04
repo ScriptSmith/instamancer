@@ -32,6 +32,10 @@ app.get("/invalid_json", (req, res) => {
     res.send("invalid");
 });
 
+app.get("non_object", (req, res) => {
+    res.send("1");
+});
+
 app.get("/no_next_page", (req, res) => {
     res.send(
         JSON.stringify({
