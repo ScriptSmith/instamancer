@@ -439,12 +439,16 @@ export class Instagram<PostType> {
             this.responseFromAPI = true;
 
             // Get JSON data
-            let data: JSON;
+            let data: unknown;
             try {
                 data = await res.json();
+                if (typeof data !== "object") {
+                    throw new Error("Response data is not an object");
+                }
             } catch (e) {
                 this.logger.error("Error processing response JSON");
                 this.logger.error(e);
+                continue;
             }
 
             // Emit event
