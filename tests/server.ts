@@ -7,7 +7,7 @@ app.get("/", (req, res) => {
     res.send(`
             <!DOCTYPE html>
             <script type="text/javascript">
-                const endpoints = ["rate_limit", "invalid_json", "no_next_page", "duplicate_ids", "invalid_id"];
+                const endpoints = ["rate_limit", "invalid_json", "non_object", "no_next_page", "duplicate_ids", "invalid_id"];
                 setInterval(() => {
                     for (const endpoint of endpoints) {
                         console.log("API request to " + endpoint);
@@ -32,7 +32,7 @@ app.get("/invalid_json", (req, res) => {
     res.send("invalid");
 });
 
-app.get("non_object", (req, res) => {
+app.get("/non_object", (req, res) => {
     res.send("1");
 });
 
