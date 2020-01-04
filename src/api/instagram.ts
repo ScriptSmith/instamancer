@@ -107,6 +107,8 @@ export class Instagram<PostType> {
     // Puppeteer state
     private browser: Browser;
     private browserDisconnected: boolean = true;
+    /** Browser instance passed from outside */
+    private readonly browserInstance?: Browser;
     private readonly headless: boolean;
 
     // Array of scraped posts and lock
@@ -207,6 +209,7 @@ export class Instagram<PostType> {
         this.total = options.total;
         this.pageQuery = pageQuery;
         this.edgeQuery = edgeQuery;
+        this.browserInstance = options.browserInstance;
         this.headless = options.headless;
         this.logger = options.logger;
         this.silent = options.silent;
@@ -357,7 +360,11 @@ export class Instagram<PostType> {
             await this.page.close();
         }
 
-        if (this.finished && !this.browserDisconnected) {
+        if (
+            this.finished &&
+            !this.browserDisconnected &&
+            !this.browserInstance
+        ) {
             await this.browser.close();
         }
     }
@@ -705,7 +712,15 @@ export class Instagram<PostType> {
         }
 
         // Launch browser
-        if (!this.sameBrowser || (this.sameBrowser && !this.started)) {
+        if (this.browserInstance) {
+            await this.progress(Progress.LAUNCHING);
+            this.browser = this.browserInstance;
+            this.browserDisconnected = !this.browser.isConnected();
+            this.browser.on(
+                "disconnected",
+                () => (this.browserDisconnected = true),
+            );
+        } else if (!this.sameBrowser || (this.sameBrowser && !this.started)) {
             await this.progress(Progress.LAUNCHING);
             this.browser = await launch(options);
             this.browserDisconnected = false;
