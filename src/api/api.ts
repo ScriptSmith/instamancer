@@ -1,4 +1,5 @@
 import {Type} from "io-ts";
+import {Browser} from "puppeteer";
 import * as winston from "winston";
 import {DType, IPlugin} from "../../plugins";
 import {Instagram} from "./instagram";
@@ -59,6 +60,10 @@ export interface IOptionsCommon {
 
     // Custom io-ts validator
     validator?: Type<unknown>;
+
+    // Pass puppeter Browser instance from outside.
+    // Be careful to close Browser by yourself, when there is no need in it anymore.
+    browserInstance?: Browser;
 }
 
 export interface IOptionsFullApi extends IOptionsCommon {

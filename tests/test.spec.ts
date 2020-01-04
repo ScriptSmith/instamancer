@@ -1,5 +1,5 @@
 import * as t from "io-ts";
-import {Overrides, Request} from "puppeteer";
+import {launch, Overrides, Request} from "puppeteer";
 import * as winston from "winston";
 import {createApi, IPlugin} from "..";
 import {plugins} from "..";
@@ -624,5 +624,38 @@ describe("Plugins", () => {
             }
             expect(mock).toBeCalledTimes(100);
         }
+    });
+});
+
+describe("Browser instance passed from outside", () => {
+    const browserOptions = {
+        headless: true,
+    };
+    testWrapper("Should re-use this browser instance", async () => {
+        const browser = await launch(browserOptions);
+
+        const hashtagGenerator = createApi("hashtag", hashtags[0], {
+            browserInstance: browser,
+        }).generator();
+        await hashtagGenerator.next();
+
+        const pages = await browser.pages();
+
+        expect(pages.length).toBe(2);
+
+        await browser.close();
+    });
+
+    testWrapper("Should not close browser instance", async () => {
+        const browser = await launch(browserOptions);
+
+        const searchGenerator = createApi("search", "therock", {
+            browserInstance: browser,
+        }).generator();
+        await searchGenerator.next();
+
+        expect(browser.isConnected()).toBe(true);
+
+        await browser.close();
     });
 });
