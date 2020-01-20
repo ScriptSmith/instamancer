@@ -223,6 +223,7 @@ export const ShortcodeMedia = t.type({
     ]),
     edge_media_preview_comment: t.union([EdgeMediaPreviewComment, t.undefined]),
     comments_disabled: t.boolean,
+    commenting_disabled_for_viewer: t.boolean,
     taken_at_timestamp: t.number,
     edge_media_preview_like: EdgeMediaPreviewComment,
     edge_media_to_sponsor_user: EdgeMediaToCaption,
