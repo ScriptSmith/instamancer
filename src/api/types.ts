@@ -140,6 +140,7 @@ export const PostNode = t.type({
     video_view_count: t.union([t.undefined, t.number]),
     gating_info: t.union([t.null, t.undefined]),
     media_preview: t.union([t.undefined, t.string, t.null]),
+    product_type: t.union([t.undefined, t.string]),
     viewer_has_liked: t.union([t.undefined, t.boolean]),
     viewer_has_saved: t.union([t.boolean, t.undefined]),
     viewer_has_saved_to_collection: t.union([t.boolean, t.undefined]),
