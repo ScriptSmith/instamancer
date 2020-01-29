@@ -1,7 +1,6 @@
 import axios from "axios";
 import * as fs from "fs";
 import * as json2csv from "json2csv";
-import * as mkdirp from "mkdirp";
 import * as winston from "winston";
 
 interface IDownload {
@@ -21,7 +20,9 @@ export async function download(
     name: string,
     extension: string,
 ) {
-    mkdirp.sync(this.directory);
+    await new Promise((resolve) => {
+        fs.mkdir(this.directory, {recursive: true}, resolve);
+    });
     try {
         // Get data
         const response = await axios({
