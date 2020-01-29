@@ -7,6 +7,8 @@ There is a daily Travis cron job which tests whether Instamancer is working as e
 ## Is there a GUI?
 No, Instamancer only works from the command-line. In the future, I might implement a GUI using [Carlo](https://github.com/GoogleChromeLabs/carlo) or something more lightweight.
 
+There is a instagram data exploring tool in development here: [https://github.com/andyepx/insta-explorer](https://github.com/andyepx/insta-explorer)
+
 ## Do I need to log in?
 No. Instamancer scrapes data that Instagram makes publicly available.
 
@@ -40,6 +42,14 @@ Seemingly as far as there are posts to scrape, but you can only reach old posts 
 ## How many posts can I scrape from a given endpoint?
 The most I've seen is more than 5 million.
 
+## How do I scrape the first posts on the page?
+
+In the default configuration, Instamancer will skip the posts that are pre-loaded on the page. This is because it only retrieves posts generated from API requests, which aren't made for these posts.
+
+If you would like to retrieve these posts, then you should use full mode: `--full` or `-f`.
+
+This behavior may change in the future.
+
 ## How do I use the `--upload` flag and depot?
 1. Set up [depot](https://github.com/ScriptSmith/depot)
     1. Set up basic access authentication if you're using a public server
@@ -71,4 +81,4 @@ user greg -c100
 ## Why does the code have so many comments?
 Instamancer was originally part of another project written in Python that used the [Pyppeteer](https://github.com/miyakogi/pyppeteer) clone of Puppeteer. This version was too error-prone because of the complicated asyncio code and Pyppeteer's instability when communicating via websockets during long scraping jobs.
 
-I decided to rewrite Instamancer in TypeScript in order to be more stable and in-sync with Puppeter. It was the first time I'd written any serious TypeScript or 'modern' JavaScript (promises, async/await etc.), so the zealous commenting helped me learn, and allowed me to figure out bugs in my algorithm and the grafting process. The comments aren't a permanent fixture and may be removed in a future commit.
+I decided to rewrite Instamancer in TypeScript in order to be more stable and in-sync with Puppeteer. It was the first time I'd written any serious TypeScript or 'modern' JavaScript (promises, async/await etc.), so the zealous commenting helped me learn, and allowed me to figure out bugs in my algorithm and the grafting process. The comments aren't a permanent fixture and may be removed in a future commit.
