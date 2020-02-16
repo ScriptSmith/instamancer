@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import * as aws from "aws-sdk";
 import * as fs from "fs";
 import * as readline from "readline";
 import * as winston from "winston";
@@ -10,8 +11,9 @@ import * as plugins from "../plugins";
 import {createApi, IOptions} from "./api/api";
 import {TFullApiPost, TPost} from "./api/types";
 import {GetPool} from "./getpool/getPool";
+import * as depotUpload from "./http/depot";
 import {download, toCSV, toJSON} from "./http/download";
-import * as upload from "./http/upload";
+import * as s3Upload from "./http/s3";
 
 const getLogger = (args) => {
     const transports = [];
@@ -217,13 +219,6 @@ function buildParser(args, callback) {
                 implies: "full",
                 group: "Download",
             },
-            upload: {
-                alias: ["u"],
-                string: true,
-                default: undefined,
-                describe: "Upload files to a URL with a PUT request",
-                group: "Download",
-            },
             sync: {
                 boolean: true,
                 default: false,
@@ -234,7 +229,7 @@ function buildParser(args, callback) {
                 alias: "k",
                 number: true,
                 default: 4,
-                describe: "Parallel download / upload threads",
+                describe: "Parallel download / depot threads",
                 group: "Download",
             },
             waitDownload: {
@@ -243,6 +238,18 @@ function buildParser(args, callback) {
                 default: false,
                 describe: "Download media after scraping",
                 group: "Download",
+            },
+            bucket: {
+                string: true,
+                default: undefined,
+                describe: "Upload files to an AWS S3 bucket",
+                group: "Upload",
+            },
+            depot: {
+                string: true,
+                default: undefined,
+                describe: "Upload files to a URL with a PUT request (depot)",
+                group: "Upload",
             },
             file: {
                 alias: ["o"],
@@ -351,14 +358,17 @@ async function spawn(args) {
         .replace("[id]", args["id"])
         .replace("[endpoint]", args["_"]);
 
-    // Replace upload url
-    let uploadUrl = args["upload"];
-    if (uploadUrl && uploadUrl.includes("[uuid]")) {
-        uploadUrl = uploadUrl.replace("[uuid]", uuid());
+    // Replace depot url
+    let depotUrl = args["depot"];
+    if (depotUrl && depotUrl.includes("[uuid]")) {
+        depotUrl = depotUrl.replace("[uuid]", uuid());
         if (!args["quiet"]) {
-            process.stdout.write(uploadUrl + "\n");
+            process.stdout.write(depotUrl + "\n");
         }
     }
+
+    // Get s3 bucket
+    const s3Bucket = args["bucket"];
 
     // Check if outputting to stdout
     const printOutput = args["file"] === "-";
@@ -367,17 +377,29 @@ async function spawn(args) {
     let downloadUpload;
     let toCSVFunc = toCSV;
     let toJSONFunc = toJSON;
-    if (uploadUrl) {
-        // Upload
-        const uploadConfig = {
+    if (depotUrl) {
+        // Depot
+        const depotConfig = {
             directory: downdir,
-            url: uploadUrl,
+            url: depotUrl,
             logger,
         };
 
-        downloadUpload = upload.upload.bind(uploadConfig);
-        toCSVFunc = upload.toCSV.bind(uploadConfig);
-        toJSONFunc = upload.toJSON.bind(uploadConfig);
+        downloadUpload = depotUpload.depot.bind(depotConfig);
+        toCSVFunc = depotUpload.toCSV.bind(depotConfig);
+        toJSONFunc = depotUpload.toJSON.bind(depotConfig);
+    } else if (s3Bucket) {
+        // s3
+        const s3Config = {
+            bucket: s3Bucket,
+            directory: downdir,
+            s3: new aws.S3(),
+            logger,
+        };
+
+        downloadUpload = s3Upload.s3.bind(s3Config);
+        toCSVFunc = s3Upload.toCSV.bind(s3Config);
+        toJSONFunc = s3Upload.toJSON.bind(s3Config);
     } else {
         // Download
         downloadUpload = download.bind({

@@ -12,7 +12,7 @@ interface IUpload {
     logger: winston.Logger;
 }
 
-export async function upload(
+export async function depot(
     this: IUpload,
     url: string,
     name: string,
@@ -34,7 +34,7 @@ export async function upload(
         const filePath = path.join(this.directory, name + "." + extension);
         const uploadUrl = resolve(this.url, filePath);
 
-        // Axios upload
+        // Axios depot
         await axios({
             data: downloadStream.data,
             headers: {
@@ -45,12 +45,10 @@ export async function upload(
             method: "PUT",
             ...authURL(uploadUrl),
         }).catch((error) => {
-            this.logger.info(`Downloading ${url} failed`);
-            this.logger.debug(error);
+            this.logger.error(`Uploading ${url} failed`, error);
         });
     } catch (e) {
-        this.logger.info(`Downloading ${url} failed`);
-        this.logger.debug(e);
+        this.logger.error(`Uploading ${url} failed`, e);
     }
 }
 
