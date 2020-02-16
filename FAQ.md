@@ -50,14 +50,33 @@ If you would like to retrieve these posts, then you should use full mode: `--ful
 
 This behavior may change in the future.
 
-## How do I use the `--upload` flag and depot?
+## How do I use the `--bucket` flag and S3?
+1. Create an S3 bucket. Find help [here](https://docs.aws.amazon.com/AmazonS3/latest/gsg/CreatingABucket.html).
+2. Configure your AWS credentials. Find help [here](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html).
+    1. Ensure you can write to S3 with the credentials you're using.
+3. Use instamancer like so:
+
+```
+instamancer ... -d --bucket=BUCKET_NAME
+```
+
+Where `BUCKET_NAME` is the name of the bucket.
+
+Example:
+
+```
+instamancer hashtag puppies -c10 -d --bucket=instagram-puppies
+```
+
+
+## How do I use the `--depot` flag and depot?
 1. Set up [depot](https://github.com/ScriptSmith/depot)
     1. Set up basic access authentication if you're using a public server
 2. Generate a UUIDv4
 3. Use instamancer like so:
 
 ```
-instamancer ... -d --upload=http://127.0.0.1:8080/jobs/UUID/
+instamancer ... -d --depot=http://127.0.0.1:8080/jobs/UUID/
 ```
 
 Where `UUID` is the UUID you generated.
@@ -65,7 +84,7 @@ Where `UUID` is the UUID you generated.
 Example:
 
 ```
-instamancer hashtag puppies -c10 -d --upload=https://depot:password@depot-vlnbfvyaiq-uc.a.run.app/jobs/4cdc21fe-6b35-473a-b26e-66f62ad66c4c/
+instamancer hashtag puppies -c10 -d --depot=https://depot:password@depot-vlnbfvyaiq-uc.a.run.app/jobs/4cdc21fe-6b35-473a-b26e-66f62ad66c4c/
 ```
 
 You can use any server that accepts `PUT` requests.

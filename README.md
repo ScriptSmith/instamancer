@@ -28,7 +28,7 @@ Read more about how Instamancer works [here](https://scriptsmith.github.io/insta
 - Batch scraping
 - Search hashtags, users, and locations
 - API response validation
-- Stream files to [depot](https://github.com/ScriptSmith/depot)
+- Upload files to [S3](https://github.com/ScriptSmith/instamancer/blob/master/FAQ.md#how-do-i-use-the---bucket-flag-and-s3) and [depot](https://github.com/ScriptSmith/instamancer/blob/master/FAQ.md#how-do-i-use-the---depot-flag-and-depot)
 - [Plugins](plugins)
 
 ### Data
@@ -120,20 +120,24 @@ Configuration
   --sleep, -s    Seconds to sleep between interactions     [number] [default: 2]
   --graft, -g    Enable grafting                       [boolean] [default: true]
   --browser, -b  Browser path. Defaults to the puppeteer version        [string]
+  --sameBrowser  Use a single browser when grafting   [boolean] [default: false]
 
 Download
   --download, -d      Save images from posts          [boolean] [default: false]
   --downdir           Download path       [default: "downloads/[endpoint]/[id]"]
   --video, -v         Download videos (requires full) [boolean] [default: false]
-  --upload, -u        Upload files to a URL with a PUT request          [string]
   --sync              Force download between requests [boolean] [default: false]
-  --threads, -k       Parallel download / upload threads   [number] [default: 4]
+  --threads, -k       Parallel download / depot threads    [number] [default: 4]
   --waitDownload, -w  Download media after scraping   [boolean] [default: false]
 
+Upload
+  --bucket  Upload files to an AWS S3 bucket                            [string]
+  --depot   Upload files to a URL with a PUT request (depot)            [string]
+
 Output
-  --filename, --file, -o  Name of the output file     [string] [default: "[id]"]
-  --filetype, --type, -t      [choices: "csv", "json", "both"] [default: "json"]
-  --mediaPath, -m         Add filepaths to _mediaPath [boolean] [default: false]
+  --file, -o       Output filename. '-' for stdout    [string] [default: "[id]"]
+  --type, -t       Filetype   [choices: "csv", "json", "both"] [default: "json"]
+  --mediaPath, -m  Add filepaths to _mediaPath        [boolean] [default: false]
 
 Display
   --visible    Show browser on the screen             [boolean] [default: false]
@@ -156,11 +160,12 @@ Options:
 Examples:
   instamancer hashtag instagood -fvd        Download all the available posts,
                                             and their media from #instagood
-  instamancer user arianagrande             Download Ariana Grande's posts to a
-  --filetype=csv --logging=info --visible   CSV file with a non-headless
+  instamancer user arianagrande --type=csv  Download Ariana Grande's posts to a
+  --logging=info --visible                  CSV file with a non-headless
                                             browser, and log all events
 
 Source code available at https://github.com/ScriptSmith/instamancer
+
 ```
 
 ### Module
