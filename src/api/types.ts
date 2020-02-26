@@ -168,6 +168,14 @@ export const EdgeMediaPreviewComment = t.type({
     ),
 });
 
+export const EdgeMediaHoistedComment = t.type({
+    edges: t.array(
+        t.type({
+            node: CommentNode,
+        }),
+    ),
+});
+
 const EdgeMediaToParentCommentNode = t.intersection([
     CommentNode,
     t.type({
@@ -220,6 +228,10 @@ export const ShortcodeMedia = t.type({
     has_ranked_comments: t.boolean,
     edge_media_to_parent_comment: t.union([
         EdgeMediaToParentComment,
+        t.undefined,
+    ]),
+    edge_media_to_hoisted_comment: t.union([
+        EdgeMediaHoistedComment,
         t.undefined,
     ]),
     edge_media_preview_comment: t.union([EdgeMediaPreviewComment, t.undefined]),
