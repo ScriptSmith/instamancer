@@ -27,10 +27,10 @@ import {IOptions} from "./api";
 import {PostIdSet} from "./postIdSet";
 
 type AsyncPluginFunctions = {
-    [key in AsyncPluginEventsType]: Array<(...args: any[]) => Promise<void>>;
+    [key in AsyncPluginEventsType]: ((...args: any[]) => Promise<void>)[];
 };
 type SyncPluginFunctions = {
-    [key in SyncPluginEventsType]: Array<(...args: any[]) => void>;
+    [key in SyncPluginEventsType]: ((...args: any[]) => void)[];
 };
 type PluginFunctions = AsyncPluginFunctions & SyncPluginFunctions;
 
@@ -123,7 +123,7 @@ export class Instagram<PostType> {
 
     // Get full amount of data from API
     private readonly fullAPI: boolean = false;
-    private pagePromises: Array<Promise<void>> = [];
+    private pagePromises: Promise<void>[] = [];
 
     // Grafting state
     private readonly enableGrafting: boolean = true;
@@ -957,7 +957,7 @@ export class Instagram<PostType> {
         }
     }
 
-    private addPlugins(plugins: Array<IPlugin<PostType>>) {
+    private addPlugins(plugins: IPlugin<PostType>[]) {
         if (!plugins) {
             return;
         }

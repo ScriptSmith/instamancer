@@ -83,7 +83,7 @@ export type ISearchOptions = Pick<
 >;
 
 export interface ISearchOptionsPlugins<PostType> extends ISearchOptions {
-    plugins?: Array<IPlugin<PostType>>;
+    plugins?: IPlugin<PostType>[];
 }
 
 export class Search extends Instagram<TSearchResult> {

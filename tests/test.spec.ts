@@ -245,7 +245,7 @@ describe("API limits", () => {
 describe("API options", () => {
     const hashtagId = "vetinari";
     const total = 50;
-    const optionsCollection: Array<[string, IOptions]> = [
+    const optionsCollection: [string, IOptions][] = [
         ["No options", {}],
         ["Silence", {silent: true, total}],
         ["Sleep", {sleepTime: 5, total}],

@@ -75,11 +75,11 @@ export interface IOptionsRegular extends IOptionsCommon {
 }
 
 export interface IOptionsFullApiPlugins<PostType> extends IOptionsFullApi {
-    plugins?: Array<IPlugin<PostType>>;
+    plugins?: IPlugin<PostType>[];
 }
 
 export interface IOptionsRegularPlugins<PostType> extends IOptionsRegular {
-    plugins?: Array<IPlugin<PostType>>;
+    plugins?: IPlugin<PostType>[];
 }
 
 export type IOptions =
