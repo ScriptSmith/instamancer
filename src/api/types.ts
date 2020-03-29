@@ -213,6 +213,7 @@ export const ShortcodeMedia = t.type({
     thumbnail_src: t.union([t.undefined, t.string]),
     dimensions: Dimensions,
     gating_info: t.union([GatingInfo, t.null, t.undefined]),
+    sensitivity_friction_info: t.union([GatingInfo, t.null, t.undefined]),
     fact_check_information: t.null,
     fact_check_overall_rating: t.union([t.undefined, t.null]),
     media_preview: t.union([t.string, t.null]),
