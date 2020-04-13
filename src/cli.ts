@@ -434,7 +434,7 @@ async function spawn(args) {
     process.stdin.on("keypress", handleKeypress);
 
     // Array of urls and filenames
-    let downloadMedia: Array<[string, string, FILETYPES]> = [];
+    let downloadMedia: [string, string, FILETYPES][] = [];
 
     // Download posts
     const posts = [];
@@ -575,7 +575,7 @@ async function spawn(args) {
 function saveMediaMetadata(
     post: object,
     args: object,
-    downloadMedia: Array<[string, string, FILETYPES]>,
+    downloadMedia: [string, string, FILETYPES][],
     downDir: string,
     url: string,
     shortcode: string,
