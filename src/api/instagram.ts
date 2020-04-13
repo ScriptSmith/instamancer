@@ -742,6 +742,7 @@ export class Instagram<PostType> {
             await this.page.goto(this.url);
 
             // Run defaultPagePlugins
+            /* istanbul ignore next */
             for (const f of this.defaultPageFunctions) {
                 await this.page.evaluate(f);
             }
