@@ -192,6 +192,7 @@ export class Hashtag<T> extends Instagram<T> {
  */
 export class User<T> extends Instagram<T> {
     defaultPageFunctions = [
+        /* istanbul ignore next */
         () => {
             let morePostsIntervalCounter = 0;
             const morePostsInterval = setInterval(() => {
