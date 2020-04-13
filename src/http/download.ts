@@ -1,6 +1,6 @@
 import axios from "axios";
 import * as fs from "fs";
-import * as json2csv from "json2csv";
+import {Parser, transforms} from "json2csv";
 import * as winston from "winston";
 
 interface IDownload {
@@ -50,7 +50,7 @@ export async function download(
  * Save list of posts to a CSV file
  */
 export async function toCSV(posts: object[], filePath: string) {
-    const parser = new json2csv.Parser({flatten: true});
+    const parser = new Parser({transforms: [transforms.flatten()]});
     const csv = parser.parse(posts);
     fs.writeFileSync(filePath, csv);
 }
