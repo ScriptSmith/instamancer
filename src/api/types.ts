@@ -69,6 +69,14 @@ export const EdgeMediaToCaption = t.type({
     ),
 });
 
+export const EdgeRelatedProfiles = t.type({
+    edges: t.array(
+        t.type({
+            node: t.undefined,
+        }),
+    ),
+});
+
 const EdgeSidecarToChildren = t.type({
     edges: t.array(
         t.type({
@@ -216,6 +224,7 @@ export const ShortcodeMedia = t.type({
     sensitivity_friction_info: t.union([GatingInfo, t.null, t.undefined]),
     fact_check_information: t.null,
     fact_check_overall_rating: t.union([t.undefined, t.null]),
+    media_overlay_info: t.null,
     media_preview: t.union([t.string, t.null]),
     display_url: t.string,
     display_resources: DisplayResources,
@@ -225,6 +234,7 @@ export const ShortcodeMedia = t.type({
     tracking_token: t.string,
     edge_media_to_tagged_user: EdgeMediaToCaption,
     edge_media_to_caption: EdgeMediaToCaption,
+    edge_related_profiles: EdgeRelatedProfiles,
     caption_is_edited: t.boolean,
     has_ranked_comments: t.boolean,
     edge_media_to_parent_comment: t.union([
