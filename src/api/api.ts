@@ -176,14 +176,11 @@ export function createApi(
  */
 export class Hashtag<T> extends Instagram<T> {
     constructor(id: string, options: IOptions = {}) {
-        const endpoint = "https://instagram.com/explore/tags/[id]";
-        const pageQuery = "data.hashtag.edge_hashtag_to_media.page_info";
-        const edgeQuery = "data.hashtag.edge_hashtag_to_media.edges";
         super(
-            endpoint,
+            "https://instagram.com/explore/tags/[id]",
             id,
-            pageQuery,
-            edgeQuery,
+            "data.hashtag.edge_hashtag_to_media.page_info",
+            "data.hashtag.edge_hashtag_to_media.edges",
             options,
             getPageValidator(options),
         );
@@ -194,15 +191,34 @@ export class Hashtag<T> extends Instagram<T> {
  * An Instagram user API wrapper
  */
 export class User<T> extends Instagram<T> {
+    defaultPageFunctions = [
+        () => {
+            let morePostsIntervalCounter = 0;
+            const morePostsInterval = setInterval(() => {
+                const searchDiv = Array.from(
+                    document.getElementsByTagName("div"),
+                ).filter((d) =>
+                    d.innerHTML.startsWith("Show More Posts from"),
+                )[0];
+
+                morePostsIntervalCounter++;
+
+                if (searchDiv !== undefined) {
+                    searchDiv.parentElement.parentElement.click();
+                    clearInterval(morePostsInterval);
+                } else if (morePostsIntervalCounter > 10) {
+                    clearInterval(morePostsInterval);
+                }
+            }, 1000);
+        },
+    ];
+
     constructor(id: string, options: IOptions = {}) {
-        const endpoint = "https://instagram.com/[id]";
-        const pageQuery = "data.user.edge_owner_to_timeline_media.page_info";
-        const edgeQuery = "data.user.edge_owner_to_timeline_media.edges";
         super(
-            endpoint,
+            "https://instagram.com/[id]",
             id,
-            pageQuery,
-            edgeQuery,
+            "data.user.edge_owner_to_timeline_media.page_info",
+            "data.user.edge_owner_to_timeline_media.edges",
             options,
             getPageValidator(options),
         );

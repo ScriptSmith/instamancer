@@ -100,6 +100,9 @@ export class Instagram<PostType> {
     // Logging object
     public logger: winston.Logger;
 
+    // Implementation-specific page functions
+    public defaultPageFunctions: (() => void)[] = [];
+
     // Validations
     private readonly strict: boolean = false;
     private readonly validator: Type<unknown>;
@@ -737,6 +740,11 @@ export class Instagram<PostType> {
         // Attempt to visit URL
         try {
             await this.page.goto(this.url);
+
+            // Run defaultPagePlugins
+            for (const f of this.defaultPageFunctions) {
+                await this.page.evaluate(f);
+            }
 
             // Fix issue with disabled scrolling
             /* istanbul ignore next */
