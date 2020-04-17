@@ -51,7 +51,7 @@ export const Places = t.type({
 export const Hashtags = t.type({
     hashtag: excess(
         t.type({
-            id: t.number,
+            id: t.string,
             media_count: t.number,
             name: t.string,
             profile_pic_url: t.string,
