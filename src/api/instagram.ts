@@ -445,7 +445,7 @@ export class Instagram<PostType> {
                 continue;
             }
 
-            // Acknowlege receipt of response
+            // Acknowledge receipt of response
             this.responseFromAPI = true;
 
             // Get JSON data
@@ -453,7 +453,8 @@ export class Instagram<PostType> {
             try {
                 data = await res.json();
                 if (typeof data !== "object") {
-                    throw new Error("Response data is not an object");
+                    this.logger.error("Response data is not an object");
+                    continue;
                 }
             } catch (e) {
                 this.logger.error("Error processing response JSON");
@@ -741,6 +742,19 @@ export class Instagram<PostType> {
         try {
             await this.page.goto(this.url);
 
+            // Check page loads
+            /* istanbul ignore next */
+            const pageLoaded = await this.page.evaluate(() => {
+                const message = document.querySelector("h2");
+                return (
+                    message === null ||
+                    message.innerHTML !== "Sorry, this page isn't available."
+                );
+            });
+            if (!pageLoaded) {
+                this.handleConstructionError("Page loaded with no content", 10);
+            }
+
             // Run defaultPagePlugins
             for (const f of this.defaultPageFunctions) {
                 await this.page.evaluate(f);
@@ -761,28 +775,35 @@ export class Instagram<PostType> {
                 }, 10000);
             });
         } catch (e) {
-            // Increment attempts
-            if (
-                this.pageUrlAttempts++ === this.maxPageUrlAttempts &&
-                !this.started
-            ) {
-                await this.forceStop(true);
-                throw new Error("Failed to visit URL");
-            }
-
-            // Log error and wait
-            this.logger.error("Error", e);
-            this.logger.error(this.url);
-            await this.progress(Progress.ABORTED);
-            await this.sleep(60);
-
-            // Close existing attempt
-            await this.page.close();
-            await this.browser.close();
-
-            // Retry
-            await this.constructPage();
+            this.handleConstructionError(e, 60);
         }
+    }
+
+    /***
+     * Handle errors that occur during page construction
+     */
+    private async handleConstructionError(error: string, timeout: number) {
+        // Increment attempts
+        if (
+            this.pageUrlAttempts++ === this.maxPageUrlAttempts &&
+            !this.started
+        ) {
+            await this.forceStop(true);
+            throw new Error("Failed to visit URL");
+        }
+
+        // Log error and wait
+        this.logger.error("Error", error);
+        this.logger.error(this.url);
+        await this.progress(Progress.ABORTED);
+        await this.sleep(timeout);
+
+        // Close existing attempt
+        await this.page.close();
+        await this.browser.close();
+
+        // Retry
+        await this.constructPage();
     }
 
     /**
