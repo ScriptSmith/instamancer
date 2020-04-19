@@ -799,7 +799,9 @@ export class Instagram<PostType> {
         await this.sleep(timeout);
 
         // Close existing attempt
-        await this.page.close();
+        if (!this.page.isClosed()) {
+            await this.page.close();
+        }
         await this.browser.close();
 
         // Retry
