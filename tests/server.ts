@@ -95,6 +95,10 @@ app.get("/invalid_id", (req, res) => {
     );
 });
 
+app.get("/invalid_page", (req, res) => {
+    res.send("<h2>Sorry, this page isn't available.</h2>");
+});
+
 let listener;
 
 export async function startServer(): Promise<number> {

@@ -416,6 +416,12 @@ describe("Network and API issues", () => {
             pageQuery: "data",
         });
     });
+
+    testWrapper("Invalid page", async () => {
+        await testOptions({
+            path: "/invalid_page",
+        });
+    });
 });
 
 describe("Strict mode", () => {
