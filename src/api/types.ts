@@ -235,7 +235,6 @@ export const ShortcodeMedia = t.type({
     tracking_token: t.string,
     edge_media_to_tagged_user: EdgeMediaToCaption,
     edge_media_to_caption: EdgeMediaToCaption,
-    edge_related_profiles: EdgeRelatedProfiles,
     caption_is_edited: t.boolean,
     has_ranked_comments: t.boolean,
     edge_media_to_parent_comment: t.union([
