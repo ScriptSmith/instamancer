@@ -301,8 +301,19 @@ export class Instagram<PostType> {
      * Construct page and add listeners
      */
     public async start() {
+        let pageConstructed: boolean;
+        while (this.pageUrlAttempts++ < this.maxPageUrlAttempts) {
+            pageConstructed = await this.constructPage();
+            if (pageConstructed) {
+                break;
+            }
+        }
+        if (!pageConstructed) {
+            await this.forceStop(true);
+            throw new Error("Failed to visit URL");
+        }
+
         // Build page and visit url
-        await this.constructPage();
         await this.executePlugins("browser");
 
         this.started = true;
@@ -695,7 +706,7 @@ export class Instagram<PostType> {
     /**
      * Create the browser and page, then visit the url
      */
-    private async constructPage() {
+    private async constructPage(): Promise<boolean> {
         // Browser args
         const args = [];
         if (process.env.NO_SANDBOX) {
@@ -745,14 +756,23 @@ export class Instagram<PostType> {
             // Check page loads
             /* istanbul ignore next */
             const pageLoaded = await this.page.evaluate(() => {
-                const message = document.querySelector("h2");
-                return (
-                    message === null ||
-                    message.innerHTML !== "Sorry, this page isn't available."
-                );
+                const headings = document.querySelectorAll("h2");
+                for (const heading of Array.from(headings)) {
+                    if (
+                        heading.innerHTML ===
+                        "Sorry, this page isn't available."
+                    ) {
+                        return false;
+                    }
+                }
+                return true;
             });
             if (!pageLoaded) {
-                this.handleConstructionError("Page loaded with no content", 10);
+                await this.handleConstructionError(
+                    "Page loaded with no content",
+                    10,
+                );
+                return false;
             }
 
             // Run defaultPagePlugins
@@ -775,23 +795,16 @@ export class Instagram<PostType> {
                 }, 10000);
             });
         } catch (e) {
-            this.handleConstructionError(e, 60);
+            await this.handleConstructionError(e, 60);
+            return false;
         }
+        return true;
     }
 
     /***
      * Handle errors that occur during page construction
      */
     private async handleConstructionError(error: string, timeout: number) {
-        // Increment attempts
-        if (
-            this.pageUrlAttempts++ === this.maxPageUrlAttempts &&
-            !this.started
-        ) {
-            await this.forceStop(true);
-            throw new Error("Failed to visit URL");
-        }
-
         // Log error and wait
         this.logger.error("Error", error);
         this.logger.error(this.url);
@@ -803,9 +816,6 @@ export class Instagram<PostType> {
             await this.page.close();
         }
         await this.browser.close();
-
-        // Retry
-        await this.constructPage();
     }
 
     /**
