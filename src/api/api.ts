@@ -117,8 +117,8 @@ export class Post extends Instagram<TSinglePost> {
     protected async getNext() {
         for (const id of this.ids) {
             this.id = id;
-            await this.postPage(id, 1);
-            await this.sleep(1);
+            await this.postPage(id, 5);
+            await this.sleep(2);
         }
         this.finished = true;
     }
