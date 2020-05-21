@@ -82,6 +82,7 @@ export class Instagram<PostType> {
     public started: boolean = false;
     public paused: boolean = false;
     public finished: boolean = false;
+    public finishedReason: FinishedReasons;
 
     // Instagram URLs
     public catchURL: string = "https://www.instagram.com/graphql/query";
@@ -252,7 +253,7 @@ export class Instagram<PostType> {
             return;
         }
         this.started = false;
-        this.finished = true;
+        this.finish(FinishedReasons.FORCED_STOP);
         try {
             this.requestBufferLock.release();
             // tslint:disable-next-line: no-empty
@@ -384,6 +385,15 @@ export class Instagram<PostType> {
     }
 
     /**
+     * Finish retrieving data for the generator
+     */
+    protected finish(reason: FinishedReasons) {
+        this.finished = true;
+        this.finishedReason = reason;
+        this.logger.info("Finished collecting", {reason});
+    }
+
+    /**
      * Process the requests in the request buffer
      */
     protected async processRequests() {
@@ -491,7 +501,7 @@ export class Instagram<PostType> {
                 )
             ) {
                 this.logger.info("No posts remaining", {data});
-                this.finished = true;
+                this.finish(FinishedReasons.API_FINISHED);
             }
 
             await this.processResponseData(data);
@@ -529,7 +539,7 @@ export class Instagram<PostType> {
                     await this.addToPostBuffer(post);
                 }
             } else {
-                this.finished = true;
+                this.finish(FinishedReasons.TOTAL_REACHED_API);
                 break;
             }
         }
@@ -652,10 +662,10 @@ export class Instagram<PostType> {
             if (this.jumps === this.failedJumps) {
                 if (this.fullAPI) {
                     if (!this.responseFromAPI) {
-                        this.finished = true;
+                        this.finish(FinishedReasons.NO_RESPONSE);
                     }
                 } else if (this.index === 0) {
-                    this.finished = true;
+                    this.finish(FinishedReasons.NO_INCREMENT);
 
                     const pageContent = {content: ""};
                     try {
@@ -1002,7 +1012,7 @@ export class Instagram<PostType> {
                     this.postPage(shortCode, this.postPageRetries),
                 );
             } else {
-                this.finished = true;
+                this.finish(FinishedReasons.TOTAL_REACHED_PAGE);
                 break;
             }
         }
@@ -1061,4 +1071,27 @@ enum Progress {
 
     PAUSED = "Paused",
     ABORTED = "Request aborted",
+}
+
+/**
+ * Reasons why the collection finished
+ */
+enum FinishedReasons {
+    // forceStop used
+    FORCED_STOP,
+
+    // API response doesn't contain next page
+    API_FINISHED,
+
+    // Total posts required have been collected from the API
+    TOTAL_REACHED_API,
+
+    // Total posts required have been collected from the default posts
+    TOTAL_REACHED_PAGE,
+
+    // No API response intercepted after interacting with page
+    NO_RESPONSE,
+
+    // Index hasn't increased after interacting with page
+    NO_INCREMENT,
 }
