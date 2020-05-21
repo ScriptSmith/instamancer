@@ -285,8 +285,8 @@ export class Instagram<PostType> {
                 post = await this.postPop();
             }
 
-            // End loop when finished and posts in buffer exhausted
-            if (this.finished) {
+            // End loop when finished, check for pagePromises if fullAPI
+            if (this.finished && this.pagePromises.length === 0) {
                 break;
             }
         }
