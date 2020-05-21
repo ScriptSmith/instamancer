@@ -552,14 +552,24 @@ export class Instagram<PostType> {
         postPage.on("requestfailed", async () => undefined);
 
         // Visit post and read state
-        let data;
         let parsed;
         try {
             await postPage.goto(this.postURL + post);
 
             // Load data from memory
             /* istanbul ignore next */
-            data = await postPage.evaluate(() => {
+            const data = await postPage.evaluate(async () => {
+                // Wait for _sharedData value to be set
+                await new Promise((resolve) => {
+                    let i = 0;
+                    const findSharedData = setInterval(() => {
+                        if (window["_sharedData"] !== undefined || i++ > 5) {
+                            resolve();
+                            clearInterval(findSharedData);
+                        }
+                    }, 2000);
+                });
+
                 return JSON.stringify(
                     window["_sharedData"].entry_data.PostPage[0].graphql,
                 );
