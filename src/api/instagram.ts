@@ -640,6 +640,8 @@ export class Instagram<PostType> {
         retries: number,
     ) {
         // Log error and wait
+        // tslint:disable:no-console
+        console.log(error);
         this.logger.error(message, {error});
         await this.progress(Progress.ABORTED);
         await this.sleep(2);
