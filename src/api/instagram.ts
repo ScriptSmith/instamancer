@@ -325,14 +325,16 @@ export class Instagram<PostType> {
         this.page.on("response", (res) => this.interceptResponse(res));
         this.page.on("requestfailed", (res) => this.interceptFailure(res));
         this.page.on("console", (message) =>
-            this.logger.info("Console log", message),
+            this.logger.info("Console log", {message}),
         );
 
         // Ignore dialog boxes
         this.page.on("dialog", (dialog) => dialog.dismiss());
 
         // Log errors
-        this.page.on("error", (error) => this.logger.error(error));
+        this.page.on("error", (error) =>
+            this.logger.error("Console error", {error}),
+        );
 
         // Gather initial posts from web page
         if (this.fullAPI) {
@@ -474,12 +476,14 @@ export class Instagram<PostType> {
             try {
                 data = await res.json();
                 if (typeof data !== "object") {
-                    this.logger.error("Response data is not an object");
+                    this.logger.error("Response data is not an object", {data});
                     continue;
                 }
-            } catch (e) {
-                this.logger.error("Error processing response JSON");
-                this.logger.error(e);
+            } catch (error) {
+                this.logger.error("Error processing response JSON", {
+                    data,
+                    error,
+                });
                 continue;
             }
 
@@ -521,7 +525,7 @@ export class Instagram<PostType> {
             // Check it hasn't already been cached
             const contains = this.postIds.add(postId);
             if (contains) {
-                this.logger.info("Duplicate id found: " + postId);
+                this.logger.info("Duplicate id found", {postId});
                 continue;
             }
 
@@ -586,9 +590,9 @@ export class Instagram<PostType> {
             });
             parsed = JSON.parse(data) as PostType;
             await postPage.close();
-        } catch (e) {
+        } catch (error) {
             // Log error and wait
-            this.logger.error(e);
+            this.logger.error("Error opening post page", {error});
             await this.progress(Progress.ABORTED);
             await this.sleep(2);
 
@@ -826,8 +830,7 @@ export class Instagram<PostType> {
      */
     private async handleConstructionError(error: string, timeout: number) {
         // Log error and wait
-        this.logger.error("Error", error);
-        this.logger.error(this.url);
+        this.logger.error("Construction error", {error, url: this.url});
         await this.progress(Progress.ABORTED);
         await this.sleep(timeout);
 
@@ -932,7 +935,7 @@ export class Instagram<PostType> {
      * Log failed requests
      */
     private async interceptFailure(req: Request) {
-        this.logger.info("Failed: " + req.url());
+        this.logger.info("Failed request", {url: req.url()});
         await this.progress(Progress.ABORTED);
     }
 
