@@ -60,6 +60,7 @@ const createLogger = () =>
             }),
         ],
     });
+const testWrapperLogger = createLogger();
 
 const libraryTestOptions: IOptions = {
     logger: createLogger(),
@@ -75,9 +76,12 @@ const libraryTestOptions: IOptions = {
  */
 function testWrapper(name: string, callback: () => Promise<void>) {
     test(name, async () => {
+        const logSignPost = `JEST: Testing ${name}`;
         if (process.env.TRAVIS) {
-            console.log(`Testing ${name}`);
+            console.log(logSignPost);
+            testWrapperLogger.info(logSignPost);
         }
+
         await callback();
     });
 }
