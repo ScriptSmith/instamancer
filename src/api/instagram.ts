@@ -597,7 +597,9 @@ export class Instagram<PostType> {
             await this.sleep(2);
 
             // Close existing attempt
-            await postPage.close();
+            if (!postPage.isClosed()) {
+                await postPage.close();
+            }
 
             // Retry
             if (retries > 0) {
