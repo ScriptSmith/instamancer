@@ -569,10 +569,21 @@ export class Instagram<PostType> {
         let parsed;
         try {
             await postPage.goto(this.postURL + post);
+        } catch (error) {
+            await this.handlePostPageError(
+                postPage,
+                error,
+                "Couldn't navigate to page",
+                post,
+                retries,
+            );
+        }
 
-            // Load data from memory
+        // Load data from memory
+        let data;
+        try {
             /* istanbul ignore next */
-            const data = await postPage.evaluate(async () => {
+            data = await postPage.evaluate(async () => {
                 // Wait for _sharedData value to be set
                 await new Promise((resolve) => {
                     let i = 0;
@@ -588,29 +599,60 @@ export class Instagram<PostType> {
                     window["_sharedData"].entry_data.PostPage[0].graphql,
                 );
             });
-            await postPage.close();
+        } catch (error) {
+            await this.handlePostPageError(
+                postPage,
+                error,
+                "Couldn't evaluate on page",
+                post,
+                retries,
+            );
+        }
+
+        // Close page
+        await postPage.close();
+
+        // Parse data to PostType
+        try {
             parsed = JSON.parse(data) as PostType;
         } catch (error) {
-            // Log error and wait
-            this.logger.error("Error opening post page", {error});
-            await this.progress(Progress.ABORTED);
-            await this.sleep(2);
-
-            // Close existing attempt
-            if (!postPage.isClosed()) {
-                await postPage.close();
-            }
-
-            // Retry
-            if (retries > 0) {
-                await this.postPage(post, --retries);
-            }
+            await this.handlePostPageError(
+                postPage,
+                error,
+                "Couldn't parse page data",
+                post,
+                retries,
+            );
         }
+
         if (!parsed) {
             return;
         }
         await this.executePlugins("postPage", parsed);
         await this.addToPostBuffer(parsed);
+    }
+
+    private async handlePostPageError(
+        page: Page,
+        error: Error,
+        message: string,
+        post: string,
+        retries: number,
+    ) {
+        // Log error and wait
+        this.logger.error(message, {error});
+        await this.progress(Progress.ABORTED);
+        await this.sleep(2);
+
+        // Close existing attempt
+        if (!page.isClosed()) {
+            await page.close();
+        }
+
+        // Retry
+        if (retries > 0) {
+            await this.postPage(post, --retries);
+        }
     }
 
     protected async validatePost(post: PostType) {
