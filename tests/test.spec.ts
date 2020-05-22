@@ -12,10 +12,6 @@ import {startServer, stopServer} from "./server";
 jest.setTimeout(8 * 60 * 1000);
 /* tslint:disable:no-console */
 
-/**
- * @jest-environment node
- */
-
 const hashtags = ["beach", "gym", "puppies", "party", "throwback"];
 const users = ["snoopdogg", "arianagrande", "bbc", "whitehouse", "australia"];
 const posts = [
