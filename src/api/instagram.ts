@@ -595,10 +595,10 @@ export class Instagram<PostType> {
                     }, 2000);
                 });
 
-                return JSON.stringify(
-                    window["_sharedData"].entry_data.PostPage[0].graphql,
-                );
+                return JSON.stringify(window["_sharedData"].entry_data);
             });
+            // tslint:disable:no-console
+            console.log(data);
         } catch (error) {
             await this.handlePostPageError(
                 postPage,
