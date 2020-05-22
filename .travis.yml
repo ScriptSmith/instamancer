@@ -5,6 +5,9 @@ node_js:
 dist: bionic
 addons:
   chrome: stable
+  artifacts:
+    paths:
+      - $(ls *.log | tr "\n" ":")
 services:
   - xvfb
 before_install:
