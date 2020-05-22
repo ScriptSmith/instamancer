@@ -588,8 +588,8 @@ export class Instagram<PostType> {
                     window["_sharedData"].entry_data.PostPage[0].graphql,
                 );
             });
-            parsed = JSON.parse(data) as PostType;
             await postPage.close();
+            parsed = JSON.parse(data) as PostType;
         } catch (error) {
             // Log error and wait
             this.logger.error("Error opening post page", {error});
