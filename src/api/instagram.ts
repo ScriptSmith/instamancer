@@ -563,7 +563,7 @@ export class Instagram<PostType> {
                 await req.continue();
             }
         });
-        postPage.on("requestfailed", async () => undefined);
+        postPage.on("requestfailed", async (req) => this.interceptFailure(req));
 
         // Visit post and read state
         let parsed;
