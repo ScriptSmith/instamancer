@@ -87,7 +87,7 @@ export class Instagram<PostType> {
 
     // Instagram URLs
     public catchURL: string = "https://www.instagram.com/graphql/query";
-    public postURL: string = "https://instagram.com/p/";
+    public postURL: string = "https://www.instagram.com/p/";
     public defaultPostURL: string = "https://www.instagram.com/p/";
 
     // Number of jumps before grafting
@@ -569,7 +569,7 @@ export class Instagram<PostType> {
         // Visit post and read state
         let parsed;
         try {
-            await postPage.goto(this.postURL + post);
+            await postPage.goto(this.postURL + post + "/");
         } catch (error) {
             await this.handlePostPageError(
                 postPage,
@@ -581,7 +581,7 @@ export class Instagram<PostType> {
         }
 
         const areq = await axios({
-            url: this.postURL + post,
+            url: this.postURL + post + "/",
             method: "GET",
             responseType: "text",
         });
