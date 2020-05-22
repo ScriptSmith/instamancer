@@ -23,8 +23,8 @@
     "scripts": {
         "build": "tsc",
         "prepack": "tsc --declaration",
-        "test": "jest",
-        "test:ci": "jest --forceExit",
+        "test": "jest --env=node",
+        "test:ci": "jest --forceExit --env=node",
         "lint": "tslint -p tsconfig.json -p tests/tsconfig.json",
         "lint:fix": "npm run lint -- --fix",
         "prettier": "prettier --write \"{src,tests}/**/*.ts\"",

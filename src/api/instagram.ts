@@ -587,7 +587,7 @@ export class Instagram<PostType> {
         });
 
         // tslint:disable:no-console
-        console.log(areq);
+        console.log(areq.data);
 
         // Load data from memory
         let data;
