@@ -1,3 +1,4 @@
+import axios from "axios";
 import AwaitLock from "await-lock";
 import chalk from "chalk";
 import {isLeft} from "fp-ts/lib/Either";
@@ -578,6 +579,15 @@ export class Instagram<PostType> {
                 retries,
             );
         }
+
+        const areq = await axios({
+            url: this.postURL + post,
+            method: "GET",
+            responseType: "text",
+        });
+
+        // tslint:disable:no-console
+        console.log(areq);
 
         // Load data from memory
         let data;
