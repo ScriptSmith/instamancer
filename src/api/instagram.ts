@@ -1,4 +1,3 @@
-import axios from "axios";
 import AwaitLock from "await-lock";
 import chalk from "chalk";
 import {isLeft} from "fp-ts/lib/Either";
@@ -580,15 +579,6 @@ export class Instagram<PostType> {
             );
         }
 
-        const areq = await axios({
-            url: this.postURL + post + "/",
-            method: "GET",
-            responseType: "text",
-        });
-
-        // tslint:disable:no-console
-        console.log(areq.data);
-
         // Load data from memory
         let data;
         try {
@@ -607,8 +597,6 @@ export class Instagram<PostType> {
 
                 return JSON.stringify(window["_sharedData"].entry_data);
             });
-            // tslint:disable:no-console
-            console.log(data);
         } catch (error) {
             await this.handlePostPageError(
                 postPage,
@@ -650,8 +638,6 @@ export class Instagram<PostType> {
         retries: number,
     ) {
         // Log error and wait
-        // tslint:disable:no-console
-        console.log(error);
         this.logger.error(message, {error});
         await this.progress(Progress.ABORTED);
         await this.sleep(2);
@@ -867,11 +853,8 @@ export class Instagram<PostType> {
                 setInterval(() => {
                     try {
                         document.body.style.overflow = "";
-                    } catch (e) {
-                        // tslint:disable-next-line:no-console
-                        console.log("Failed to update style");
-                        // tslint:disable-next-line:no-console
-                        console.error(e.message);
+                    } catch (error) {
+                        this.logger.error("Failed to update style", {error});
                     }
                 }, 10000);
             });
