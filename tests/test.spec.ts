@@ -640,6 +640,7 @@ describe("Plugins", () => {
 describe("Browser instance passed from outside", () => {
     const browserOptions = {
         headless: true,
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
     };
     testWrapper("Should re-use this browser instance", async () => {
         const browser = await launch(browserOptions);
