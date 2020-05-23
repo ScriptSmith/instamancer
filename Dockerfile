@@ -7,6 +7,7 @@ RUN apt-get update \
     && apt-get update \
     && apt-get install -y google-chrome-unstable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf \
       --no-install-recommends \
+    && apt-get install xvfb \
     && rm -rf /var/lib/apt/lists/*
 
 ENV CI=1

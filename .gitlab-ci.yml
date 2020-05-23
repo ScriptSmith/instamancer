@@ -5,6 +5,6 @@ default:
     script:
         - npm install
         - npm run build -- --noEmit
-        - npm run test:ci
+        - xvfb-run -a npm run test:ci
     after_script:
         - cat ./coverage/lcov.info | codacy-coverage --language=typescript;
