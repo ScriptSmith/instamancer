@@ -789,6 +789,7 @@ export class Instagram<PostType> {
     private async constructPage(): Promise<boolean> {
         // Browser args
         const args = [];
+        /* istanbul ignore if */
         if (process.env.NO_SANDBOX) {
             args.push("--no-sandbox");
             args.push("--disable-setuid-sandbox");
