@@ -332,6 +332,7 @@ export class Instagram<PostType> {
         this.page.on("dialog", (dialog) => dialog.dismiss());
 
         // Log errors
+        /* istanbul ignore next */
         this.page.on("error", (error) =>
             this.logger.error("Console error", {error}),
         );
