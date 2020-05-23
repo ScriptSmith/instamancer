@@ -1,0 +1,8 @@
+default:
+  image: ci.adamsm.com:5050/scriptsmith/instamancer:latest
+  script:
+    - npm install -g codacy-coverage
+    - npm install
+    - npm run build -- --noEmit
+    - npm run test:ci
+    - cat ./coverage/lcov.info | codacy-coverage --language=typescript;
