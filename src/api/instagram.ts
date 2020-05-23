@@ -577,6 +577,7 @@ export class Instagram<PostType> {
                 post,
                 retries,
             );
+            return;
         }
 
         // Load data from memory
@@ -605,6 +606,7 @@ export class Instagram<PostType> {
                 post,
                 retries,
             );
+            return;
         }
 
         // Close page
@@ -621,11 +623,9 @@ export class Instagram<PostType> {
                 post,
                 retries,
             );
-        }
-
-        if (!parsed) {
             return;
         }
+
         await this.executePlugins("postPage", parsed);
         await this.addToPostBuffer(parsed);
     }
