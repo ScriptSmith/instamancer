@@ -4,7 +4,7 @@
 
 <h1 align="center">Instamancer</h1>
 
-[![Build Status](https://travis-ci.com/ScriptSmith/instamancer.svg?token=s9KJfKerUtoC75SEgCjT&branch=master)](https://travis-ci.com/ScriptSmith/instamancer)
+[![Build Status](https://img.shields.io/gitlab/pipeline/scriptsmith/instamancer)](https://gitlab.com/ScriptSmith/instamancer/pipelines)
 [![Quality](https://img.shields.io/codacy/grade/98066a13fa444845aa3902d180581b86.svg)](https://app.codacy.com/project/ScriptSmith/instamancer/dashboard)
 [![Coverage](https://img.shields.io/codacy/coverage/98066a13fa444845aa3902d180581b86.svg)](https://app.codacy.com/project/ScriptSmith/instamancer/dashboard)
 [![Speed](https://firebasestorage.googleapis.com/v0/b/instagram-speed-test.appspot.com/o/instamancer.svg?alt=media&token=dcc3e623-ee88-4d74-ae86-2d969a1cd8ad)](https://scriptsmith.github.io/instagram-speed-test)
@@ -303,7 +303,7 @@ To see a speed comparison, visit [this page](https://scriptsmith.github.io/insta
         <td><img src="https://img.shields.io/github/last-commit/scriptsmith/instamancer.svg"></td>
         <td><img src="https://img.shields.io/github/issues/scriptsmith/instamancer.svg"></td>
         <td><img src="https://img.shields.io/github/issues-closed/scriptsmith/instamancer.svg"></td>
-        <td><img src="https://img.shields.io/travis/com/ScriptSmith/instamancer.svg"></td>
+        <td><img src="https://img.shields.io/gitlab/pipeline/scriptsmith/instamancer"></td>
         <td><img src="https://img.shields.io/codacy/coverage/98066a13fa444845aa3902d180581b86.svg"></td>
         <td><img src="https://img.shields.io/codacy/grade/98066a13fa444845aa3902d180581b86.svg"></td>
     </tr>
