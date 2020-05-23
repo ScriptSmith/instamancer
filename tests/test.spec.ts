@@ -32,7 +32,7 @@ let mediumSize = 100;
 let largeSize = 1000;
 
 // Run faster unless executing in CI
-if (!process.env.TRAVIS) {
+if (!process.env.CI) {
     smallSize /= 10;
     mediumSize /= 10;
     largeSize /= 10;
@@ -40,7 +40,7 @@ if (!process.env.TRAVIS) {
 
 const browserPath = process.env.CHROME
     ? process.env.CHROME
-    : "/usr/bin/google-chrome-stable";
+    : "/usr/bin/google-chrome";
 
 // Name of an account with 0 posts to test graceful exit
 const emptyAccountName = "emptyaccount";
