@@ -596,7 +596,9 @@ export class Instagram<PostType> {
                     }, 2000);
                 });
 
-                return JSON.stringify(window["_sharedData"].entry_data);
+                return JSON.stringify(
+                    window["_sharedData"].entry_data.PostPage[0].graphql,
+                );
             });
         } catch (error) {
             await this.handlePostPageError(
