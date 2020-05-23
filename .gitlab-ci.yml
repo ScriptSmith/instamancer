@@ -1,5 +1,5 @@
 default:
-  image: ci.adamsm.com:5050/scriptsmith/instamancer:latest
+  image: registry.gitlab.com/scriptsmith/instamancer:latest
   script:
     - npm install -g codacy-coverage
     - npm install
