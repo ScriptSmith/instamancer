@@ -111,7 +111,6 @@ export class Instagram<PostType> {
     // Puppeteer state
     private browser: Browser;
     private browserDisconnected: boolean = true;
-    /** Browser instance passed from outside */
     private readonly browserInstance?: Browser;
     private readonly headless: boolean;
 
