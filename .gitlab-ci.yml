@@ -1,8 +1,10 @@
 default:
-  image: registry.gitlab.com/scriptsmith/instamancer:latest
-  script:
-    - npm install -g codacy-coverage
-    - npm install
-    - npm run build -- --noEmit
-    - npm run test:ci
-    - cat ./coverage/lcov.info | codacy-coverage --language=typescript;
+    image: registry.gitlab.com/scriptsmith/instamancer:latest
+    before_script:
+        - npm install -g codacy-coverage
+    script:
+        - npm install
+        - npm run build -- --noEmit
+        - npm run test:ci
+    after_script:
+        - cat ./coverage/lcov.info | codacy-coverage --language=typescript;
