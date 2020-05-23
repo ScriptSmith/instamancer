@@ -601,7 +601,7 @@ export class Instagram<PostType> {
                     window["_sharedData"].entry_data.PostPage[0].graphql,
                 );
             });
-        } catch (error) {
+        } catch (error) /* istanbul ignore next */ {
             await this.handlePostPageError(
                 postPage,
                 error,
@@ -618,7 +618,7 @@ export class Instagram<PostType> {
         // Parse data to PostType
         try {
             parsed = JSON.parse(data) as PostType;
-        } catch (error) {
+        } catch (error) /* istanbul ignore next */ {
             await this.handlePostPageError(
                 postPage,
                 error,
