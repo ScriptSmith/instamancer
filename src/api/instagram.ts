@@ -302,6 +302,7 @@ export class Instagram<PostType> {
      */
     public async start() {
         let pageConstructed: boolean;
+        this.pageUrlAttempts = 0;
         while (this.pageUrlAttempts++ < this.maxPageUrlAttempts) {
             pageConstructed = await this.constructPage();
             if (pageConstructed) {
