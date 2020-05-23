@@ -2,7 +2,7 @@
 ## Does it still work?
 At the time of writing, Instamancer still works. It's possible that it will break when Instagram.com is updated, or Instagram tries to curb this method of scraping.
 
-There is a daily Travis cron job which tests whether Instamancer is working as expected. You can see the results here: [![Build Status](https://travis-ci.com/ScriptSmith/instamancer.svg?token=s9KJfKerUtoC75SEgCjT&branch=master)](https://travis-ci.com/ScriptSmith/instamancer)
+There is a daily Travis cron job which tests whether Instamancer is working as expected. You can see the results here: [![Build Status](https://img.shields.io/gitlab/pipeline/scriptsmith/instamancer)](https://gitlab.com/ScriptSmith/instamancer/pipelines)
 
 ## Is there a GUI?
 No, Instamancer only works from the command-line. In the future, I might implement a GUI using [Carlo](https://github.com/GoogleChromeLabs/carlo) or something more lightweight.
