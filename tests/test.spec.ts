@@ -336,18 +336,6 @@ describe("Unusual behavior", () => {
         }
     });
 
-    testWrapper("Sandbox", async () => {
-        process.env["NO_SANDBOX"] = "true";
-        for await (const post of createApi(
-            "hashtag",
-            hashtags[0],
-            libraryTestOptions,
-        ).generator()) {
-            expect(post).toBeDefined();
-        }
-        process.env["NO_SANDBOX"] = "";
-    });
-
     testWrapper("Failed Page visit", async () => {
         const options: IOptions = {
             proxyURL: "127.0.0.1:9999",
