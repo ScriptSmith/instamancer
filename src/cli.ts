@@ -514,12 +514,11 @@ async function spawn(args) {
             }
         }
 
-        // Save post
-        posts.push(post);
-
         // Output if required
         if (printOutput) {
             process.stdout.write(JSON.stringify(post, null, 2) + "\n");
+        } else {
+            posts.push(post);
         }
 
         // Download the identified media
