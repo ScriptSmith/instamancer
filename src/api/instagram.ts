@@ -373,16 +373,21 @@ export class Instagram<PostType> {
         this.responseBuffer = [];
         this.responseBufferLock.release();
 
+        // Wait for pagePromises to empty
+        while (true) {
+            if (this.pagePromises.length === 0) {
+                break;
+            } else {
+                await this.sleep(1);
+            }
+        }
+
         // Close page
         if (!this.page.isClosed()) {
             await this.page.close();
         }
 
-        if (
-            this.finished &&
-            !this.browserDisconnected &&
-            !this.browserInstance
-        ) {
+        if (!this.browserDisconnected && !this.browserInstance) {
             await this.browser.close();
         }
     }
