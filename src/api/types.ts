@@ -237,7 +237,7 @@ export const ShortcodeMedia = t.type({
     edge_media_to_caption: EdgeMediaToCaption,
     caption_is_edited: t.boolean,
     has_ranked_comments: t.boolean,
-    has_audio: t.boolean,
+    has_audio: t.union([t.boolean, t.undefined]),
     edge_media_to_parent_comment: t.union([
         EdgeMediaToParentComment,
         t.undefined,
