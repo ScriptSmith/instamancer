@@ -45,6 +45,17 @@ export const Dimensions = t.type({
     width: t.number,
 });
 
+export const Counter = t.type({
+    count: t.number,
+});
+
+export const GatingInfo = t.type({
+    buttons: t.array(t.string),
+    description: t.string,
+    gating_type: t.string,
+    title: t.string,
+});
+
 export const DisplayResources = t.array(
     t.type({
         src: t.string,
@@ -69,10 +80,44 @@ export const EdgeMediaToCaption = t.type({
     ),
 });
 
+export const RelatedProfile = t.type({
+    id: t.string,
+    full_name: t.string,
+    is_private: t.boolean,
+    is_verified: t.boolean,
+    profile_pic_url: t.string,
+    username: t.string,
+    edge_followed_by: t.type({
+        count: t.number,
+    }),
+    edge_owner_to_timeline_media: t.type({
+        count: t.number,
+        edges: t.array(
+            t.type({
+                node: t.type({
+                    __typename: t.string,
+                    id: t.string,
+                    shortcode: t.string,
+                    edge_media_preview_like: Counter,
+                    edge_media_preview_comment: Counter,
+                    thumbnail_src: t.string,
+                    owner: t.type({
+                        id: t.string,
+                        username: t.string,
+                    }),
+                    gating_info: t.union([GatingInfo, t.null, t.undefined]),
+                    is_video: t.boolean,
+                    accessibility_caption: t.union([t.string, t.null]),
+                }),
+            }),
+        ),
+    }),
+});
+
 export const EdgeRelatedProfiles = t.type({
     edges: t.array(
         t.type({
-            node: t.undefined,
+            node: t.union([t.undefined, RelatedProfile]),
         }),
     ),
 });
@@ -100,17 +145,6 @@ const EdgeSidecarToChildren = t.type({
     ),
 });
 
-export const EdgeMediaToComment = t.type({
-    count: t.number,
-});
-
-export const GatingInfo = t.type({
-    buttons: t.array(t.string),
-    description: t.string,
-    gating_type: t.string,
-    title: t.string,
-});
-
 export const PostNode = t.type({
     __typename: t.union([t.string, t.undefined]),
     comments_disabled: t.boolean,
@@ -118,15 +152,15 @@ export const PostNode = t.type({
     id: t.string,
     edge_media_to_caption: EdgeMediaToCaption,
     shortcode: t.string,
-    edge_media_to_comment: EdgeMediaToComment,
+    edge_media_to_comment: Counter,
     taken_at_timestamp: t.number,
     media_overlay_info: t.union([t.null, t.undefined]),
     fact_check_information: t.union([t.null, t.undefined]),
     fact_check_overall_rating: t.union([t.undefined, t.null]),
     dimensions: Dimensions,
     display_url: t.string,
-    edge_liked_by: t.union([EdgeMediaToComment, t.undefined]),
-    edge_media_preview_like: EdgeMediaToComment,
+    edge_liked_by: t.union([Counter, t.undefined]),
+    edge_media_preview_like: Counter,
     owner: PostNodeOwner,
     thumbnail_src: t.string,
     thumbnail_resources: t.union([DisplayResources, t.undefined]),
@@ -165,7 +199,7 @@ export const CommentNode = t.type({
     did_report_as_spam: t.boolean,
     owner: CommentNodeOwner,
     viewer_has_liked: t.boolean,
-    edge_liked_by: EdgeMediaToComment,
+    edge_liked_by: Counter,
 });
 
 export const EdgeMediaPreviewComment = t.type({
@@ -218,7 +252,7 @@ export const ShortcodeMedia = t.type({
     __typename: t.string,
     id: t.string,
     shortcode: t.string,
-    edge_media_to_comment: t.union([EdgeMediaToComment, t.undefined]),
+    edge_media_to_comment: t.union([Counter, t.undefined]),
     thumbnail_src: t.union([t.undefined, t.string]),
     dimensions: Dimensions,
     gating_info: t.union([GatingInfo, t.null, t.undefined]),
