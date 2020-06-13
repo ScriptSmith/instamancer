@@ -250,6 +250,7 @@ export const ShortcodeMedia = t.type({
     edge_related_profiles: EdgeRelatedProfiles,
     comments_disabled: t.boolean,
     commenting_disabled_for_viewer: t.boolean,
+    clips_music_attribution_info: t.union([t.null, t.undefined]),
     taken_at_timestamp: t.number,
     edge_media_preview_like: EdgeMediaPreviewComment,
     edge_media_to_sponsor_user: EdgeMediaToCaption,
