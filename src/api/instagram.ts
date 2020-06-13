@@ -374,11 +374,11 @@ export class Instagram<PostType> {
         this.responseBufferLock.release();
 
         // Wait for pagePromises to empty
-        /* istanbul ignore while */
         while (true) {
             if (this.pagePromises.length === 0) {
                 break;
             } else {
+                /* istanbul ignore next */
                 await this.sleep(1);
             }
         }
