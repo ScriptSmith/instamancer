@@ -664,12 +664,7 @@ export class Instagram<PostType> {
     protected async validatePost(post: PostType) {
         const validationResult = this.validator.decode(post);
         if (this.strict) {
-            try {
-                ThrowReporter.report(validationResult);
-            } catch (e) {
-                await this.forceStop();
-                throw e;
-            }
+            ThrowReporter.report(validationResult);
             return;
         }
         if (isLeft(validationResult)) {
