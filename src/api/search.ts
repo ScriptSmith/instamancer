@@ -9,6 +9,8 @@ export const Users = t.type({
     user: excess(
         t.type({
             full_name: t.string,
+            account_badges: t.array(t.undefined),
+            biography_product_mentions: t.array(t.undefined),
             has_anonymous_profile_picture: t.boolean,
             is_private: t.boolean,
             is_verified: t.boolean,
