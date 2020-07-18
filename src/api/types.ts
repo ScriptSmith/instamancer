@@ -154,6 +154,7 @@ export const PostNode = t.type({
     shortcode: t.string,
     edge_media_to_comment: Counter,
     taken_at_timestamp: t.number,
+    sensitivity_friction_info: t.union([GatingInfo, t.null, t.undefined]),
     media_overlay_info: t.union([t.null, t.undefined]),
     fact_check_information: t.union([t.null, t.undefined]),
     fact_check_overall_rating: t.union([t.undefined, t.null]),
