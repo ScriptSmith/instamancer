@@ -308,6 +308,7 @@ export const ShortcodeMedia = t.type({
     ]),
     video_url: t.union([t.undefined, t.string]),
     video_view_count: t.union([t.undefined, t.number]),
+    video_play_count: t.union([t.undefined, t.null, t.number]),
     encoding_status: t.union([t.undefined, t.string, t.null]),
     is_published: t.union([t.undefined, t.boolean]),
     product_type: t.union([t.undefined, t.string]),
