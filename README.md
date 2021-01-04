@@ -16,6 +16,12 @@ Scrape Instagram's API with Puppeteer.
 
 ###### [Install](#Install) | [Usage](#Usage) | [Comparison](#Comparison) | [Website](https://scriptsmith.github.io/instamancer/) | [FAQ](FAQ.md) | [Examples](examples/README.md)
 
+<hr/>
+
+**Notice:** Instagram's Web UI and API now requires users to be logged in to access hashtag and account endpoints through a browser. As instamancer is designed to access publicly available data, it currently does not work as intended. Given that this change is unlikely to be reversed, Instamancer will remain unsupported and unmaintained indefinitely. Please use [this pinned issue](https://github.com/ScriptSmith/instamancer/issues/58) to discuss. 
+
+<hr/>
+
 
 Instamancer is a new type of scraping tool that leverages Puppeteer's ability to intercept requests made by a webpage to an API.
 
