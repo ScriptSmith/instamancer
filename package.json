@@ -41,7 +41,7 @@
     "dependencies": {
         "await-lock": "^2.0.1",
         "aws-sdk": "^2.715.0",
-        "axios": "^0.19.2",
+        "axios": "^0.21.1",
         "chalk": "^4.1.0",
         "env-paths": "^2.2.0",
         "fp-ts": "^2.7.0",
